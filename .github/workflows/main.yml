@@ -31,4 +31,10 @@ jobs:
       - name: Compile Latex w/ latexmk
         run: |
           cd $GITHUB_WORKSPACE
-          latexmk -pdf
+          latexmk -pdf main.tex
+
+      - name: Upload Compile PDF File
+        uses: actions/upload-artifact@v3
+        with:
+          name: pdf-output
+          path: main.pdf
