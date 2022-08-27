@@ -6,14 +6,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MSC Paper</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2.1.1/out/water.min.css"
+        integrity="sha256-QST90Wzz4PEr5KlclQaOCsjc00FTyf86Wrj41oqZB4w=" crossorigin="anonymous">
 </head>
 
 <body>
-    <h1>MSC Paper</h1>
-    <h2>release pdf</h2>
-    <a href="main.pdf">Download the pdf.</a>
-    <iframe src="main.pdf" width="100%" height="1000px"></iframe>
+
+    <main>
+        <h1>GPU accelerated Andersen Analysis</h1>
+        <h2>Implemented inside the SVF Framework as a Whole Program Analysis</h2>
+        <blockquote cite="https://en.wikipedia.org/wiki/Pointer_analysis">
+
+            "In <a href="https://en.wikipedia.org/wiki/Computer_science" title="Computer science">computer science</a>,
+            <b>pointer analysis</b>, or <b>points-to analysis</b>, is a
+            <a href="https://en.wikipedia.org/wiki/Static_code_analysis" title="Static code analysis">static code
+                analysis</a>
+            technique that establishes which
+            <a href="https://en.wikipedia.org/wiki/Pointer_(computer_programming)"
+                title="Pointer (computer programming)">pointers</a>,
+            or heap references, can point to which variables, or storage locations. It is often a component of more
+            complex analyses such as
+            <a href="https://en.wikipedia.org/wiki/Escape_analysis" title="Escape analysis">escape analysis</a>. A
+            closely related
+            technique is <a href="https://en.wikipedia.org/wiki/Shape_analysis_(software)"
+                title="Shape analysis (software)">shape analysis</a>."
+
+            <footer> <cite>Wikipedia, "Pointer analysis"</cite> </footer>
+        </blockquote>
+        <p>
+            Check out the code for this thesis <a href="https://github.com/lukasboettcher/msc-code">here</a>.
+            This project is based on the SVF Framework, check it out <a
+                href="https://svf-tools.github.io/SVF/">here</a>.
+        </p>
+        <p>You can download the thesis <a href="main.pdf">here</a>.</p>
+
+        <object type="application/pdf" data="main.pdf" width="100%" height="700px">
+        </object>
+
+    </main>
+    <footer>
+        <p>Lukas Böttcher</p>
+        <address>
+            <a href="mailto:stu210239@mail.uni-kiel.de">stu210239@mail.uni-kiel.de</a>
+        </address>
+    </footer>
 </body>
 
 </html>
