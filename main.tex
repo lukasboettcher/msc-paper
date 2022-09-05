@@ -3,7 +3,7 @@
 \documentclass[12pt,a4paper,twoside,openright]{report}
 
 % basics
-\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{cmap} % allow copy paste from pdf
@@ -15,6 +15,7 @@
 \usepackage[unicode]{hyperref}
 \usepackage[math]{blindtext}
 \usepackage[mode=text,group-minimum-digits=4,round-mode=places,round-precision=2]{siunitx}
+\usepackage{csquotes}
 
 % \usepackage{tabularx}
 % \usepackage{listings}
@@ -40,16 +41,16 @@
 % \usepackage[amsmath,hyperref]{ntheorem}
 
 \usepackage[
-    title={Implementierung einer parallelen Points-To Analyse},
+    title={Implementing a parallel Points-To Analysis},
     author={Lukas Böttcher},
-    type=master,
+    type={Master Thesis},
     institute={Christian-Albrechts-Universität zu Kiel},
-    course=cs,
+    course={Computer Science},
     examiner={Prof.\ Dr.\ Hans Mustermann},
     supervisor={Dipl.-Inf.\ Roman Tiker,\\Dipl.-Inf.\ Laura Stern,\\Otto Normalverbraucher,\ M.Sc.},
     startdate={2022-08-01},
     enddate={2023-01-16},
-    language=deutsch
+    language=english
 ]{scientific-thesis-cover}
 
 % set up biblatex
@@ -103,7 +104,8 @@
 \cleardoublepage
 
 \pagestyle{headings}
-\input{include/chap1_einleitung.tex}
-
+\input{include/chap1_introduction.tex}
+\input{include/chap2_main.tex}
+\input{include/chap3_conclusion.tex}
 \printbibliography[heading=bibintoc]
 \end{document}
