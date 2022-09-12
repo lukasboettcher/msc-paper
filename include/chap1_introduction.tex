@@ -12,6 +12,44 @@ The last chapter \autoref{chap:conclusion} covers possible future work that coul
 This chapter also discusses the experimental results from \autoref{chap:main}.
 
 
+\section{Pointer Analysis}
+In general a pointer analysis tries to find the values of pointers at runtime, without having to execute the program.
+So naturally this problem is undecidable \cite{landi1992undecidability} following a reduction from the halting problem.
+Another analysis closely related to pointer analysis is alias analysis, where two pointers are said to alias if their points-to sets have an intersection. Both pointer analysis, alias analysis, as well as points-to analysis are all terms commonly used interchangeably in literature \cite{hind2001pointer}. From now on pointer analysis will be used in this thesis to refer to this type of static analysis.
+
+A motivating example for pointer analyses is the detection on memory leaks in programs.
+This occurs when a memory location is allocated on the heap, for example with a call to malloc in glibc, and is not freed at a later stage in the program.
+It is in the interest of the developer to find such faults as to not exhaust the computers memory during execution.
+Finding such logical errors can be accomplished via a related static analysis called data-flow analysis, where each possible value at different stages of the program is calculated. Here pointer information is vital, as pointers can represent lateral movement of data trough the control flow of a program, independent of direct assignments and read operations. Ultimately almost all static analyses require some kind of information about pointers to fully determine the state of a program.
+Aside from error detection such as memory leaks, optimizations are another aspect of compiler systems, where pointer information is important to achieve better results, see \autoref{lst:dataflow}.
+
+\begin{listing}
+    \begin{minted}{c}
+    #include <stdlib.h>
+    void *iter;
+    iter = value;
+
+    /* depending on the data at value's memory location 
+    the loop might not be necessary */
+    
+    while(*iter)
+    {
+        complex_computation(iter);
+    }
+    \end{minted}
+    \caption{Optimizations in a c program}
+    \label{lst:dataflow}
+\end{listing}
+
+for example the liveness of a variable can be determined with pointer information. Since a given variable is considered live iff some following instruction
+
+what is pta; survey \autocite{hind2001pointer} and \autocite{toman2017taming} and \autocite{smaragdakis2015pointer}; theoretical complexity of parallel andersen analysis \autocite{mathiasen2021fine}
+
+\subsection{Notions of Sensitivity}
+There are various notions of sensitivity when talking about pointer analysis.
+These notions present a compromise between precision and complexity of the analysis.
+Following, some of the more common sensitivity notions will be illustrated to differentiate the more complex analyses from the less complex analyses and explain the impact of these sensitivities on actual performance.
+
 \subsubsection{Field-sensitivity}
 field sensitivity is nice
 \subsubsection{Flow-sensitivity}
