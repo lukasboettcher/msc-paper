@@ -1,4 +1,43 @@
 \chapter{Introduction} \label{chap:intro}
+\subsubsection{Field-sensitivity}
+field sensitivity is nice
+\subsubsection{Flow-sensitivity}
+flow sensitivity is nice
+\subsubsection{Context-sensitivity}
+Context sensitivity is nice
+\subsubsection{Array-sensitivity}
+array sensitivity is nice
+\subsubsection{Structure-sensitivity}
+Structure sensitivity is nice
+
+field - flow - context - array sensitivity; structure sensitivity: \autocite{balatsouras2016structure}
+\subsection{Steengards Analysis}
+general idea
+\subsection{Andersens Analysis}
+inclusion based pta idea, timeframe
+\subsection{Wave Propagation}
+explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \autocite{pereirawave}
+\subsection{LLVM - Generating Data for Analysis}
+what is llvm, general compiler architecture: front / backends, llvm-IR
+
+go through instrs, and how they are relevant to pta, explain constraints \autocite{lin2015alias}
+\section{Related Work}
+\subsection{Context Free Languages}
+first general idea: \autocite{reps1998program} first idea of gemm for cflpq \autocite{azimov2018context} kronecker product idea \autocite{orachev2020context} evaluation \autocite{mishin2019evaluation} spbla library \autocite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \autocite{su2014parallel}
+\subsection{Sequential Analyses}
+\subsubsection{SVF}
+svf idea, built on top of llvm, \autocite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \autocite{sui2014detecting} demand driven VF: \autocite{sui2018value} new alternative, faster, better results than svf \autocite{shi2018pinpoint}
+\subsection{GPU Accelerated Analyses}
+\subsubsection{Graspan}
+original idea \autocite{zheng2008demand} big data approach on cpu \autocite{wang2017graspan} and gpu \autocite{zuo2021systemizing} alternative impl \autocite{gu2020towards} based on \autocite{mendez2012gpu} and \autocite{mendez2010parallel}
+\section{Motivation}
+general alias analysis is undecidable
+\subsection{Static Analysis in Software Development}
+finding bugs is becoming harder
+
+inter procedural analysis scalability; create a single machine implementation that used parallel hardware and integrates into SVF
+
+
 This is a citation \autocite{juliani2018unity}!
 \begin{figure}
     \centering
@@ -41,37 +80,3 @@ This is a citation \autocite{juliani2018unity}!
         \end{tabular}
     \end{center}
 \end{table}
-
-
-\section{Structure of this Thesis}
-
-\section{Pointer Analysis}
-what is pta; survey \autocite{hind2001pointer} and \autocite{toman2017taming} and \autocite{smaragdakis2015pointer}; theoretical complexity of parallel andersen analysis \autocite{mathiasen2021fine}
-
-\subsubsection{Notions of Sensitivity}
-field - flow - context - array sensitivity; structure sensitivity: \autocite{balatsouras2016structure}
-\subsubsection{Steengards Analysis}
-general idea
-\subsubsection{Andersens Analysis}
-inclusion based pta idea, timeframe
-\subsubsection{Wave Propagation}
-explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \autocite{pereirawave}
-\section{LLVM}
-what is llvm, general compiler architecture: front / backends, llvm-IR
-\subsection{Overview of Instructions}
-go through instrs, and how they are relevant to pta, explain constraints \autocite{lin2015alias}
-\section{Related Work}
-\subsection{Context Free Languages}
-first general idea: \autocite{reps1998program} first idea of gemm for cflpq \autocite{azimov2018context} kronecker product idea \autocite{orachev2020context} evaluation \autocite{mishin2019evaluation} spbla library \autocite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \autocite{su2014parallel}
-\subsection{Sequential Analyses}
-\subsubsection{SVF}
-svf idea, built on top of llvm, \autocite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \autocite{sui2014detecting} demand driven VF: \autocite{sui2018value} new alternative, faster, better results than svf \autocite{shi2018pinpoint}
-\subsection{GPU Accelerated Analyses}
-\subsubsection{Graspan}
-original idea \autocite{zheng2008demand} big data approach on cpu \autocite{wang2017graspan} and gpu \autocite{zuo2021systemizing} alternative impl \autocite{gu2020towards} based on \autocite{mendez2012gpu} and \autocite{mendez2010parallel}
-\section{Motivation}
-general alias analysis is undecidable
-\subsection{Static Analysis in Software Development}
-finding bugs is becoming harder
-
-inter procedural analysis scalability; create a single machine implementation that used parallel hardware and integrates into SVF
