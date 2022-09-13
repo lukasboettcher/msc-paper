@@ -43,7 +43,7 @@ Aside from error detection such as memory leaks, optimizations are another aspec
 
 for example the liveness of a variable can be determined with pointer information. Since a given variable is considered live iff some following instruction
 
-what is pta; survey \autocite{hind2001pointer} and \autocite{toman2017taming} and \autocite{smaragdakis2015pointer}; theoretical complexity of parallel andersen analysis \autocite{mathiasen2021fine}
+what is pta; survey \cite{hind2001pointer} and \cite{toman2017taming} and \cite{smaragdakis2015pointer}; theoretical complexity of parallel andersen analysis \cite{mathiasen2021fine}
 
 \subsection{Notions of Sensitivity}
 There are various notions of sensitivity when talking about pointer analysis.
@@ -61,41 +61,35 @@ array sensitivity is nice
 \subsubsection{Structure-sensitivity}
 Structure sensitivity is nice
 
-field - flow - context - array sensitivity; structure sensitivity: \autocite{balatsouras2016structure}
+field - flow - context - array sensitivity; structure sensitivity: \cite{balatsouras2016structure}
 \subsection{Steengards Analysis}
 general idea
 \subsection{Andersens Analysis}
 inclusion based pta idea, timeframe
 \subsection{Wave Propagation}
-explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \autocite{pereirawave}
+explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \cite{waveprop}
 \subsection{LLVM - Generating Data for Analysis}
 what is llvm, general compiler architecture: front / backends, llvm-IR
 
-go through instrs, and how they are relevant to pta, explain constraints \autocite{lin2015alias}
+go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
 \section{Related Work}
 \subsection{Context Free Languages}
-first general idea: \autocite{reps1998program} first idea of gemm for cflpq \autocite{azimov2018context} kronecker product idea \autocite{orachev2020context} evaluation \autocite{mishin2019evaluation} spbla library \autocite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \autocite{su2014parallel}
+first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \cite{su2014parallel}
 \subsection{Sequential Analyses}
 \subsubsection{SVF}
-svf idea, built on top of llvm, \autocite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \autocite{sui2014detecting} demand driven VF: \autocite{sui2018value} new alternative, faster, better results than svf \autocite{shi2018pinpoint}
+svf idea, built on top of llvm, \cite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \cite{sui2014detecting} demand driven VF: \cite{sui2018value} new alternative, faster, better results than svf \cite{shi2018pinpoint}
 \subsection{GPU Accelerated Analyses}
 \subsubsection{Graspan}
-original idea \autocite{zheng2008demand} big data approach on cpu \autocite{wang2017graspan} and gpu \autocite{zuo2021systemizing} alternative impl \autocite{gu2020towards} based on \autocite{mendez2012gpu} and \autocite{mendez2010parallel}
+original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
 \section{Motivation}
 general alias analysis is undecidable
 \subsection{Static Analysis in Software Development}
 finding bugs is becoming harder
 
-inter procedural analysis scalability; create a single machine implementation that used parallel hardware and integrates into SVF
+inter procedural analysis scalability; create a single machine implementation that used parallel hardware and integrates into SVF 
 
 
-This is a citation \autocite{juliani2018unity}!
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/test.png}
-    \caption{Einige typische Aktivierungsfunktionen}
-    \label{fig:actfn}
-\end{figure}
+This is a citation \cite{juliani2018unity}!
 
 \begin{figure}
     \centering
