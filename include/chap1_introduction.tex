@@ -55,7 +55,28 @@ These notions present a compromise between precision and complexity of the analy
 Following, some of the more common sensitivity notions will be illustrated to differentiate the more complex analyses from the less complex analyses and explain the impact of these sensitivities on actual performance.
 
 \subsubsection{Field-sensitivity}
-field sensitivity is nice
+\begin{minted}{c}
+struct Person {
+    char *name;
+    int *age;
+} p1, p2;
+\end{minted}
+
+Field-sensitivity describes how the pointer analysis algorithm handles structures in the program.
+Most low-level languages, such as c and c++, offer some form of structures to represent an object that internally holds multiple values.
+If an analysis is field-sensitive, each field of each struct is represented in the analysis as an independent node that can point to unique memory locations.
+For the given example, \mint{c}|p1.age| and \mint{c}|p1.name| can point to different memory locations.
+Alternatively a field-insensitive analysis does not differentiate betweeb any fields of a given struct.
+Therefore only two nodes are created to represent the struct, $p1.*$ and $p2.*$.
+Another common alternative is field-base-sensitivity, where instead of omitting the individual fields of each struct, the fields of every struct are merged into a single instance of the struct.
+As a result the Person structs, p1 and p2, would be represented as a single object with fields name and age, such that $p1.age == p2.age$ are represented by the same node in the analysis.
+
+\subsubsection{Array-sensitivity}
+Array-sensitivity is conceptually similar to field-sensitivity but often has different effects on the runtime of the analysis.
+For a given array $int arr[100]$ an array-sensitivie analysis would model each entry of the array, \newline e.g. arr[0], arr[1], \dots, with a unique node, whereas an insensitive analysis would model the array as a single node.
+Generally speaking arrays are often homogeneous data structures that can hold a vast amount of data, compared to structs which are often more compact as they model attributes instead of raw data.
+Therefore array-sensitivity if often omitted from whole program analyses, while field-sensitivity is common among pointer analyses.
+
 \subsubsection{Flow-sensitivity}
 flow sensitivity is nice
 \subsubsection{Context-sensitivity}
