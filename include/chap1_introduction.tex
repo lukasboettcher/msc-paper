@@ -78,12 +78,18 @@ For a given array $int arr[100]$ an array-sensitivie analysis would model each e
 Generally speaking arrays are often homogeneous data structures that can hold a vast amount of data, compared to structs which are often more compact as they model attributes instead of raw data.
 Therefore array-sensitivity if often omitted from whole program analyses, while field-sensitivity is common among pointer analyses.
 
+\subsubsection{Library-sensitivity}
+The notion of library-sensitivity describes the involvement of external libraries into the program analysis.
+Often times a programs transitive dependencies can dwarf the original code by several magnitudes in size \cite{toman2017taming}.
+Even a basic Hello World program in Java transitively depends on 3000 classes \cite{kulkarni2016accelerating} from the Java standard library.
+For this reason most analyses either ignore external library code during analysis, or summarize the most relevant library calls during analysis, such as \verb|malloc| or \verb|free|.
+Although this leaves most analyses in an unsound state, the tradeoff is well worth it, as most interesting properties in pointer analysis do not originate in standard libraries, but the actual program code that is written by the developer.
+
 \subsubsection{Flow-sensitivity}
 flow sensitivity is nice
 \subsubsection{Context-sensitivity}
 Context sensitivity is nice
-\subsubsection{Array-sensitivity}
-array sensitivity is nice
+
 \subsubsection{Structure-sensitivity}
 Structure sensitivity is nice
 
