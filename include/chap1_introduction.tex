@@ -93,6 +93,9 @@ Often times a programs transitive dependencies can dwarf the original code by se
 Even a basic Hello World program in Java transitively depends on 3000 classes \cite{kulkarni2016accelerating} from the Java standard library.
 For this reason most analyses either ignore external library code during analysis, or summarize the most relevant library calls during analysis, such as \verb|malloc| or \verb|free|.
 Although this leaves most analyses in an unsound state, the tradeoff is well worth it, as most interesting properties in pointer analysis do not originate in standard libraries, but the actual program code that is written by the developer.
+Furthermore, most standard libraries of common programming languages go through rigorous testing, making it exceedingly unlikely to produce errors.
+This does however not solve the problem of standard library code mutating the program state. Here, simply ignoring the external code during analysis would greatly decrease the accuracy of the analysis.
+For this reason, a lot of research is being done to develop methods that alleviate some of the problems that arise from analyzing external dependencies of a given program. Caching incremental results during analysis seems to be one of the most promising methods thus far \cite{mcpeak2013scalable}.
 
 \subsubsection{Flow-sensitivity}
 flow sensitivity is nice
