@@ -97,6 +97,29 @@ Furthermore, most standard libraries of common programming languages go through 
 This does however not solve the problem of standard library code mutating the program state. Here, simply ignoring the external code during analysis would greatly decrease the accuracy of the analysis.
 For this reason, a lot of research is being done to develop methods that alleviate some of the problems that arise from analyzing external dependencies of a given program. Caching incremental results during analysis seems to be one of the most promising methods thus far \cite{mcpeak2013scalable}.
 
+\subsubsection{Interprocedural analysis}
+Another aspect that greatly influences the precision of analyses is whether they are interprocedural or intraprocedural.
+An intraprocedural analysis only analyzes each function in an isolated context and disregards any influences on other functions or global state.
+Interestingly most compilers rely mostly on intraprocedural analysis for bug detection as it can be performed in parallel for each function independently and is in general much faster than interprocedural analysis.
+The following example \ref{lst:intraprocedural} illustrates the shortcomings of only performing intraprocedural analysis. Essentially parameter passing especially of pointers is not taken into account properly for the calculation of points-to sets.
+An interprocedural analysis overcomes these limitations by connecting parameters of functions and the arguments at the respective callsites as well as the resulting return values in the graph structure that is used to solve the pointer analysis.
+Fundamentally an interprocedural analysis is related to another notion of sensitivity, context sensitivity, since every context sensitive analysis has to be interprocedural in order to capture the context of each function call \cite{lin2015alias}.
+
+\begin{listing}
+    \begin{minted}{c}
+        int *manupulatePointer(int *ptr);
+        int main() {
+            int *a, *b;
+            b = manupulatePointer(a);
+            /* intraprocedural analysis is unable 
+            to determine the state of a or b */
+        }
+    \end{minted}
+    \caption{Limitations of intraprocedural analysis}
+    \label{lst:intraprocedural}
+\end{listing}
+
+
 \subsubsection{Flow-sensitivity}
 flow sensitivity is nice
 \subsubsection{Context-sensitivity}
