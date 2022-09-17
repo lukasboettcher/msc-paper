@@ -73,7 +73,7 @@ struct Person {
 \end{minted}
 
 Field-sensitivity describes how the pointer analysis algorithm handles structures in the program.
-Most low-level languages, such as c and c++, offer some form of structures to represent an object that internally holds multiple values.
+Most low-level languages, such as c, c++ and Rust, offer some form of structures to represent an object that internally holds multiple values.
 If an analysis is field-sensitive, each field of each struct is represented in the analysis as an independent node that can point to unique memory locations.
 For the given example, \verb|p1.age| and \verb|p1.name| can point to different memory locations.
 Alternatively a field-insensitive analysis does not differentiate between any fields of a given struct.
@@ -104,6 +104,8 @@ Context sensitivity is nice
 
 \subsubsection{Structure-sensitivity}
 Structure sensitivity is nice
+
+heap abstractions \cite{kanvar2016heap}
 
 \begin{tikzpicture}
     \begin{scope}[every node/.style={circle,thick,draw}]
