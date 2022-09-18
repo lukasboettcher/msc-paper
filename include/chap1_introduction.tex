@@ -144,10 +144,27 @@ Although this problem can be slightly alleviated, by only condering program stat
 \end{listing}
 
 \subsubsection{Context-sensitivity}
-Context sensitivity is nice
+As previouly eluded to, context-sensitivity is directly related to interprocedural analyses, since it governs how call sites and called functions are interpreted in the analysis.
+More specifically a centext-sensitive analysis considers the relevant program state at every function call, for this reason context-sensitive analyses are also flow-sensitive.
+While a context-sensitive analysis would in theory provide more precision and therefore decrease the average size of points-to sets, in practice most context-sensitive analyses quickly grow out of control as the analysis explodes in terms of running time and space requirements \cite{smaragdakis2014introspective}. In contrast, context-insensitive analyses scale uniformly well.
 
-\subsubsection{Structure-sensitivity}
-Structure sensitivity is nice
+\begin{listing}
+    \begin{minted}{c}
+        int *manupulatePointer(int *ptr);
+        int main() {
+            int a, b, *x;
+            x = &a;
+            manupulatePointer(x);
+            x = &b;
+            manupulatePointer(x);
+            /* a context-sensitive analysis evaluates both
+            calls to manupulatePointer as unique function calls
+            since the context differs between both calls */
+        }
+    \end{minted}
+    \caption{Context-sensitivity by example}
+    \label{lst:contextsens}
+\end{listing}
 
 heap abstractions \cite{kanvar2016heap}
 
