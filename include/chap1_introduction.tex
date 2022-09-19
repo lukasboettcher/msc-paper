@@ -169,6 +169,16 @@ While a context-sensitive analysis would in theory provide more precision and th
 heap abstractions \cite{kanvar2016heap}
 
 \begin{tikzpicture}
+    \node[shape=circle,draw=black,fill=cyan] (A) at (0,0) {A};
+    \node[shape=circle,draw=black,fill=lime] (B) at (4,0) {B};
+    \node[shape=circle,draw=black] (C) at (2,-2) {C};
+
+    \path [->] (A) edge[] node[fill=white,circle] {$p$} (B);
+    \path [->] (A) edge[dashed] node[fill=white,circle] {$c^{-1}$} (C);
+    \path [->] (C) edge[dotted] node[fill=white,circle] {$p$} (B);
+\end{tikzpicture}
+
+\begin{tikzpicture}
     \begin{scope}[every node/.style={circle,thick,draw}]
         \node (A) at (0,0) {A};
         \node (B) at (0,3) {B};
