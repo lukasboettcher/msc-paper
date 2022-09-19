@@ -208,6 +208,23 @@ field - flow - context - array sensitivity; structure sensitivity: \cite{balatso
 \subsection{Steengards Analysis}
 general idea
 \subsection{Andersens Analysis}
+\begin{table}
+    \begin{center}
+        \caption{Constraints of an inclusion-based pointer analysis.}
+        \label{tab:ander}
+        \begin{tabular}{l|c|l}
+            \hline \\
+            \textbf{Statement} & \textbf{Description} & \textbf{Constraint} \\
+            \hline
+            $x = \&a$ & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$ \\
+            $x = y$ & Variable y is assigned to x. & $pts(y) \subseteq pts(x)$ \\
+            $x = *y$ & Load value of y and assign to x. & $\forall p \in y \colon p \subseteq pts(x)$ \\
+            $*x = y$ & Store y into value of x. & $\forall p \in x \colon y \subseteq pts(p)$ \\
+            $x = y.f$ & Field f of variable y is assigned to x & $pts(y.f) \subseteq pts(x)$ \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
 inclusion based pta idea, timeframe
 \subsection{Wave Propagation}
 explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \cite{waveprop}
@@ -242,7 +259,7 @@ This is a citation \cite{juliani2018unity}!
 \end{figure}
 
 
-\begin{table}[h!]
+\begin{table}
     \begin{center}
         \caption{More rows.}
         \label{tab:table1}
