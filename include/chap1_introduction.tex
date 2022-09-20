@@ -139,9 +139,8 @@ Fundamentally an interprocedural analysis is related to another notion of sensit
 
 
 \subsubsection{Flow-sensitivity}
-When one performs a flow-sensitive pointer analysis, this means that instead of computing a single result for the entire program during analysis, 
-one such result is computed during every possible step in the execution flow of the program.
-As can be seen in \ref{lst:flowsens}, a flow-sensitive analysis is in general more precise than a flow-insensitive analysis. Meanwhile running a flow-sensitive analyis is also exponentially more expensive to compute as every step in a programs execution carries its own state concerning points-to relations - especially when the control flow is complicated by complex conditional statements or recursive execution.
+When one performs a flow-sensitive pointer analysis, this means that the analysis takes into account the control flow of the program when calculating point-to information.
+As can be seen in \ref{lst:flowsens}, a flow-sensitive analysis is in general more precise than a flow-insensitive analysis. Meanwhile running a flow-sensitive analyis is also exponentially more expensive to compute as every step in a programs control flow carries its own state concerning points-to relations - especially when the control flow is complicated by complex conditional statements or recursive execution.
 Although this problem can be slightly alleviated, by only condering program statements that manipulate pointers.
 
 \begin{listing}
@@ -149,12 +148,15 @@ Although this problem can be slightly alleviated, by only condering program stat
         int *manupulatePointer(int *ptr);
         int main() {
             int a, b, *x; // x -> {}
-            x = &a; // x -> {a}
-            x = &b; // x -> {a,b} ?
+            if (something())
+                x = &a; // x -> {a}
+            else
+                x = &b; // x -> {a,b} ?
             manupulatePointer(x);
             /* a flow insensitive analysis computes 
             a points-to set {a,b} for x while in actuality 
-            x = &b overwrites x = &a during execution */
+            x = &b and x = &a are mutually exclusive statements
+            during execution */
         }
     \end{minted}
     \caption{Flow-sensitivity by example}
