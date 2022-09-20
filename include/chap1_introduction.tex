@@ -72,14 +72,10 @@ More often than not the pointer information alone does not provide an immediate 
     \label{lst:dataflow}
 \end{listing}
 
-for example the liveness of a variable can be determined with pointer information. Since a given variable is considered live iff some following instruction
-
-what is pta; survey \cite{hind2001pointer} and \cite{toman2017taming} and \cite{smaragdakis2015pointer}; theoretical complexity of parallel andersen analysis \cite{mathiasen2021fine}
-
-\subsection{Notions of Sensitivity}
+\subsection{Notions of Sensitivity in Pointer Analysis}
 As previously established, a complete pointer analysis is undecidable.
 For this reason there are various notions of sensitivity when talking about pointer analysis.
-These notions present a compromise between precision and complexity of the analysis.
+These notions represent a compromise between precision, scalability and complexity of the analysis.
 Following, some of the more common sensitivity notions will be illustrated to differentiate the more complex analyses from the less complex analyses and explain the impact of these sensitivities on actual performance when analyzing a program.
 
 \subsubsection{Field-sensitivity}
