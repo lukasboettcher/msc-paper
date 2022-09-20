@@ -165,8 +165,10 @@ Although this problem can be slightly alleviated, by only condering program stat
 
 \subsubsection{Context-sensitivity}
 As previouly eluded to, context-sensitivity is directly related to interprocedural analyses, since it governs how call sites and called functions are interpreted in the analysis.
-More specifically a centext-sensitive analysis considers the relevant program state at every function call, for this reason context-sensitive analyses are also flow-sensitive.
-While a context-sensitive analysis would in theory provide more precision and therefore decrease the average size of points-to sets, in practice most context-sensitive analyses quickly grow out of control as the analysis explodes in terms of running time and space requirements \cite{smaragdakis2014introspective}. In contrast, context-insensitive analyses scale uniformly well.
+More specifically a centext-sensitive analysis considers the relevant program state at every function call.
+While a context-sensitive analysis would in theory provide more precision and therefore decrease the average size of points-to sets, in practice most context-sensitive pointer analyses quickly grow out of control as the analysis explodes in terms of running time and space requirements \cite{smaragdakis2014introspective}. In contrast, context-insensitive analyses anecdotally scale uniformly well.
+
+\cite{smaragdakis2015pointer} for flow and context sens
 
 \begin{listing}
     \begin{minted}{c}
@@ -233,14 +235,14 @@ general idea
         \caption{Constraints of an inclusion-based pointer analysis.}
         \label{tab:ander}
         \begin{tabular}{l|c|l}
-            \hline \\
-            \textbf{Statement} & \textbf{Description} & \textbf{Constraint} \\
+            \hline                                                                                                         \\
+            \textbf{Statement} & \textbf{Description}                        & \textbf{Constraint}                         \\
             \hline
-            $x = \&a$ & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$ \\
-            $x = y$ & Variable y is assigned to x. & $pts(y) \subseteq pts(x)$ \\
-            $x = *y$ & Load value of y and assign to x. & $\forall p \in y \colon p \subseteq pts(x)$ \\
-            $*x = y$ & Store y into value of x. & $\forall p \in x \colon y \subseteq pts(p)$ \\
-            $x = y.f$ & Field f of variable y is assigned to x & $pts(y.f) \subseteq pts(x)$ \\
+            $x = \&a$          & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$                    \\
+            $x = y$            & Variable y is assigned to x.                & $pts(y) \subseteq pts(x)$                   \\
+            $x = *y$           & Load value of y and assign to x.            & $\forall p \in y \colon p \subseteq pts(x)$ \\
+            $*x = y$           & Store y into value of x.                    & $\forall p \in x \colon y \subseteq pts(p)$ \\
+            $x = y.f$          & Field f of variable y is assigned to x      & $pts(y.f) \subseteq pts(x)$                 \\
         \end{tabular}
     \end{center}
 \end{table}
