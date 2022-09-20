@@ -80,17 +80,22 @@ Following, some of the more common sensitivity notions will be illustrated to di
 
 \subsubsection{Field-sensitivity}
 \begin{minted}{c}
+int a;
+char b;
 struct Person {
     char *name;
     int *age;
 } p1, p2;
+p1.age = &a;
+p1.name = &b;
 \end{minted}
 
 Field-sensitivity describes how the pointer analysis algorithm handles structures in the program.
-Most low-level languages, such as c, c++ and Rust, offer some form of structures to represent an object that internally holds multiple values.
-If an analysis is field-sensitive, each field of each struct is represented in the analysis as an independent node that can point to unique memory locations.
+Most programming languages that expose memory management to a developer, such as c, c++ and Rust, offer some form of structures to represent an object that internally holds multiple values where these values might be pointers, that reference memory locations.
+If an analysis is field-sensitive, each field of each struct is represented in the analysis as an independent node that can point to unique memory locations, as long as the field can be statically determined during the analysis.
+If the field of a struct can not be statically determined, for example because of an arithmetic operation that produces multiple possible results for the offset during runtime, it is common for field-sensitive pointer analyses to fallback to a field-insensitive mode for the specific struct, wherein all fields of the struct are merged into a single abstract object.
 For the given example, \verb|p1.age| and \verb|p1.name| can point to different memory locations.
-Alternatively a field-insensitive analysis does not differentiate between any fields of a given struct.
+Alternatively a field-insensitive analysis does not differentiate between any fields of a given struct at any point of the analysis.
 Therefore only two nodes are created to represent the struct, $p1.*$ and $p2.*$.
 Another common alternative is field-base-sensitivity, where instead of omitting the individual fields of each struct, the fields of every struct are merged into a single instance of that struct.
 As a result the Person structs, p1 and p2, would be represented as a single object with fields name and age, such that \verb|p1.age == p2.age| are represented by the same node in the analysis.
