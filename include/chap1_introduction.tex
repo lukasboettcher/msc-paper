@@ -233,6 +233,8 @@ field - flow - context - array sensitivity; structure sensitivity: \cite{balatso
 \subsection{Steengards Analysis}
 general idea
 \subsection{Andersens Analysis}
+Andersens Analysis is an inclusion based pointer analysis algorithm first proposed by CITATION. It is a field-sensitive, context-insensitive and flow-insensitive analysis. 
+The algorithm was one of the first constraint based algorithms introduced for pointer analysis. Since it is lacking constext- and flow-sensitivity, it is often used as a base algorithm which produced broad over estimations of the points-to data and is later refined by more precise algorithms to develop usable information.
 \begin{table}
     \begin{center}
         \caption{Constraints of an inclusion-based pointer analysis.}
