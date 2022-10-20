@@ -255,8 +255,44 @@ As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows
     \end{center}
 \end{table}
 
-\subsection{Steengards Analysis}
-general idea
+\subsection{Steensgard's Analysis}
+Steensgard's analysis was introduced in 1996 by \cite{steensgaard1996points}. It was inspired by Andersen's analysis and as such is also an inter-procedural pointer analysis.
+The key proposition of Steensgard's work was to improve the runtime of Andersen's algorithm by using equalities instead of subsets for the constraints that are used as inputs for the algorithm, an overview for the constraints can be seen in \autoref{tab:steens} - the rules are nearly identical to the constraints for the Andersen algorithm.
+The change from subsets to equalities leads to an almost linear algorithm by utilizing union/find datastructures for efficient computation of a fixpoint solution for a given set of pointers.
+The tradeoff for this faster algorithm is precision, since Steensgard's algorithm quickly looses precicion compared to Andersen's algorithm by loosing the small differences between points-to sets of individual varialbes by equating them. An example for this precision loss can be seen in \autoref{lst:steensvander}.
+
+\begin{listing}
+    \begin{minted}{c}
+        int main() {
+            int a, b, *x, *y;
+            x = &a; // pts(x) = {a}
+            y = &b; // pts(y) = {b}
+            y = x; // pts(y) = pts(x) = {a,b}
+            /* by equating the points-to sets of x and y
+            the fact that x never points to b is lost
+            this leads to an obvious loss of precision */
+        }
+    \end{minted}
+    \caption{Steensgard easily looses precision.}
+    \label{lst:steensvander}
+\end{listing}
+
+\begin{table}
+    \begin{center}
+        \caption{Constraints of an equality-based pointer analysis.}
+        \label{tab:steens}
+        \begin{tabular}{l|c|l}
+            \hline                                                                                                 \\
+            \textbf{Statement} & \textbf{Description}                        & \textbf{Constraint}                 \\
+            \hline                                                                                                 \\
+            $x = \&a$          & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$            \\
+            $x = y$            & Variable y is assigned to x.                & $pts(y) = pts(x)$                   \\
+            $x = *y$           & Load value of y and assign to x.            & $\forall p \in y \colon p = pts(x)$ \\
+            $*x = y$           & Store y into value of x.                    & $\forall p \in x \colon y = pts(p)$ \\
+            $x = y.f$          & Field f of variable y is assigned to x      & $pts(y.f) = pts(x)$                 \\
+        \end{tabular}
+    \end{center}
+\end{table}
 
 inclusion based pta idea, timeframe
 \subsection{Wave Propagation}
