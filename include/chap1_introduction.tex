@@ -305,6 +305,13 @@ By now the fundamentals of pointer analysis have been introduced, which unilater
 The missing part of the Introduction is where the underlying data for such a pointer analysis algorithm comes from or how it is derived from a given program that has to be analyzed.
 Initially pointer analyses were solely implemented in compilers to detect errors and find possible optimizations during compilation. As compilers already employ an internal representation for the programs to be compiled, the data generation was not problematic.
 As the scope of pointer analyses expands from intraprocedural analysis part of a compiler towards standalone interprocedural whole program analyses it is clear, that a new representation for programs is needed, on which analyses can run - independent of compilations.
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/llvm.png}
+    \caption{Illustration of the LLVM toolchain from Lattner et al.}
+    \label{fig:llvm}
+\end{figure}
+
 what is llvm, general compiler architecture: front / backends, llvm-IR
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
