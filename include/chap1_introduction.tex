@@ -305,6 +305,12 @@ By now the fundamentals of pointer analysis have been introduced, which unilater
 The missing part of the Introduction is where the underlying data for such a pointer analysis algorithm comes from or how it is derived from a given program that has to be analyzed.
 Initially pointer analyses were solely implemented in compilers to detect errors and find possible optimizations during compilation. As compilers already employ an internal representation for the programs to be compiled, the data generation was not problematic.
 As the scope of pointer analyses expands from intraprocedural analysis part of a compiler towards standalone interprocedural whole program analyses it is clear, that a new representation for programs is needed, on which analyses can run - independent of compilations.
+
+During initial review of literature for pointer analysis multiple methods for data generation were surveyed. Notably parsing was among the most common data extraction methods for programs. Another method was to extract an intermediate representation of the code during compilation of a program by means of using the low level virtual machine, LLVM. Using LLVM has some distinct advantages compared to parsing the source files of a program.
+For one, LLVM provides multiple compiler front-ends for various compiled programming languages, including C/C++ and Objective-C through the Clang compiler, which allows one to compile multiple languages without having to adapt the parser, as can be seen in \autoref{fig:llvm}.
+Especially when working with older non-strictly standardized versions of the C language utilizing all available tricks of an established compiler proves to be more resourceful compared to reinventing the wheel with new tools.
+Secondly one can easily verify the correctness of the extracted data for a program by simply executing the compiled intermediate representation.
+
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/llvm.png}
