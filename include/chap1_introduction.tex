@@ -318,7 +318,32 @@ Secondly one can easily verify the correctness of the extracted data for a progr
     \label{fig:llvm}
 \end{figure}
 
-what is llvm, general compiler architecture: front / backends, llvm-IR
+\begin{listing}
+    \begin{minted}{c}
+#include <stdio.h>
+int main()
+{
+    printf("Hello World!\n");
+    return 0;
+}
+// gets compiled into...
+    \end{minted}
+    \begin{minted}{llvm}
+@.str = private unnamed_addr constant [14 x i8] c"Hello World!\0A\00", align 1
+; Function Attrs: noinline nounwind optnone uwtable
+define dso_local i32 @main() #0 {
+    %1 = alloca i32, align 4
+    store i32 0, i32* %1, align 4
+    %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds 
+        ([14 x i8], [14 x i8]* @.str, i64 0, i64 0))
+    ret i32 0
+}
+declare dso_local i32 @printf(i8*, ...) #1
+    \end{minted}
+    \caption{A basic hello world program in human-readable LLVM-IR.}
+    \label{lst:llvmir}
+\end{listing}
+
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
 \section{Related Work}
