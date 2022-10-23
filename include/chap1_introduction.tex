@@ -344,6 +344,10 @@ declare dso_local i32 @printf(i8*, ...) #1
     \label{lst:llvmir}
 \end{listing}
 
+\subsubsection{LLVM Instructions}
+With the generated LLVM-IR we can now build a graph, by interpreting the individual LLVM instructions as constraints for a chosen pointer analysis.
+Following is an interpretation of the LLVM instructions for Andersen's pointer analysis.
+
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
 \section{Related Work}
