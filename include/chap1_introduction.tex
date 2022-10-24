@@ -299,6 +299,11 @@ The tradeoff for this faster algorithm is precision, since Steensgard's algorith
 
 inclusion based pta idea, timeframe
 \subsection{Wave Propagation}
+Since its first introduction in 1994, there have naturally been many incremental improvements to Andersen style pointer analysis.
+Most current implementations are derived from \cite{waveprop}, specifically the Wave Propagation Method, which is a highly optimized version of Andersen's algorithm.
+In Wave Propagation the procedure is separated into an insertion phase and a propagation phase. Furthermore the constraint graph is topologically sorted and acyclic, which enables the algorithm to pass forward the computed points-to information in topological order, preventing redundant work since only set differences need to be propagated to the next nodes. The algorithm is intended to be more memory intensive in order to achieve better performance on large codebases \cite{waveprop}.
+The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
+
 explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \cite{waveprop}
 \subsection{LLVM - Generating Data for Analysis}
 By now the fundamentals of pointer analysis have been introduced, which unilaterally can be modeled as a graph problem.
