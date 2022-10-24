@@ -304,6 +304,50 @@ Most current implementations are derived from \cite{waveprop}, specifically the 
 In Wave Propagation the procedure is separated into an insertion phase and a propagation phase. Furthermore the constraint graph is topologically sorted and acyclic, which enables the algorithm to pass forward the computed points-to information in topological order, preventing redundant work since only set differences need to be propagated to the next nodes. The algorithm is intended to be more memory intensive in order to achieve better performance on large codebases \cite{waveprop}.
 The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
 
+\begin{algorithm}
+    \caption{General Wave Propagation Algorithm \\ \textbf{Input:} Constraint Graph $G=(V,E)$ \\ \textbf{Output:} Modified Constraint Graph $G=(V,E)$ and points-to information for each node.}\label{alg:waveprop}
+    \begin{algorithmic}
+        \State Detect strongly connected components and find topological sorting for $G$. \\ Build topological node stack $T$.
+        \Repeat
+            \State changed = False
+            \State worklist = $\emptyset$
+            \While{$T \neq \emptyset $}
+                \State node $\leftarrow$ pop from T
+                \For{edge (node,target) $\in out_{copy/gep}(node)$}
+                    \State pts(target) $\leftarrow$ union pts(node) pts(target)
+                    \If{pts(target) changed}
+                        \State changed = False
+                        \State add target to worklist
+                    \EndIf
+                \EndFor
+            \EndWhile
+            \While{worklist $\neq \emptyset $}
+                \State node $\leftarrow$ pop from worklist
+                \For{edge (node,target) $\in out_{load}(node)$}
+                    \For{ptsDst $\in pts(node)$}
+                        \State add copy edge (ptsDst, target) to $G$.
+                        \If{edge added to $G$}
+                            \State changed = True
+                        \EndIf
+                    \EndFor
+                \EndFor
+                \For{edge (src,node) $\in in_{store}(node)$}
+                    \For{ptsDst $\in pts(node)$}
+                        \State add copy edge (src, ptsDst) to $G$.
+                        \If{edge added to $G$}
+                            \State changed = True
+                        \EndIf
+                    \EndFor
+                \EndFor
+            \EndWhile
+
+            \If{Edge added to $G$}
+                \State changed = True
+            \EndIf
+        \Until{changed = False}
+    \end{algorithmic}
+\end{algorithm}
+
 explain optimizations in modern sequential pta implementations: diffpts, worklists, consed hashes, \cite{waveprop}
 \subsection{LLVM - Generating Data for Analysis}
 By now the fundamentals of pointer analysis have been introduced, which unilaterally can be modeled as a graph problem.
