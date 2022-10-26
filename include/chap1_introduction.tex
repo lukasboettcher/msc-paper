@@ -428,11 +428,15 @@ When interpreting LLVM load instructions for a pointer analysis, we can treat it
 Again just like the alloca instruction we can not draw a direct comparison between the definition of the constraint $x = *y$ and the equivalent statement in the C language, since we are working with the LLVM-IR in SSA form.
 The C equivalant would be the dereferencing of $*y$ alone. The assignment to x would require another store instruction.
 
+\paragraph{Store Instruction}
+The LLVM \verb|store| instruction stores a value into a variable. The variable might be a top-level or an abstract memory object represented by an address-taken variable.
 \begin{minted}{llvm}
     %ptr = alloca i32*, align 8
-    ; load the 32 bit integer from ptr into %var
-    %var = load i32, i32* %ptr, align 8
+    %var = load i32*, i32** %ptr, align 8
+    ; store the literal value 10 into %var
+    store i32 10, i32* %var, align 4
 \end{minted}
+The interpretation of the LLVM store instruction is similar to the load instruction. It can be interpreted as the complex store constraint defined as part of Andersen's analysis.
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
 \section{Related Work}
