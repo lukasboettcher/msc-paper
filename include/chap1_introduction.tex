@@ -409,12 +409,13 @@ Following is an interpretation of the LLVM instructions for Andersen's pointer a
 
 \paragraph{Load Instruction}
 The LLVM \verb|alloca| instruction is used to allocate memory on the stack.
-
 \begin{minted}{llvm}
-    ; allocate a 32 bit integer on the stack 
+    ; allocate a pointer to a 32 bit integer on the stack 
     ; and save a reference at ptr
     %ptr = alloca i32*, align 8
 \end{minted}
+The analog of the \verb|alloca| instruction in a pointer analysis is the address-of operation $x = \&a$, since the top-level variable $ptr$ points to the abstract memory location holding the actual value.
+This might come as a surprise, since the implementation of $x = \&a$ in C does not result in an \verb|alloca| instruction. This often leads to confusion when interpreting points-to results that are built using the LLVM-IR.
 
 \paragraph{Load Instruction}
 The LLVM \verb|load| instruction loads the value on a top-level variable into a new variable. Compared to the C programming language this is comparable to dereferencing a pointer variable.
