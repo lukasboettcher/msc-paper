@@ -419,6 +419,14 @@ This might come as a surprise, since the implementation of $x = \&a$ in C does n
 
 \paragraph{Load Instruction}
 The LLVM \verb|load| instruction loads the value on a top-level variable into a new variable. Compared to the C programming language this is comparable to dereferencing a pointer variable.
+\begin{minted}{llvm}
+    %ptr = alloca i32*, align 8
+    ; load the pointer to the 32 bit integer from ptr into %var
+    %var = load i32*, i32** %ptr, align 8
+\end{minted}
+When interpreting LLVM load instructions for a pointer analysis, we can treat it as the complex load constraint that is already defined for Andersen's analysis in \autoref{tab:ander}.
+Again just like the alloca instruction we can not draw a direct comparison between the definition of the constraint $x = *y$ and the equivalent statement in the C language, since we are working with the LLVM-IR in SSA form.
+The C equivalant would be the dereferencing of $*y$ alone. The assignment to x would require another store instruction.
 
 \begin{minted}{llvm}
     %ptr = alloca i32*, align 8
