@@ -440,6 +440,19 @@ The interpretation of the LLVM store instruction is similar to the load instruct
 
 \paragraph{Getelementptr Instruction}
 The LLVM \verb|getelementptr| or \verb|gep| instruction is used to get subelements from an aggregate datastructure such as arrays or structs. When the gep instruction is invoked, it requires an index in order to perform the address calculation for the subelement. Getelementptr does not access memory, it only finds the correct address.
+\begin{minted}{c}
+    int arr[10];
+    arr[5] = 10;
+\end{minted}
+\begin{minted}{llvm}
+    ; create an integer array
+    %arr = alloca [10 x i32], align 16
+    ; get the address for the 5th element
+    %idx = getelementptr inbounds [10 x i32], [10 x i32]* %arr, 
+        i64 0, i64 5
+    store i32 10, i32* %idx, align 4
+\end{minted}
+
 Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
 We are going to observe a simple c program:
 \begin{minted}{c}
