@@ -260,7 +260,7 @@ As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows
 \subsection{Steensgard's Analysis}
 Steensgard's analysis was introduced in 1996 by \cite{steensgaard1996points}. It was inspired by Andersen's analysis and as such is also an interprocedural pointer analysis.
 The key proposition of Steensgard's work was to improve the runtime of Andersen's algorithm by using equalities instead of subsets for the constraints that are used as inputs for the algorithm, an overview for the constraints can be seen in \autoref{tab:steens} - the rules are nearly identical to the constraints for the Andersen algorithm.
-The change from subsets to equalities leads to an almost linear algorithm by utilizing union/find datastructures for efficient computation of a fixpoint solution for a given set of pointers.
+The change from subsets to equalities leads to an almost linear algorithm by utilizing union/find data structures for efficient computation of a fixpoint solution for a given set of pointers.
 The tradeoff for this faster algorithm is precision, since Steensgard's algorithm quickly looses precicion compared to Andersen's algorithm by loosing the small differences between points-to sets of individual varialbes by equating them. An example for this precision loss can be seen in \autoref{lst:steensvander}.
 
 \begin{listing}
@@ -439,7 +439,7 @@ The LLVM \verb|store| instruction stores a value into a variable. The variable m
 The interpretation of the LLVM store instruction is similar to the load instruction. It can be interpreted as the complex store constraint defined as part of Andersen's analysis.
 
 \paragraph{Getelementptr Instruction}
-The LLVM \verb|getelementptr| or \verb|gep| instruction is used to get subelements from an aggregate datastructure such as arrays or structs. When the gep instruction is invoked, it requires an index in order to perform the address calculation for the subelement. Getelementptr does not access memory, it only finds the correct address.
+The LLVM \verb|getelementptr| or \verb|gep| instruction is used to get subelements from an aggregate data structure such as arrays or structs. When the gep instruction is invoked, it requires an index in order to perform the address calculation for the subelement. Getelementptr does not access memory, it only finds the correct address.
 \begin{minted}{c}
     int arr[10];
     arr[5] = 10;
