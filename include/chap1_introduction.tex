@@ -437,6 +437,9 @@ The LLVM \verb|store| instruction stores a value into a variable. The variable m
     store i32 10, i32* %var, align 4
 \end{minted}
 The interpretation of the LLVM store instruction is similar to the load instruction. It can be interpreted as the complex store constraint defined as part of Andersen's analysis.
+
+\paragraph{Getelementptr Instruction}
+The LLVM \verb|getelementptr| or \verb|gep| instruction is used to get subelements from an aggregate datastructure such as arrays or structs. When the gep instruction is invoked, it requires an index in order to perform the address calculation for the subelement. Getelementptr does not access memory, it only finds the correct address.
 Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
 We are going to observe a simple c program:
 \begin{minted}{c}
