@@ -454,7 +454,7 @@ The LLVM \verb|getelementptr| or \verb|gep| instruction is used to get subelemen
 \end{minted}
 Since we intend to run a static analysis, we need to consider the properties of the index value passed into the getelementptr instruction.
 Either the index is a constant value, and we can forward the gep instruction together with the constant index into the static analysis,
-or the index is a variable that is subject to change during execution, and we need to assume that every possible value can be realized, i.e. every offset for aggregate data structure might be referenced by such a gep instruction and this information must be passed to the static analysis.
+or the index is a variable that is subject to change during execution, and we need to assume that every possible value can be realized during execution, i.e. every offset for an aggregate data structure might be referenced by such a gep instruction and this information must be passed to the static analysis.
 This behaviour is handled by differentiating between two types of gep constraints in the pointer analysis, normal- and variant-gep constraints. The former specifying a singular offset and the latter every possible offset for a given aggregate data type, since the value can not be statically determined.
 
 Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
