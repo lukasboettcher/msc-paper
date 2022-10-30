@@ -498,15 +498,16 @@ store i32* %2, i32** %1, align 8
             \path [->] (B) edge[] node[linenode] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
             \path [->] (B) edge[] node[linenode] {$s$} (A);
-            \path [->] (A) edge[] node[linenode] {$l$} (D);
-        \end{tikzpicture} \\
+        \end{tikzpicture}                                                        \\
         \midrule
         \begin{minipage}[t]{0.5\textwidth}
             \begin{minted}{llvm}
-%5 = load i32, i32* %4, align 4
-store i32 %5, i32* %3, align 4
+%4 = load i32*, i32** %1, align 8
+store i32* %4, i32** %3, align 8
+; create constraints from every 
+; instruction
             \end{minted}
-        \end{minipage} & 
+        \end{minipage}  & 
         \begin{tikzpicture}[baseline=0]
             \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
             \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
@@ -515,15 +516,72 @@ store i32 %5, i32* %3, align 4
             \node[node] (C) at (3,-2) {\small$\%3$};
             \node[node] (Ap) at (0,0) {\small$p$};
             \node[node] (Bp) at (2,0) {\small$x$};
-            \node[node] (Cp) at (3,0) {\small$y$};
-            \node[node] (D) at (1,-1.1) {\small$\%4$};
-            \node[node] (E) at (1,-0.2) {\small$\%5$};
+            \node[node] (Cp) at (3,0) {\small$q$};
+            \node[node] (D) at (1,-1) {\small$\%4$};
             \path [->] (A) edge[] node[linenode] {$p$} (Ap);
-            \path [->] (B) edge[] node[linenode] {$p$} (Bp);
+            \path [->] (B) edge[] node[linenode, yshift=4pt] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
             \path [->] (B) edge[] node[linenode] {$s$} (A);
             \path [->] (A) edge[] node[linenode] {$l$} (D);
-            \draw[->, rounded corners=6mm] (E) -- ($(E.60) + (0.5,0.5)$) -- ($(Cp.30) + (0.4,0.4)$) node[linenode]{$s$} -- ($(C.30) + (0.5,0.5)$) -- (C);
+            \path [->] (D) edge[] node[linenode, xshift=-10pt, yshift=8pt] {$s$} (C);
+            % \draw[->, rounded corners=6mm] (E) -- ($(E.30) + (0.5,0.5)$) -- ($(Cp.30) + (0.4,0.4)$) node[linenode]{$s$} -- ($(C.30) + (0.5,0.5)$) -- (C);
+        \end{tikzpicture} \\
+        \midrule
+        \begin{minipage}[t]{0.5\textwidth}
+            \begin{minted}{llvm}
+; apply first store 
+; constraint rule(s)
+            \end{minted}
+        \end{minipage}               & 
+        \begin{tikzpicture}[baseline=0]
+            \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
+            \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
+            \node[node] (A) at (0,-2) {\small$\%1$};
+            \node[node] (B) at (2,-2) {\small$\%2$};
+            \node[node] (C) at (3,-2) {\small$\%3$};
+            \node[node] (Ap) at (0,0) {\small$p$};
+            \node[node] (Bp) at (2,0) {\small$x$};
+            \node[node] (Cp) at (3,0) {\small$q$};
+            \node[node] (D) at (1,-1) {\small$\%4$};
+            \path [->] (A) edge[] node[linenode] {$p$} (Ap);
+            \path [->] (B) edge[] node[linenode, yshift=4pt] {$p$} (Bp);
+            \path [->] (C) edge[] node[linenode] {$p$} (Cp);
+            \path [->] (B) edge[] node[linenode] {$s$} (A);
+            \path [->] (A) edge[] node[linenode] {$l$} (D);
+            \path [->] (D) edge[] node[linenode, xshift=-10pt, yshift=8pt] {$s$} (C);
+            % \draw[->, rounded corners=6mm] (E) -- ($(E.30) + (0.5,0.5)$) -- ($(Cp.30) + (0.4,0.4)$) node[linenode]{$s$} -- ($(C.30) + (0.5,0.5)$) -- (C);
+            \path [->] (Ap) edge[] node[linenode] {$p$} (Bp);
+        \end{tikzpicture} \\
+        \midrule
+        \begin{minipage}[t]{0.5\textwidth}
+            \begin{minted}{llvm}
+; apply last load and store 
+; constraint rule(s)
+; 
+; finally p pts-to x
+; and q also pts-to x
+            \end{minted}
+        \end{minipage}               & 
+        \begin{tikzpicture}[baseline=0]
+            \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
+            \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
+            \node[node] (A) at (0,-2) {\small$\%1$};
+            \node[node] (B) at (2,-2) {\small$\%2$};
+            \node[node] (C) at (3.5,-2) {\small$\%3$};
+            \node[node] (Ap) at (0,0) {\small$p$};
+            \node[node] (Bp) at (2,0) {\small$x$};
+            \node[node] (Cp) at (3.5,0) {\small$q$};
+            \node[node] (D) at (1,-1) {\small$\%4$};
+            \path [->] (A) edge[] node[linenode] {$p$} (Ap);
+            \path [->] (B) edge[] node[linenode, yshift=4pt] {$p$} (Bp);
+            \path [->] (C) edge[] node[linenode] {$p$} (Cp);
+            \path [->] (B) edge[] node[linenode] {$s$} (A);
+            \path [->] (A) edge[] node[linenode] {$l$} (D);
+            \path [->] (D) edge[] node[linenode, xshift=-10pt, yshift=8pt] {$s$} (C);
+            % \draw[->, rounded corners=6mm] (E) -- ($(E.30) + (0.5,0.5)$) -- ($(Cp.30) + (0.4,0.4)$) node[linenode]{$s$} -- ($(C.30) + (0.5,0.5)$) -- (C);
+            \path [->] (Ap) edge[] node[linenode] {$p$} (Bp);
+            \path [->] (D) edge[] node[linenode] {$p$} (Bp);
+            \path [->] (Cp) edge[] node[linenode] {$p$} (Bp);
         \end{tikzpicture} \\
         \bottomrule
     \end{tabular}
