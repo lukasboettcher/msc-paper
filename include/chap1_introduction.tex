@@ -434,19 +434,18 @@ The following instructions are interpreted as simple constraints:
 Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
 We are going to observe a simple c program:
 \begin{minted}{c}
-    int *p, x, y;
+    int *p, x, *q;
     p = &x;
-    y = *p;
+    q = p;
 \end{minted}
 Which will compile into the following LLVM-IR:
 \begin{minted}{llvm}
     %1 = alloca i32*, align 8
     %2 = alloca i32, align 4
-    %3 = alloca i32, align 4
+    %3 = alloca i32*, align 8
     store i32* %2, i32** %1, align 8
     %4 = load i32*, i32** %1, align 8
-    %5 = load i32, i32* %4, align 4
-    store i32 %5, i32* %3, align 4
+    store i32* %4, i32** %3, align 8
 \end{minted}
 An example for applying the constraint rules according to the Andersen algorithm in \autoref{tab:ander} can be observed in \autoref{tab:applyander}.
 The edge labels of the constraint graph are \verb|p|, \verb|s|, \verb|l|, \verb|c| corresponding to points-to (inverse alloca), store, load and copy constraints.
@@ -464,9 +463,9 @@ Furthermore the copy edges are immediately converted into point-to edges in orde
             \begin{minted}{llvm}
 %1 = alloca i32*, align 8
 %2 = alloca i32, align 4
-%3 = alloca i32, align 4
+%3 = alloca i32*, align 8
             \end{minted}
-        \end{minipage} & 
+        \end{minipage}            & 
         \begin{tikzpicture}[baseline=0]
             \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
             \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
@@ -475,16 +474,15 @@ Furthermore the copy edges are immediately converted into point-to edges in orde
             \node[node] (C) at (2,-2) {\small$\%3$};
             \node[node] (Ap) at (0,0) {\small$p$};
             \node[node] (Bp) at (1,0) {\small$x$};
-            \node[node] (Cp) at (2,0) {\small$y$};
+            \node[node] (Cp) at (2,0) {\small$q$};
             \path [->] (A) edge[] node[linenode] {$p$} (Ap);
             \path [->] (B) edge[] node[linenode] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
-        \end{tikzpicture} \\
+        \end{tikzpicture}                                                        \\
         \midrule
         \begin{minipage}[t]{0.5\textwidth}
             \begin{minted}{llvm}
 store i32* %2, i32** %1, align 8
-%4 = load i32*, i32** %1, align 8
             \end{minted}
         \end{minipage} & 
         \begin{tikzpicture}[baseline=0]
@@ -495,8 +493,7 @@ store i32* %2, i32** %1, align 8
             \node[node] (C) at (3,-2) {\small$\%3$};
             \node[node] (Ap) at (0,0) {\small$p$};
             \node[node] (Bp) at (2,0) {\small$x$};
-            \node[node] (Cp) at (3,0) {\small$y$};
-            \node[node] (D) at (1,-0.6) {\small$\%4$};
+            \node[node] (Cp) at (3,0) {\small$q$};
             \path [->] (A) edge[] node[linenode] {$p$} (Ap);
             \path [->] (B) edge[] node[linenode] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
