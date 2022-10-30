@@ -203,6 +203,7 @@ The underlying idea is that the Algorithm operates on a given program by convert
 These constraints can be classified into a few types which can be seen in \autoref{tab:ander}.
 It is worth noting that in literatur the field-sensitivity aspect is often omitted from the definition of the Andersen analysis although it was included in the original specification.
 As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows exponentially with regards to the number of pointer variables in a program. The reason for this exponential growth, among other aspects, is the field-sensitivity. Depending on the structure of the code under analysis, field-sensitivity might play the most influential part in the analysis' complexity. This will be further expanded upon in \autoref{chap:main}. Ultimaltely this is the reason for specifically including field-sensitivity when discussing Andersen's analysis in this thesis.
+During execution an Andersen style pointer analysis repeatedly applies the constraints until a point is reached where no more changes are applied to the constraint graph at which point the execution concludes and the points-to sets for each variable are returned.
 \begin{table}
     \begin{center}
         \caption{Constraints of an inclusion-based pointer analysis.}
