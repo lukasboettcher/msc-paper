@@ -208,15 +208,15 @@ During execution an Andersen style pointer analysis repeatedly applies the const
     \begin{center}
         \caption{Constraints of an inclusion-based pointer analysis.}
         \label{tab:ander}
-        \begin{tabular}{l|c|l}
-            \hline                                                                                                         \\
-            \textbf{Statement} & \textbf{Description}                        & \textbf{Constraint}                         \\
-            \hline                                                                                                         \\
-            $x = \&a$          & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$                    \\
-            $x = y$            & Variable y is assigned to x.                & $pts(y) \subseteq pts(x)$                   \\
-            $x = *y$           & Load value of y and assign to x.            & $\forall p \in y \colon p \subseteq pts(x)$ \\
-            $*x = y$           & Store y into value of x.                    & $\forall p \in x \colon y \subseteq pts(p)$ \\
-            $x = y.f$          & Field f of variable y is assigned to x      & $pts(y.f) \subseteq pts(x)$                 \\
+        \begin{tabular}{l|l|c|l}
+            \hline                                                                                                                         \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Description}                        & \textbf{Constraint}                         \\
+            \hline                                                                                                                         \\
+            $x = \&a$          & alloca        & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$                    \\
+            $x = y$            & copy          & Variable y is assigned to x.                & $pts(y) \subseteq pts(x)$                   \\
+            $x = *y$           & load          & Load value of y and assign to x.            & $\forall p \in pts(y) \colon p \subseteq pts(x)$ \\
+            $*x = y$           & store         & Store y into value of x.                    & $\forall p \in pts(x) \colon y \subseteq pts(p)$ \\
+            $x = y.f$          & field         & Field f of variable y is assigned to x      & $pts(y.f) \subseteq pts(x)$                 \\
         \end{tabular}
     \end{center}
 \end{table}
@@ -247,15 +247,15 @@ The tradeoff for this faster algorithm is precision, since Steensgard's algorith
     \begin{center}
         \caption{Constraints of an equality-based pointer analysis.}
         \label{tab:steens}
-        \begin{tabular}{l|c|l}
-            \hline                                                                                                 \\
-            \textbf{Statement} & \textbf{Description}                        & \textbf{Constraint}                 \\
-            \hline                                                                                                 \\
-            $x = \&a$          & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$            \\
-            $x = y$            & Variable y is assigned to x.                & $pts(y) = pts(x)$                   \\
-            $x = *y$           & Load value of y and assign to x.            & $\forall p \in y \colon p = pts(x)$ \\
-            $*x = y$           & Store y into value of x.                    & $\forall p \in x \colon y = pts(p)$ \\
-            $x = y.f$          & Field f of variable y is assigned to x      & $pts(y.f) = pts(x)$                 \\
+        \begin{tabular}{l|l|c|l}
+            \hline                                                                                                                 \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Description}                        & \textbf{Constraint}                 \\
+            \hline                                                                                                                 \\
+            $x = \&a$          & alloca        & The address of a is assigned to variable x. & $pts(x) = \{a\} \cup pts(x)$        \\
+            $x = y$            & copy          & Variable y is assigned to x.                & $pts(y) = pts(x)$                   \\
+            $x = *y$           & load          & Load value of y and assign to x.            & $\forall p \in pts(y) \colon p = pts(x)$ \\
+            $*x = y$           & store         & Store y into value of x.                    & $\forall p \in pts(x) \colon y = pts(p)$ \\
+            $x = y.f$          & field         & Field f of variable y is assigned to x      & $pts(y.f) = pts(x)$                 \\
         \end{tabular}
     \end{center}
 \end{table}
