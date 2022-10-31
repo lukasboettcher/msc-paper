@@ -468,7 +468,7 @@ Furthermore the copy edges are immediately converted into point-to edges in orde
     \label{tab:applyander}
     \begin{tabular}{p{0.5\textwidth} c c}
         \toprule
-        Code Snippet to analyze / comment                & Constraint Graph                                                                          \\
+        Code Snippet to analyze / comment                & Constraint Graph                   \\
         \midrule
         \begin{minipage}[t]{0.5\textwidth}
             \begin{minted}{llvm}
@@ -489,7 +489,7 @@ Furthermore the copy edges are immediately converted into point-to edges in orde
             \path [->] (A) edge[] node[linenode] {$p$} (Ap);
             \path [->] (B) edge[] node[linenode] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
-        \end{tikzpicture}                                                        \\
+        \end{tikzpicture} \\
         \midrule
         \begin{minipage}[t]{0.5\textwidth}
             \begin{minted}{llvm}
@@ -509,7 +509,7 @@ store i32* %2, i32** %1, align 8
             \path [->] (B) edge[] node[linenode] {$p$} (Bp);
             \path [->] (C) edge[] node[linenode] {$p$} (Cp);
             \path [->] (B) edge[] node[linenode] {$s$} (A);
-        \end{tikzpicture}                                                        \\
+        \end{tikzpicture} \\
         \midrule
         \begin{minipage}[t]{0.5\textwidth}
             \begin{minted}{llvm}
@@ -518,7 +518,7 @@ store i32* %4, i32** %3, align 8
 ; create constraints from every 
 ; instruction
             \end{minted}
-        \end{minipage}  & 
+        \end{minipage} & 
         \begin{tikzpicture}[baseline=0]
             \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
             \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
@@ -623,7 +623,7 @@ See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{t
     \centering
     \includegraphics[width=1.\textwidth]{img/pag.png}
     \caption{The PAG for the Example from \autoref{tab:applyander} computed by SVF.
-    Green edges representing an alloca instruction, blue edges stores and red edges loads.}
+        Green edges representing an alloca instruction, blue edges stores and red edges loads.}
     \label{fig:pag}
 \end{figure}
 
