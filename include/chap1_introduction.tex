@@ -220,15 +220,15 @@ During execution an Andersen style pointer analysis repeatedly applies the const
     \begin{center}
         \caption{Constraints of an inclusion-based pointer analysis.}
         \label{tab:ander}
-        \begin{tabular}{l|l|c|l}
-            \hline                                                                                                                         \\
-            \textbf{Statement} & \textbf{Name} & \textbf{Description}                        & \textbf{Constraint}                         \\
-            \hline                                                                                                                         \\
-            $x = \&a$          & alloca        & The address of a is assigned to variable x. & $\{a\} \subseteq pts(x)$                    \\
-            $x = y$            & copy          & Variable y is assigned to x.                & $pts(y) \subseteq pts(x)$                   \\
-            $x = *y$           & load          & Load value of y and assign to x.            & $\forall p \in pts(y) \colon p \subseteq pts(x)$ \\
-            $*x = y$           & store         & Store y into value of x.                    & $\forall p \in pts(x) \colon y \subseteq pts(p)$ \\
-            $x = y.f$          & field         & Field f of variable y is assigned to x      & $pts(y.f) \subseteq pts(x)$                 \\
+        \begin{tabular}{l|l|p{0.32\textwidth}|l}
+            \hline                                                                                                                          \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                              \\
+            \hline                                                                                                                          \\
+            $x = \&a$          & alloca        & \makecell[cl]{The address of a is                                                          \\assigned to x.}  & $\{a\} \subseteq pts(x)$                    \\
+            $x = y$            & copy          & \makecell[cl]{Variable y is assigned                                                       \\to x.}            & $pts(y) \subseteq pts(x)$                        \\
+            $x = *y$           & load          & \makecell[cl]{Load value of y and                                                          \\assign to x.}       & $\forall p \in pts(y) \colon p \subseteq pts(x)$ \\
+            $*x = y$           & store         & \makecell[cl]{Store y into value of x.} & $\forall p \in pts(x) \colon y \subseteq pts(p)$ \\
+            $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                                     \\assigned to x.} & $pts(y.f) \subseteq pts(x)$                      \\
         \end{tabular}
     \end{center}
 \end{table}
