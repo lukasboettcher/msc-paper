@@ -279,7 +279,7 @@ In Wave Propagation the procedure is separated into an insertion phase and a pro
 The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
 
 \begin{algorithm}
-    \caption{General Wave Propagation Algorithm \\ \textbf{Input:} Constraint Graph $G=(V,E)$ \\ \textbf{Output:} Modified Constraint Graph $G=(V,E)$ and points-to information for each node.}\label{alg:waveprop}
+    \caption{General Wave Propagation Algorithm \\ \textbf{Input:} Constraint Graph $G=(V,E)$ \\ \textbf{Output:} Modified Constraint Graph $G=(V,E)$ and points-to information.}\label{alg:waveprop}
     \begin{algorithmic}
         \State Detect strongly connected components and find topological sorting for $G$. \\ Build topological node stack $T$.
         \Repeat
@@ -290,8 +290,7 @@ The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
         \For{edge (node,target) $\in out_{copy/gep}(node)$}
         \State pts(target) $\leftarrow$ union pts(node) pts(target)
         \If{pts(target) changed}
-        \State changed = False
-        \State add target to worklist
+        \State changed = False and add target to worklist
         \EndIf
         \EndFor
         \EndWhile
