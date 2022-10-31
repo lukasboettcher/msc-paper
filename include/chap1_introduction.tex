@@ -635,6 +635,44 @@ Given the following graph $G$:
 \end{center}
 The cfl-reachability defined by the grammar $CFG_{bpar}$ would find node 2 to be reachable by node 0, since the word "$()$" is part of $\mathcal{L}_{bpar}$.
 This computed reachability can be saved in the graph, by inserting a new edge from node 0 to node 2 with the nonterminal label $S$, representing the balanced parenthesis property.
+\subsection{Andersen Analysis via CFL-Reachability}
+With the knowledge about the Andersen constraints, a set of logical base facts along with terminal characters can be defined for each constraint as can be seen in \autoref{tab:cfl-ander}. Note that each terminal character $x$ also has an inverse representation $bar{x}$ which represents its inverse edge in the constraint graph.
+With these base facts one can define horn-clause rules for a points-to relation \cite{reps1998program}. These horn-clauses can then be reinterpreted as a context free grammar via the respective production rules that represent an instance of the Andersen pointer analysis problem, see \autoref{tab:cfl-ander2}.
+$$R=\{P\rightarrow \bar{a}, P\rightarrow cP, P\rightarrow lPP, P\rightarrow \bar{P}sP\}$$
+$$CFG_{ander}=(\{P\}, \{a,c,l,s,\bar{a},\bar{c},\bar{l},\bar{s}\}, R, P)$$
+With the context free grammar the points-to information can then be computed by calculating the transiive closure of the points-to production rule $P$. In general a variable x points to a variable y iff a path $x \rightsquigarrow y$ exists such that the word created by the ordered edge labels of the path is in the language $\mathcal{L}(CFG_{ander})$ defined by the grammar.
+\begin{table}
+    \begin{center}
+        \caption{Context Free Grammar Nonterminals and Base Facts for each Andersen Constraint.\\Field-sensitive base facts are implemented by a template e.g. one for each possible offset value N.}
+        \label{tab:cfl-ander}
+        \begin{tabular}{l|l|l|l}
+            \hline                                                                                 \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Base Fact}  & \textbf{Terminal Character} \\
+            \hline                                                                                 \\
+            $x = \&a$          & alloca        & alloca(a,x)         & a                           \\
+            $x = y$            & copy          & simpleCopy(x,y)     & c                           \\
+            $x = *y$           & load          & complexLoad(x,y)    & l                           \\
+            $*x = y$           & store         & complexStore(x,y)   & s                           \\
+            $x = y.f$          & field         & simpleField<N>(x,y) & f<N>                        \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}
+    \begin{center}
+        \caption{Context Free Grammar Productions and Horn-clauses for each Andersen Constraint.\\Field-sensitive rules are omitted for simplicity.}
+        \label{tab:cfl-ander2}
+        \begin{tabularx}{1\textwidth} {X|X|X}
+            \hline                                                                   \\
+            \textbf{Statement} & \textbf{Horn-clause rule}     & \textbf{Production} \\
+            \hline                                                                   \\
+            $x = \&a$          & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} alloca(a,x)} & $\{P\rightarrow \bar{a}\}$                          \\\hline
+            $x = y$            & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} simpleCopy(x,y),\\\hspace{1em} pointsTo(y,a)} &$\{P\rightarrow cP\}$    \\\hline
+            $x = *y$           & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} complexLoad(x,y),\\\hspace{1em} pointsTo(y,z),\\\hspace{1em} pointsTo(z,a)}    & $\{P\rightarrow lPP\}$                          \\\hline
+            $*x = y$           & \makecell[cl]{pointsTo(a,b):-                       \\\hspace{1em} complexStore(x,y),\\\hspace{1em} pointsTo(x,a),\\\hspace{1em} pointsTo(y,b)}   & $\{P\rightarrow \bar{P}sP\}$                          \\
+        \end{tabularx}
+    \end{center}
+\end{table}
 first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \cite{su2014parallel}
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
