@@ -609,20 +609,8 @@ first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{az
 \subsection{Sequential Analyses}
 \subsubsection{SVF}
 svf idea, built on top of llvm, \cite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \cite{sui2014detecting} demand driven VF: \cite{sui2018value} new alternative, faster, better results than svf \cite{shi2018pinpoint}
-\subsection{GPU Accelerated Analyses}
-\subsubsection{Graspan}
+\subsection{Graspan}
 original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
-\section{Motivation}
-general alias analysis is undecidable
-This thesis aims to explore the possibilities of parallelizing the Andersen style inclusion based whole program pointer analysis. The goal is to improve static pointer analysis performance by using massively parallel GPUs.
-With the general trend of more complex software systems in software development, developers also require static analysis tools that are able to perform scalable analyses on entire codebases.
-Unfortunately general pointer analysis is undecidable problem, which is a problem that prevents maximally precise pointer analysis from being a possibility.
-For this reason a balance must be found between performance and precision when analyzing code.
-Historically most pointer analysis solutions have been implemented as single threaded applications. By using GPGPUs the proposed library from this thesis aims to improve performance when analyzing entire programs by distributing the work accross the many streaming processors modern GPGPUs possess. The proposed performance improvement also does not decrease the analysis precision.
-\subsection{Static Analysis in Software Development}
-finding bugs is becoming harder
-
-inter procedural analysis scalability; create a single machine implementation that used parallel hardware and integrates into SVF
 
 \begin{figure}
     \centering
