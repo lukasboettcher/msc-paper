@@ -615,6 +615,18 @@ SVF as a framework also allows users to extend and implement custom analysis sol
     \caption{Overview of SVF from \cite{sui2016svf}}
     \label{fig:svf}
 \end{figure}
+
+Currently SVF requires version 14 of the LLVM project and makes extensive use of internal data structures.
+At the core of the SVF analysis tools is the LLVM-IR which is used to derive information from the source code of a program. Internally this intermediate representation is augmented into the SVF-IR, a graph data structure that models the program assignment graph, short PAG. The PAG is a mostly immutable graph that contains all program instructions and incorporates a model for the memory SSA. All further analyses use the PAG as a root of information from which the analysis results are derived.
+See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{tab:applyander}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/pag.png}
+    \caption{The PAG for the Example from \autoref{tab:applyander} computed by SVF.
+    Green edges representing an alloca instruction, blue edges stores and red edges loads.}
+    \label{fig:pag}
+\end{figure}
 svf idea, built on top of llvm, \cite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \cite{sui2014detecting} demand driven VF: \cite{sui2018value} new alternative, faster, better results than svf \cite{shi2018pinpoint}
 \subsection{Graspan}
 original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
