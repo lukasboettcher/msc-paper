@@ -440,7 +440,7 @@ The following instructions are interpreted as simple constraints:
     \item \verb|Call| instructions represent a function call. If the function call contains arguments the caller arguments and callee parameters need to be interpreted as a simple constraint. Beyond this, nothing is done to analyze the context of the function call, since we are performing a context-insensitive pointer analysis.
     \item Like the call instructions, \verb|Ret| instructions are simply interpreted as simple constraints so the returned function value is included in the pointer analysis.
     \item \verb|ThreadFork| \verb|ThreadJoin| are not LLVM-IR instruction. But just like the call and ret instructions, these must be interpreted as function calls with simple constraints in the context of pointer analysis.
-    \item Lastly there are various instructions that are straightforward to interpret as simple constraints, including \verb|bitcast|, \verb|ptrtoint| and \verb|freeze| instructions. Furthermore variable argument values and external library call parameters need to be handled like regular call instructions.
+    \item Lastly there are various instructions that are straightforward to interpret as simple constraints, including \verb|bitcast|, \verb|ptrtoint|, \verb|constexpr|, \verb|extractvalue| and \verb|freeze| instructions. Furthermore variable argument values and external library call parameters need to be handled like regular call instructions.
 \end{itemize}
 
 Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
