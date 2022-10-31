@@ -627,6 +627,16 @@ See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{t
     Green edges representing an alloca instruction, blue edges stores and red edges loads.}
     \label{fig:pag}
 \end{figure}
+
+The typical analysis run with SVF starts off with a pointer analysis that first derives a constraint graph, similar to the procedure described in \autoref{sec:ander}.
+The constraint graph is then fed into a pointer analysis algorithm such as the state of the art interprocedural Andersen style Wave Propagation algorithm.
+The result is a points-to set for each top-level variable and address-taken variable, as well as a callgraph, that represents an over-approximation for each direct and indirect function call.
+Given the points-to information SVF performs an initial mod-ref analysis run to find interprocedural side-effects of variables. Given mod-ref and pointer information, defs and uses are then annotated in each procedure with alias sets of abstract memory objects that might be accessed indirectly by loads and stores.
+SVF also allows users to specify a memory partitioning strategy whereby the heap can be partitioned with varying granularity to allow for precision and scalability trade-offs.
+The properties that are of interest here are specifically the def-use chains of address-taken variables of pointers, which are difficult to compute compared to the def-use chains of top-level variables which are already available if the program in in SSA form \cite{sui2016svf}.
+The difficulty arises from the seeming ambiguity of indirect accesses to address-taken variables through loads and stores in the program.
+After connecting defs and uses of variables, the result is a value-flow graph, or sparse value-flow graph depending on the specified analysis details, that can then be used for more concrete analyses, e.g. use-after-free detection or fed back into a more precise pointer analysis algorithm to increase precision with the gained value-flow information.
+
 svf idea, built on top of llvm, \cite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \cite{sui2014detecting} demand driven VF: \cite{sui2018value} new alternative, faster, better results than svf \cite{shi2018pinpoint}
 \subsection{Graspan}
 original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
