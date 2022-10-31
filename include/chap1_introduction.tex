@@ -604,10 +604,17 @@ first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{az
 
 go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
 \section{Related Work}
-\subsection{Context Free Languages}
-first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, current draft [Taming Transitive Redundancy for Context-Free Language Reachability] fron SVF, parallel pta via cfl \cite{su2014parallel}
-\subsection{Sequential Analyses}
-\subsubsection{SVF}
+\subsection{SVF}
+As mentioned in \autoref{sec:pta} a pointer analysis is the basis for many types of static analyses.
+One such analysis framework is SVF\footnote{\url{http://svf-tools.github.io/SVF}}, a project that aims to enable scalable and precise interprocedural static value-flow analysis \cite{sui2016svf}. The SVF tool consists of a number of subcomponents that represent individual analysis use cases, such as use-after-free and source-sink error detection, whole program pointer analysis and on-demand value flow analysis to name a few.
+SVF as a framework also allows users to extend and implement custom analysis solutions that build on top of the subcomponents that make up SVF and LLVM, which serves as a base and data source for SVF, see \autoref{fig:svf}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/svf.png}
+    \caption{Overview of SVF from \cite{sui2016svf}}
+    \label{fig:svf}
+\end{figure}
 svf idea, built on top of llvm, \cite{sui2016svf}, briefly explain all subcomponents i.e. memleak detection: \cite{sui2014detecting} demand driven VF: \cite{sui2018value} new alternative, faster, better results than svf \cite{shi2018pinpoint}
 \subsection{Graspan}
 original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
