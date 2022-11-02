@@ -462,7 +462,7 @@ Which will compile into the following LLVM-IR:
 \end{minted}
 An example for applying the constraint rules according to the Andersen algorithm in \autoref{tab:ander} can be observed in \autoref{tab:applyander}.
 The edge labels of the constraint graph are \verb|p|, \verb|s|, \verb|l|, \verb|c| corresponding to points-to (inverse alloca), store, load and copy constraints.
-Furthermore the copy edges are immediately converted into point-to edges in order to simplify the constraint graph.
+Furthermore the copy edges are immediately converted into point-to edges in order to simplify the constraint graph in this example.
 
 \begin{table}[H]
     \caption{Applying Andersen Constraints}
@@ -715,7 +715,7 @@ After connecting defs and uses of variables, the result is a value-flow graph, o
 This thesis focuses on pointer analysis, thus, the details are pointer analyses inside SVF are especially relevant. SVF provides a wide set of pointer analyses to choose from, see \autoref{fig:pta-svf} taken from SVF's technical documentation \footnote{\url{https://github.com/svf-tools/SVF/wiki/Technical-documentation}}.
 \begin{figure}
     \centering
-    \includegraphics[width=.8\textwidth]{img/pta-svf.png}
+    \includegraphics[width=.7\textwidth]{img/pta-svf.png}
     \caption{The class hierarchy of pointer analysis implementations in SVF.}
     \label{fig:pta-svf}
 \end{figure}
