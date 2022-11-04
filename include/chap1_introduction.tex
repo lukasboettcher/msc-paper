@@ -675,7 +675,9 @@ With the context-free grammar the points-to information can then be computed by 
         \end{tabularx}
     \end{center}
 \end{table}
-\subsection{Context Free Path Queries via Matrix Multiplications}
+\subsection{Context-free Path Queries via Matrix Multiplications}
+While the transformation of the Andersen problem statement into a reachability relation on top of a context-free language is a helpful mathematical abstraction, it does nothing to improve performance, scalability or precision of the algorithm.
+Subsequently \cite{azimov2018context} proposed a matrix multiplication based approach that works with graph data and allows path queries by means of context-free grammars.
 
 Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
 
