@@ -678,6 +678,8 @@ With the context-free grammar the points-to information can then be computed by 
 \subsection{Context-free Path Queries via Matrix Multiplications}
 While the transformation of the Andersen problem statement into a reachability relation on top of a context-free language is a helpful mathematical abstraction, it does nothing to improve performance, scalability or precision of the algorithm.
 Subsequently \cite{azimov2018context} proposed a matrix multiplication based approach that works with graph data and allows path queries by means of context-free grammars.
+The general answer to a path query is aset of triples of the form $(P,a,b)$, such that there exists a path in the graph from node a to node b with a path labeling derived from the nonterminal P according to \cite{azimov2018context}.
+The central idea for the algorithm is to solve these context-free path queries by calculating the transitive closure of matrices. These matrices are constructed by capturing the adjacency matrices of each individual terminal edge label from the graph. Given two of these boolean adjacency matrices, we can compute the transitive closure by repeatedly multiplying them until no more changes are applied.
 
 Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
 
