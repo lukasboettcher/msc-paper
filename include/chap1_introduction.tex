@@ -692,7 +692,14 @@ By rearranging the Andersen algorithm as repeated matrix multiplications, we ind
 In this case we utilize a subset of linear algebra algorithms, specifically sparse boolean linear algebra.
 Whenever linear algebra is involved, it is often a good idea to use accelerators such as GPGPUs to speed up the calculations.
 
-Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
+Next we will consider an example to illustrate the
+
+extension w/ kronecker product \cite{orachev2020context}
+introduce librara jetbrains \cite{orachev2021spbla}
+mention svf version \cite{lei2022taming}
+an evaluation found that.... \cite{mishin2019evaluation}
+
+Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context-free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
 
 first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, cfg-svf \cite{lei2022taming} fron SVF, parallel pta via cfl \cite{su2014parallel}
 
