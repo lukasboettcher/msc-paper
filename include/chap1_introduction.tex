@@ -683,8 +683,8 @@ The central idea for the algorithm is to solve these context-free path queries b
 To simplify these operations we can convert our context-free grammar that we derived from the Andersen constraints into Chomsky normal form.
 After the conversion of a grammar $G=(V,\Sigma,R,S)$ into Chomsky normal form we are left with productions in the following form:
 \begin{align}
-    &P\rightarrow AB, &\textrm{ for } P,A,B \in V \label{eq:cnf1}\\
-    &P\rightarrow v, &\textrm{ for } P \in V \land v\in \Sigma \label{eq:cnf2}
+     & P\rightarrow AB, & \textrm{ for } P,A,B \in V \label{eq:cnf1}               \\
+     & P\rightarrow v,  & \textrm{ for } P \in V \land v\in \Sigma \label{eq:cnf2}
 \end{align}
 Following this we iterate through all production rules in the form of \autoref{eq:cnf2} and populate the adjacency matrices, then we iterate through all production rules in the form of \autoref{eq:cnf1} and apply the matrix multiplications to find the transitive closures for each of these pdoduction.
 TODO original paper uses set matrices instead of boolean mats
