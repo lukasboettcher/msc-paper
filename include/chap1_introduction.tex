@@ -640,8 +640,8 @@ This computed reachability can be saved in the graph, by inserting a new edge fr
 \subsection{Andersen Analysis via CFL-Reachability}\label{sec:ander-cfl}
 With the knowledge about the Andersen constraints, a set of logical base facts along with terminal characters can be defined for each constraint as can be seen in \autoref{tab:cfl-ander}. Note that each terminal character $x$ also has an inverse representation $bar{x}$ which represents its inverse edge in the constraint graph.
 With these base facts one can define horn-clause rules for a points-to relation \cite{reps1998program}. These horn-clauses can then be reinterpreted as a context-free grammar via the respective production rules that represent an instance of the Andersen pointer analysis problem, see \autoref{tab:cfl-ander2}.
-$$R=\{P\rightarrow \bar{a}, P\rightarrow cP, P\rightarrow lPP, P\rightarrow \bar{P}sP\}$$
-$$CFG_{ander}=(\{P\}, \{a,c,l,s,\bar{a},\bar{c},\bar{l},\bar{s}\}, R, P)$$
+$$R=\{P\rightarrow \bar{a}, C \rightarrow c, P\rightarrow aC, C\rightarrow al, C\rightarrow sP\}$$
+$$CFG_{ander}=(\{P,C\}, \{a,c,l,s,\bar{a},\bar{c},\bar{l},\bar{s}\}, R, P)$$
 With the context-free grammar the points-to information can then be computed by calculating the transiive closure of the points-to production rule $P$. In general a variable x points to a variable y iff a path $x \rightsquigarrow y$ exists such that the word created by the ordered edge labels of the path is in the language $\mathcal{L}(CFG_{ander})$ defined by the grammar.
 \begin{table}
     \begin{center}
