@@ -721,6 +721,28 @@ define dso_local i32 @main() #0 {
         \end{minted}
     \end{minipage}
 \end{center}
+Which results in the following graph.
+\begin{center}
+    \begin{tikzpicture}[]
+        \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
+        \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
+        \node[node] (A) at (0,0) {\small$0$};
+        \node[node] (B) at (2,0) {\small$1$};
+        \node[node] (C) at (4,1) {\small$2$};
+        \node[node] (E) at (6,1) {\small$5$};
+        \node[node] (D) at (4,-1) {\small$4$};
+        \node[node] (F) at (6,-1) {\small$3$};
+        \node[node] (G) at (8,-1) {\small$6$};
+        \path [->] (B) edge[] node[linenode] {$p$} (A);
+        \path [->] (C) edge[] node[linenode] {$p$} (E);
+        \path [->] (F) edge[] node[linenode] {$p$} (G);
+        \path [->] (B) edge[] node[linenode] {$l$} (D);
+        \path [->] (D) edge[] node[linenode] {$s$} (F);
+        \path [->] (C) edge[] node[linenode] {$s$} (B);
+        % \path [->] (A) edge[dotted, bend left] node[linenode] {$S$} (C);
+    \end{tikzpicture}
+\end{center}
+This is the same code snippet from \autoref{tab:applyander}, compiled into LLMV-IR and interpreted into an Andersen constraint graph.
 
 extension w/ kronecker product \cite{orachev2020context}
 introduce librara jetbrains \cite{orachev2021spbla}
