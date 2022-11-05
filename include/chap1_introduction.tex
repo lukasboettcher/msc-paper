@@ -693,7 +693,34 @@ By rearranging the Andersen algorithm as repeated matrix multiplications, we ind
 In this case we utilize a subset of linear algebra algorithms, specifically sparse boolean linear algebra.
 Whenever linear algebra is involved, it is often a good idea to use accelerators such as GPGPUs to speed up the calculations.
 
-Next we will consider an example to illustrate the
+Next we will consider a basic pointer analysis example to illustrate the context-free path query approach that uses matrices for the calculation.
+The input constraint graph that we will use as an input for the Andersen style analysis is derived from the following c code:
+
+\begin{center}
+    \begin{minipage}[t]{0.3\textwidth}
+        \begin{minted}{c}
+int main()
+{
+    int *p, x, *q;
+    p = &x;
+    q = p;
+}
+        \end{minted}
+    \end{minipage}
+    \begin{minipage}[t]{0.6\textwidth}
+        \begin{minted}{llvm}
+define dso_local i32 @main() #0 {
+    %1 = alloca i32*, align 8
+    %2 = alloca i32, align 4
+    %3 = alloca i32*, align 8
+    store i32* %2, i32** %1, align 8
+    %4 = load i32*, i32** %1, align 8
+    store i32* %4, i32** %3, align 8
+    ret i32 0
+}
+        \end{minted}
+    \end{minipage}
+\end{center}
 
 extension w/ kronecker product \cite{orachev2020context}
 introduce librara jetbrains \cite{orachev2021spbla}
