@@ -744,6 +744,58 @@ Which results in the following graph.
 \end{center}
 This is the same code snippet from \autoref{tab:applyander}, compiled into LLMV-IR and interpreted into an Andersen constraint graph.
 
+If we take the context-free grammar we defined for an Andersen style analysis from \autoref{sec:ander-cfl} and convert it into Chomsky normal form, we arrive at the following production rules and grammar.
+$$R=\{P\rightarrow p, C \rightarrow c, S\rightarrow s, L\rightarrow l, P\rightarrow \bar{C}P, C\rightarrow SP, C\rightarrow \bar{P}L\}$$
+$$CFG_{ander}=(\{P,C,L,S\}, \{a,c,l,s,\}, R, P)$$
+Following this we iterate through all production rules of the form \autoref{eq:cnf2} abd create/fill boolean adjacency matrices for each nonterminal with the associated edges from the graph, where an edge $(a,b,l)$ from node $a$ to node $b$ with label $l$ is represented in the matrix element $L_{a,b}$.
+\[
+    P_{7\times 7} = 
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+    % \]
+    % \[
+    C_{7\times 7} = 
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+\]
+\[
+    L_{7\times 7} = 
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+    % \]
+    % \[
+    S_{7\times 7} = 
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+\]
 extension w/ kronecker product \cite{orachev2020context}
 introduce librara jetbrains \cite{orachev2021spbla}
 mention svf version \cite{lei2022taming}
