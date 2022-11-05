@@ -687,6 +687,7 @@ After the conversion of a grammar $G=(V,\Sigma,R,S)$ into Chomsky normal form we
     &P\rightarrow v, &\textrm{ for } P \in V \land v\in \Sigma \label{eq:cnf2}
 \end{align}
 Following this we iterate through all production rules in the form of \autoref{eq:cnf2} and populate the adjacency matrices, then we iterate through all production rules in the form of \autoref{eq:cnf1} and apply the matrix multiplications to find the transitive closures for each of these pdoduction.
+TODO original paper uses set matrices instead of boolean mats
 An elaborate proof for the correctness of this approach can found in \cite{azimov2018context}.
 By rearranging the Andersen algorithm as repeated matrix multiplications, we indirectly profit from decades of research into efficient linear algebra algorithms.
 In this case we utilize a subset of linear algebra algorithms, specifically sparse boolean linear algebra.
