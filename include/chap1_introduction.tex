@@ -637,7 +637,7 @@ Given the following graph $G$:
 \end{center}
 The cfl-reachability defined by the grammar $CFG_{bpar}$ would find node 2 to be reachable by node 0, since the word "$()$" is part of $\mathcal{L}_{bpar}$.
 This computed reachability can be saved in the graph, by inserting a new edge from node 0 to node 2 with the nonterminal label $S$, representing the balanced parenthesis property.
-\subsection{Andersen Analysis via CFL-Reachability}
+\subsection{Andersen Analysis via CFL-Reachability}\label{sec:ander-cfl}
 With the knowledge about the Andersen constraints, a set of logical base facts along with terminal characters can be defined for each constraint as can be seen in \autoref{tab:cfl-ander}. Note that each terminal character $x$ also has an inverse representation $bar{x}$ which represents its inverse edge in the constraint graph.
 With these base facts one can define horn-clause rules for a points-to relation \cite{reps1998program}. These horn-clauses can then be reinterpreted as a context-free grammar via the respective production rules that represent an instance of the Andersen pointer analysis problem, see \autoref{tab:cfl-ander2}.
 $$R=\{P\rightarrow \bar{a}, P\rightarrow cP, P\rightarrow lPP, P\rightarrow \bar{P}sP\}$$
