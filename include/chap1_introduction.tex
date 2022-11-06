@@ -796,6 +796,58 @@ Following this we iterate through all production rules of the form \autoref{eq:c
         0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     \end{bmatrix}
 \]
+With these initial matrices in place, we now iterate over all production rules in the form of $P\rightarrow AB, \textrm{ for } P,A,B \in V$, see \autoref{eq:cnf1} which we apply by multiplying the corresponding nonterminal matrices. Note that we use the inverse matrix if we encounter a negated nonterminal. Looking at $C\rightarrow \bar{S}P$, one of these production rules, we update the $C_{7\times 7}$ matrix as follows $$C_{7\times 7} = C_{7\times 7} + S_{7\times 7}^{-1} \times P_{7\times 7}$$
+\[
+    C_{7\times 7}
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+    =
+    S_{7\times 7}
+    \begin{smallmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{smallmatrix}
+    \times
+    P_{7\times 7}
+    \begin{smallmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \end{smallmatrix}
+\]
+We repeat this operation for all these production rules until no more changes take place in the matrices.
+This can be done efficiently by storing the number of non zero elements, nnz., for each matrix and only multiplying for a given production rule, if either of the RHS matrices have changed nnz values.
+Finally we arrive at the following matrix for the $P$ nonterminal corresponding to the point-to relation:
+\[
+    P_{7\times 7} =
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+    \end{bmatrix}
+\]
+Fortunately this is the same result we arrived at when manually applying the andersen constraints in \autoref{tab:applyander}.
+
 extension w/ kronecker product \cite{orachev2020context}
 introduce librara jetbrains \cite{orachev2021spbla}
 mention svf version \cite{lei2022taming}
