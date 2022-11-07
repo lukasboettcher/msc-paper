@@ -854,9 +854,8 @@ Unfortunately the kronecker calculation is much more complex than conventional m
 Further research by a research team collaborating with developers from JetBrains, a developer of integrated development environments, in \cite{mishin2019evaluation} found that for synthetic graph data, GPU accelerated sparse boolearn linear algebra were a promising method for context-free path queries.
 Furthermore this research lead to a software library designed specifically for sparse boolean linear algebra, \verb|spbla| \cite{orachev2021spbla}. This library utilizes GPGPUs either through CUDA or OpenCL to accelerate boolean linear algebra operations.
 
-first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, cfg-svf \cite{lei2022taming} fron SVF, parallel pta via cfl \cite{su2014parallel}
-
-go through instrs, and how they are relevant to pta, explain constraints \cite{lin2015alias}
+Unfortunately the current state of the spbla project's\footnote{\url{https://github.com/JetBrains-Research/spbla}} codebase contains errors for which reason the idea of using context-free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
+During the writing of this thesis another library with a focus on static analysis, SVF\footnote{\url{https://github.com/SVF-tools/SVF}}, introduced support for context-free path queries \cite{lei2022taming}. Although the software developed as part of this thesis makes heavy use of the SVF library (see \autoref{chap:main}), standalone context-free path querying approaches for solving pointer analyses were not used during development as the support was introduced in SVF during late development of PTAGPU.
 \section{Related Work}
 \subsection{SVF}\label{sec:svf}
 As mentioned in \autoref{sec:pta} a pointer analysis is the basis for many types of static analyses.
