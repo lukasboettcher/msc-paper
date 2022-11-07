@@ -851,7 +851,8 @@ Fortunately this is the same result we arrived at when manually applying the and
 Since the transformation of the context-free grammar into a normal form can lead to a substantial increase of required matrices, \cite{orachev2020context} introduced a context-free path querying algorithm that utilizes the kronecker product to realize recursive finite state machines which in turn do not require normalized grammars and can operate on the original context-free grammar for Andersen style pointer analysis.
 Unfortunately the kronecker calculation is much more complex than conventional matrix multiplications and thus this convention did not yield performance improvements.
 
-Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context-free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
+Further research by a research team collaborating with developers from JetBrains, a developer of integrated development environments, in \cite{mishin2019evaluation} found that for synthetic graph data, GPU accelerated sparse boolearn linear algebra were a promising method for context-free path queries.
+Furthermore this research lead to a software library designed specifically for sparse boolean linear algebra, \verb|spbla| \cite{orachev2021spbla}. This library utilizes GPGPUs either through CUDA or OpenCL to accelerate boolean linear algebra operations.
 
 first general idea: \cite{reps1998program} first idea of gemm for cflpq \cite{azimov2018context} kronecker product idea \cite{orachev2020context} evaluation \cite{mishin2019evaluation} spbla library \cite{orachev2021spbla}, cfg-svf \cite{lei2022taming} fron SVF, parallel pta via cfl \cite{su2014parallel}
 
