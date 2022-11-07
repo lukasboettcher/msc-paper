@@ -848,10 +848,8 @@ Finally we arrive at the following matrix for the $P$ nonterminal corresponding 
 \]
 Fortunately this is the same result we arrived at when manually applying the andersen constraints in \autoref{tab:applyander}.
 
-extension w/ kronecker product \cite{orachev2020context}
-introduce librara jetbrains \cite{orachev2021spbla}
-mention svf version \cite{lei2022taming}
-an evaluation found that.... \cite{mishin2019evaluation}
+Since the transformation of the context-free grammar into a normal form can lead to a substantial increase of required matrices, \cite{orachev2020context} introduced a context-free path querying algorithm that utilizes the kronecker product to realize recursive finite state machines which in turn do not require normalized grammars and can operate on the original context-free grammar for Andersen style pointer analysis.
+Unfortunately the kronecker calculation is much more complex than conventional matrix multiplications and thus this convention did not yield performance improvements.
 
 Unfortunately the current state of the spbla project's codebase contains errors for which reason the idea of using context-free path queries via matrix multiplications for solving Andersen's analysis was abandoned in favor of a more direct CUDA based implementation, see \autoref{chap:main}.
 
