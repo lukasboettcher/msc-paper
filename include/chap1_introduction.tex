@@ -643,6 +643,7 @@ With these base facts one can define horn-clause rules for a points-to relation 
 $$R=\{P\rightarrow \bar{a}, C \rightarrow c, P\rightarrow aC, C\rightarrow al, C\rightarrow sP\}$$
 $$CFG_{ander}=(\{P,C\}, \{a,c,l,s,\bar{a},\bar{c},\bar{l},\bar{s}\}, R, P)$$
 With the context-free grammar the points-to information can then be computed by calculating the transiive closure of the points-to production rule $P$. In general a variable x points to a variable y iff a path $x \rightsquigarrow y$ exists such that the word created by the ordered edge labels of the path is in the language $\mathcal{L}(CFG_{ander})$ defined by the grammar.
+In fact, most interprocedural static analyses can be implemented this way by using a context-free grammar.
 The first time this approach was mentioned in the context of a pointer analysis was \cite{zheng2008demand} where context-free reachability was used to implement a demand-driven flow-insensitive alias analysis.
 This proved to be a faster and more resource efficient approach compared to other demand-driven alias analyses at the time.
 \begin{table}
