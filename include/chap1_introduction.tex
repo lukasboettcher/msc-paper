@@ -861,6 +861,7 @@ During the writing of this thesis another library with a focus on static analysi
 As mentioned in \autoref{sec:pta} a pointer analysis is the basis for many types of static analyses.
 One such analysis framework is SVF\footnote{\url{http://svf-tools.github.io/SVF}}, a project that aims to enable scalable and precise interprocedural static value-flow analysis \cite{sui2016svf}. The SVF tool consists of a number of subcomponents that represent individual analysis use cases, such as use-after-free and source-sink error detection \cite{sui2014detecting}, whole program pointer analysis and on-demand value flow analysis \cite{sui2018value} to name a few.
 SVF as a framework also allows users to extend and implement custom analysis solutions that build on top of the subcomponents that make up SVF and LLVM, which serves as a base and data source for SVF, see \autoref{fig:svf}.
+This gives SVF a degree of modularity that other current static analysis frameworks, such as \cite{shi2018pinpoint}, often lack.
 
 \begin{figure}
     \centering
