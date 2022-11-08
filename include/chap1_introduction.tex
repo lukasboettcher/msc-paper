@@ -907,7 +907,9 @@ A set of Rules, which dictate how points-to information should be derived from e
 A user can then choose which components to reuse and which to replace or augment with custom algorithms or data structures.
 This modular approach makes it convenient to experiment with different in-memory representations of points-to data, as well as testing different methods for solving the constraint graph.
 \subsection{Graspan}
-original idea \cite{zheng2008demand} big data approach on cpu \cite{wang2017graspan} and gpu \cite{zuo2021systemizing} alternative impl \cite{gu2020towards} based on \cite{mendez2012gpu} and \cite{mendez2010parallel}
+Graspan is a disk-based parallel graph system designed for computing transitive closures on very large graphs defined by context-free grammars. It was first introduced by \cite{wang2017graspan} with a CPU backend and later in \cite{zuo2021systemizing} with a GPU based backend.
+Disk-based means, that a given constraint-graph is divided into smaller subgraphs, called partitions, that are stored on non volative memory and loaded into memory in pairs to calculate the transitive closures in steps that lead to the desired pointer information - or any other static analysis solution that can be defined by a context-free grammar, see \autoref{sec:ander-cfl}.
+This approach is similar to many of the design decisions taken by common "BigData" solutions, such as Apache Kafka and Spark, where disk-based solutions are common.
 
 \begin{figure}
     \centering
