@@ -915,6 +915,15 @@ Graspan is meant to be run on a single machine, hence the emphasis on saving mem
 
 Overall Graspan was able to perform a pointer analysis for the Linux kernel in 10.9 minutes with the GPU version \cite{zuo2021systemizing}, while other tools fail to perform on graphs as large as the Linux kernel's constraint graph, which contained 250 million edges after preprocessing in Graspan. It should be noted that this result was achieved with a flow- and field-insensitive context-free grammar.
 
+In terms of data structures, Graspan has specific requirements. The graph data is large, sparse and dynamic, consequently Graspan uses different in-memory representations for the graph in the CPU and GPU version. The CPU version uses two arrays of $(dst,label)$ pairs that represent the old and new outgoing edges for each node while the GPU version uses a sparse bitvector representation that, while containing the same information as the CPU arrays, is optimized for GPU SIMT parallelism. See \autoref{fig:graspan-g} for an illustration of the GPU optimized sparse bitvector data structure from \cite{zuo2021systemizing}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/graspan-g.png}
+    \caption{Data structure for the constraint graph in the Graspan GPU version, from \cite{zuo2021systemizing}}
+    \label{fig:graspan-g}
+\end{figure}
+
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/linux-consg-min.png}
