@@ -912,6 +912,9 @@ Disk-based means, that a given constraint-graph is divided into smaller subgraph
 This approach is similar to many of the design decisions taken by common "BigData" solutions, such as Apache Kafka and Spark, where disk-based solutions are common.
 
 Graspan is meant to be run on a single machine, hence the emphasis on saving memory by offloading to the disk. Another implementation that takes the ideas from the Graspan paper is \cite{gu2020towards} where the computation is distributed accross multiple nodes, making use of other "BigData" concepts.
+
+Overall Graspan was able to perform a pointer analysis for the Linux kernel in 10.9 minutes with the GPU version \cite{zuo2021systemizing}, while other tools fail to perform on graphs as large as the Linux kernel's constraint graph, which contained 250 million edges after preprocessing in Graspan. It should be noted that this result was achieved with a flow- and field-insensitive context-free grammar.
+
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/linux-consg-min.png}
