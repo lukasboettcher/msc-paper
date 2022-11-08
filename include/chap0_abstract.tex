@@ -1,0 +1,13 @@
+\chapter*{Abstract}
+
+Pointer analysis is a subgroup of static analysis techniques. 
+In general, the goal is to detect a set of memory locations for each pointer element in a program. 
+All major compiler systems make use of this information in order to optimize the given code during compilation
+and most importantly, to detect errors in the program.
+In this thesis an interprocedural inclusion-based pointer analysis, PTAGPU, is presented that utilizes the parallel execution of GPGPUs to speedup the pointer analysis as part of the SVF framework. 
+As the SVF framework itself is built on top of the LLVM compiler infrastructure, 
+it is possible to run the proposed analysis on any program that can be compiled inside the LLVM toolchain.
+A meaningful speedup was observed with the proposed parallel implementation compared to the single threaded highly optimized wave propagation inclusion-based pointer analysis.
+An evaluation of the proposed analysis is provided both through the SVF testsuite as well as a collection of open source programs used as benchmarks.
+
+\textbf{Keywords:} Pointer analysis, static analysis, GPGPU acceleration
