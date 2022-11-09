@@ -465,9 +465,7 @@ Which will compile into the following LLVM-IR:
 \end{minted}
 An example for applying the constraint rules according to the Andersen algorithm in \autoref{tab:ander} can be observed in \autoref{tab:applyander}.
 The edge labels of the constraint graph are \verb|p|, \verb|s|, \verb|l|, \verb|c| corresponding to points-to (inverse alloca), store, load and copy constraints.
-Furthermore the copy edges are immediately converted into point-to edges in order to simplify the constraint graph in this example.
-
-\begin{table}[H]
+\begin{table}
     \caption{Applying Andersen Constraints}
     \centering
     \label{tab:applyander}
