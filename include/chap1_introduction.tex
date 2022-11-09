@@ -447,24 +447,30 @@ The following instructions are interpreted as simple constraints:
     \item Lastly there are various instructions that are straightforward to interpret as simple constraints, including \verb|bitcast|, \verb|ptrtoint|, \verb|constexpr|, \verb|extractvalue| and \verb|freeze| instructions. Furthermore variable argument values and external library call parameters need to be handled like regular call instructions.
 \end{itemize}
 
-Now with alloca, load and store instructions introduced, we can analyze a basic example during pointer analysis.
-We are going to observe a simple c program:
-\begin{minted}{c}
+Now with alloca, load and store instructions introduced, we can analyze a basic example by applying Andersen constraints to perform a pointer analysis.
+We are going to observe a simple c program, which will compile into the following LLVM-IR.
+\begin{center}
+    \begin{minipage}[t]{0.3\textwidth}
+        \begin{minted}{c}
     int *p, x, *q;
     p = &x;
     q = p;
-\end{minted}
-Which will compile into the following LLVM-IR:
-\begin{minted}{llvm}
+        \end{minted}
+    \end{minipage}
+    \begin{minipage}[t]{0.6\textwidth}
+        \begin{minted}{llvm}
     %1 = alloca i32*, align 8
     %2 = alloca i32, align 4
     %3 = alloca i32*, align 8
     store i32* %2, i32** %1, align 8
     %4 = load i32*, i32** %1, align 8
     store i32* %4, i32** %3, align 8
-\end{minted}
+        \end{minted}
+    \end{minipage}
+\end{center}
 An example for applying the constraint rules according to the Andersen algorithm in \autoref{tab:ander} can be observed in \autoref{tab:applyander}.
 The edge labels of the constraint graph are \verb|p|, \verb|s|, \verb|l|, \verb|c| corresponding to points-to (inverse alloca), store, load and copy constraints.
+Furthermore the copy edges are immediately converted into point-to edges in order to simplify the constraint graph in this example and reduce the number of steps.
 \begin{table}
     \caption{Applying Andersen Constraints}
     \centering
