@@ -7,6 +7,8 @@ As described in \autoref{sec:svf} the SVF framework is capable of processing the
 When SVF is launched for a whole program analysis, the program assignment graph is further processed into a constraint graph that holds holds all relevant constraints for an initial pointer analysis, see \autoref{tab:ander}.
 At this point the constraint graph is passed into a class that inherits from the PointerAnalysis class, see \autoref{fig:pta-svf} for an overview of the pointer analysis class hierarchy in SVF.
 Since our goal is to implement a custom pointer analysis, we can inject out own implementation at this stage as a PointerAnalysis subclass.
+Specifically we inherit from the Andersen class which is itself a subclass of the PointerAnalysis class that implements the Andersen algorithm in SVF.
+By extensive use of runtime polymorphism most of SVF is implemented via virtual member functions - a construct specific to c++ - allowing for function overriding in subclasses. This makes implementing a custom pointer analysis easy as we can reuse most of the initialization steps and program assignment graph processing from the superclasses. Part of the processing is an initial topological sorting and the previously mentioned interpretation into a constraint graph.
 \section{Design}
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
