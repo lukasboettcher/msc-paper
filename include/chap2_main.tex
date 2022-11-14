@@ -16,6 +16,9 @@ For this reason we initially reinterpret the constraint graph into a more fittin
 While iterating through the entire constraint graph, we differentiate by edge types and collect all $(src,dst)$ edge pairs in standard library vectors.
 If we refer back to the design principles of SVF in \autoref{sec:svf}, where pointer analyses were conceptually split into three components, the Rules, the Graph and the Solver, we effectively implement our own Graph component by using a different linear memory representation for the constraint graph. 
 The underlying goal of putting the constraint graph into a linear in-memory data structure is to allow us to more easily copy the memory region containing the relevant information into GPU device memory, which is where our pointer analysis will operate on the data.
+Similarly to the Graph component we also modify the Solver and Rule components in the custom analysis implementation.
+The details of the implementation will be described in detail in \autoref{sec:design}.
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
