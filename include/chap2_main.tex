@@ -49,6 +49,17 @@ To start a computation, a collection of thread blocks are assigned to the availa
     \label{fig:cuda-sm}
 \end{figure}
 \footnotetext{\url{https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/}}
+The execution order of individual Warps is handled by a Warp scheduler, that decides what Warps get executed at what time.
+The purpose of overprovisioning SMs with more blocks/Warps than they can concurrently execute is that when a single Warp executes a memory read/write operation other Warps can execute while the device is busy fetching the data.
+Key specification for each SM of a certain compute capability are the following:
+\begin{itemize}
+    \item Memory Bandwith per SM
+    \item Total shared memory per SM
+    \item Max number of threads per SM
+    \item Max number of blocks per SM
+    \item Total number of registers of all cores in SM
+\end{itemize}
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
