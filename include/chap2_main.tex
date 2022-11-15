@@ -26,6 +26,9 @@ One might assume that no pointer information is needed for SVF to build a call g
 It is important to consider that the initial pointer analysis does not directly produce any valuable information in terms of static analysis purposes. Instead we use the pointer information produced by the initial analysis for the call graph which is then used to refine the analysis result by applying a more precise flow- and/or context-sensitive analysis that produces the relevant results, which can then be used to derive value flow information that can directly be used for actual analysis purposes.
 Since we are applying a more precise pointer analysis at a later stage anyways one might argue that it would be wise to start off with such an analysis. For small programs this is a viable strategy, unfortunately these more precise analyses are currently not scalable for a whole program analysis and are only applied on-demand \cite{sui2016svf}. This is also one of the motivations for trying to accelerate the initial Anderen analysis specifically since it is performed on the entire program and thus can in theory profit from the paralellism of GPUs.
 
+\section{Design of the Algorithm}\label{sec:design}
+The PTAGPU library uses CUDA\footnote{\url{https://developer.nvidia.com/cuda-toolkit}}, an application programming interface language from NVIDIA, to program GPUs in C++.
+CUDA accomodates developers with a collection of abstractions that simplify operations with GPU memory. NVIDIA also provides a standalone library for common parallel oeprations such as sorting and transformations named Thrust\footnote{\url{https://docs.nvidia.com/cuda/thrust/index.html}} which is also employed by PTAGPU for common sorting operations.
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
