@@ -28,7 +28,10 @@ Since we are applying a more precise pointer analysis at a later stage anyways o
 
 \section{Design of the Algorithm}\label{sec:design}
 The PTAGPU library uses CUDA\footnote{\url{https://developer.nvidia.com/cuda-toolkit}}, an application programming interface language from NVIDIA, to program GPUs in C++.
-CUDA accomodates developers with a collection of abstractions that simplify operations with GPU memory. NVIDIA also provides a standalone library for common parallel oeprations such as sorting and transformations named Thrust\footnote{\url{https://docs.nvidia.com/cuda/thrust/index.html}} which is also employed by PTAGPU for common sorting operations.
+CUDA accomodates developers with a collection of abstractions that simplify operations with GPU memory. NVIDIA also provides a standalone library for common parallel oeprations such as sorting and transformations named Thrust\footnote{\url{https://docs.nvidia.com/cuda/thrust/index.html}} which is also employed by PTAGPU for common sorting and deduplication operations.
+In principle all calculations that are executed with a GPU are denoted as kernels in CUDA. While GPU kernels and CPU code can be shared, CUDA provides some intrinsic operations that can only function on a GPU.
+Likewise all CPU operations that rely on external libraries or non standard-library code are not supported in GPU kernels.
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
