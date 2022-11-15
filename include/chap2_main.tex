@@ -69,16 +69,20 @@ Counterintuitively high occupancy does not always lead to better performance. So
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
-\blindtext[3]
 \begin{center}
-\begin{bytefield}{24}
-    \memsection{ffff ffff}{0040 0000}{15}{-- free --}\\
-    \begin{rightwordgroup}{internal memory}
-        \memsection{003f ffff}{002f c000}{4}{Special Function Registers}\\
-        \memsection{002f bfff}{0007 0000}{3}{-- reserved --}\\
-        \memsection{0006 ffff}{0000 0000}{8}{Internal Flash}
-    \end{rightwordgroup}\\
-\end{bytefield}
+    \begin{bytefield}{32}
+        \begin{rightwordgroup}{includes all pointer relations\\that have been computed\\at any stage}
+            \memsection{ffff ffff}{a000 0000}{12}{pointer constraints}
+        \end{rightwordgroup}\\
+        \begin{rightwordgroup}{these memory regions are used\\to compute the delta updates\\for the pointer relations}
+            \memsection{9fff ffff}{6000 0000}{8}{current pointer constraints}\\
+            \memsection{5fff ffff}{2000 0000}{8}{next pointer constraints}
+        \end{rightwordgroup}\\
+        \begin{rightwordgroup}{static memory\\does not change once written}
+            \memsection{1fff ffff}{1000 0000}{2}{load constraints}\\
+            \memsection{0fff ffff}{0000 0000}{2}{store constraints}
+        \end{rightwordgroup}\\
+    \end{bytefield}
 \end{center}
 
 \begin{center}
