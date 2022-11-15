@@ -60,6 +60,12 @@ Key specification for each SM of a certain compute capability are the following:
     \item Total number of registers of all cores in SM
 \end{itemize}
 
+\subsubsection{Occupancy}
+Since each SM has multiple limited resources that can be controlled by the developer, namely register count, shared memory and thread count, a kernel has to be designed with these limitations in mind such that a maximally concurrent execution is possible.
+Given a device with compute capability 8.0 and a kernel that requires 256 registers per thread while also running 256 threads per block, we would essentially limit our execution to a single block per SM, since a device with compute capability 8.0 has 64K registers per SM.
+This might be disadvantageous, since the SM is in theory capable of working on up to 1024 threads.
+We might profit from reducing the amount of registers used per thread and thus increasing the occupancy on our GPU.
+Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionally profit from the use of a single resource.
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
