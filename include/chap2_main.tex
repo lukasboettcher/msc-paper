@@ -42,6 +42,13 @@ Each CUDA capable device has a number of streaming multiprocessors, in short SMs
 While this is similar to how CPU cores operate, GPU programming uses a flat memory hierarchy with less reliance on caching and more on raw memory bandwidth. For this reason each core in an SM has a relatively large register file so that a single CUDA thread commonly uses hundreds of registers.
 The entire work that is to be performed by a single kernel is called a grid, which is divided evenly into blocks, which are divided into Warps. Both the grid and each block can be indexed in up to three dimensions, which is useful for working with shader, global illumination rendering and less useful for static analyses.
 To start a computation, a collection of thread blocks are assigned to the available SMs of a GPU. Depending on the hardware and compute capability, a single SM can execute multiple Warps from the assigned thread blocks in parallel as long as enough resources are available in the SM.
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{img/a100.png}
+    \caption[Diagram of a single A100 SM]{A single SM of an A100 GPU.\\Taken from an NVIDIA Blog Post\footnotemark}
+    \label{fig:cuda-sm}
+\end{figure}
+\footnotetext{\url{https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/}}
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
