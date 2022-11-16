@@ -808,7 +808,7 @@ Following this we iterate through all production rules of the form \autoref{eq:c
         0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     \end{bmatrix}
 \]
-With these initial matrices in place, we now iterate over all production rules in the form of $P\rightarrow AB, \textrm{ for } P,A,B \in V$, see \autoref{eq:cnf1} which we apply by multiplying the corresponding nonterminal matrices. Note that we use the inverse matrix if we encounter a negated nonterminal. Looking at $C\rightarrow \bar{S}P$, one of these production rules, we update the $C_{7\times 7}$ matrix as follows $$C_{7\times 7} = C_{7\times 7} + S_{7\times 7}^{-1} \times P_{7\times 7}$$
+With these initial matrices in place, we now iterate over all production rules in the form of $P\rightarrow AB, \textrm{ for } P,A,B \in V$, see \autoref{eq:cnf1} which we apply by multiplying the corresponding nonterminal matrices. Note that we use the inverse matrix if we encounter a negated nonterminal. Looking at $C\rightarrow SP$, one of these production rules for Andersen's analysis, we update the $C_{7\times 7}$ matrix as follows $$C_{7\times 7} = C_{7\times 7} + S_{7\times 7} \times P_{7\times 7}$$
 \[
     C_{7\times 7}
     \begin{bmatrix}
@@ -843,6 +843,7 @@ With these initial matrices in place, we now iterate over all production rules i
         0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     \end{smallmatrix}
 \]
+Here a copy relation was added from node $2$ to node $0$.
 We repeat this operation for all these production rules until no more changes take place in the matrices.
 This can be done efficiently by storing the number of non zero elements, nnz., for each matrix and only multiplying for a given production rule, if either of the RHS matrices have changed nnz values.
 Finally we arrive at the following matrix for the $P$ nonterminal corresponding to the point-to relation:
