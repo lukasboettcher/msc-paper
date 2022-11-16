@@ -66,6 +66,16 @@ Given a device with compute capability 8.0 and a kernel that requires 256 regist
 This might be disadvantageous, since the SM is in theory capable of working on up to 1024 threads.
 We might profit from reducing the amount of registers used per thread and thus increasing the occupancy on our GPU.
 Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionally profit from the use of a single resource.
+\subsubsection{Memory Accesses in CUDA}
+While modern GPUs can in theory perform multiple TFLOPS of calculations per second, effectively all calculations are limited by memory bandwidth.
+Consequently how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps where consecutive threads access consecutive memory addresses are important so the memory read operation can be performed within a single transaction and not multiple strided reads.
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{img/cuda.png}
+    \caption{Diagram of the CUDA memory architecture for an A100 GPU.}
+    \label{fig:cuda-arch}
+\end{figure}
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
