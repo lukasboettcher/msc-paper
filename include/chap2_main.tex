@@ -76,6 +76,16 @@ Consequently how we access the GPU memory is very important for the overall perf
     \label{fig:cuda-arch}
 \end{figure}
 
+\subsubsection{Unified Memory}
+When CUDA code is executed on a 64bit host system, the developer can use a single memory address space for host and device memory.
+Using this unified memory address space allows memory access from both CPU and GPU in the same address space without explicit memory copy operations.
+The memory in question is moved implicitly to the device that performs the read operation. The CUDA API also allows the developer to assign preferred residency for specific memory regions, as well as prefetching memory asynchronously for a device. When prefetching is properly employed, unified memory achieves the same performance as dedicated device memory \cite{cudaunifiedmem}.
+The major advantage of unified memory is the fact that the memory allocation size is only limited by system memory, not device memory.
+This allows a CUDA program to potentially hold vastly more data in memory than would be possible with only GPU memory, while also moving the needed memory regions without much involvement of the developer.
+Crucially this keeps large data structures intact without splitting and partitioning them for incremental loading into GPU memory.
+This mirrors some of the core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
+Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this enables us to expand the scope of our analysis without requiring specialized GPU hardware.
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
