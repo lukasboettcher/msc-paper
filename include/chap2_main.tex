@@ -86,6 +86,13 @@ Crucially this keeps large data structures intact without splitting and partitio
 This mirrors some of the core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
 Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this enables us to expand the scope of our analysis without requiring specialized GPU hardware.
 
+\subsection{Initialization of CUDA code}
+As soon as the constraint graph is handed over to the CUDA section of the code some global state is initialized with the information from the constraint graph.
+This includes various counter variables for the number of nodes in the graph, as well as the initial unified memory allocations.
+When the counter for the number of nodes is first initialized the node count is read from the constraint graph and increased by 20 percent to reserve headroom for new nodes that might be added to the constraint graph during the execution of the algorithm.
+This ensures that each node has a well defined place in memory that can not be overwritten by subsequent nodes.
+In the current implementation, the algorithm allocates a fixed amount of unified memory accessible from the CPU and GPU. While this requires overprovisioning of memory for a given analysis without knowing the exact amount needed for the pointer analysis, dynamic allocation proves to be very challenging as it is difficult to deduce the exact required amount of GPU memory from a given constraint graph for pointer analysis.
+
 
 based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
 
