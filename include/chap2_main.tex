@@ -67,6 +67,7 @@ Given a device with compute capability 8.0 and a kernel that requires 256 regist
 This might be disadvantageous, since the SM is in theory capable of working on up to 1024 threads.
 We might profit from reducing the amount of registers used per thread and thus increasing the occupancy on our GPU.
 Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionally profit from the use of a single resource.
+For example compute intensive kernels require more registers per thread than kernels that are heavily reliant on memory operations. Increasing the use of shared memory does not always lead to a performance improvement and decreasing the number of required registers is not always possible.
 \subsubsection{Memory Accesses in CUDA}
 While modern GPUs can in theory perform multiple TFLOPS of calculations per second, effectively all calculations are limited by memory bandwidth.
 Consequently how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps where consecutive threads access consecutive memory addresses are important so the memory read operation can be performed within a single transaction and not multiple strided reads.
