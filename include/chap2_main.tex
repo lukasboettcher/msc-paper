@@ -77,6 +77,9 @@ Consequently, how we access the GPU memory is very important for the overall per
     \caption{Diagram of the CUDA memory architecture for an A100 GPU.\\Taken from \cite{cudarefresher}.}
     \label{fig:cuda-arch}
 \end{figure}
+The GPU memory controller on modern graphics cards can typically execute memory read or write operations in granularities of 32 bytes up to 128 bytes in total.
+As a result it is for example more efficient to load a single byte of memory per thread in a Warp, compared to loading 8 bytes per thread, since we would exceed the maximum of 128 bytes per memory transaction and require multiple memory accesses.
+In terms of time needed per instruction, global memory operations are typically two orders of magnitude slower compared to operations on SM registers or shared memory in L1 cache. For this reason CUDA programs can perform exponentially worse if memory accesses are random or strided inefficiently instead of coalesced.
 
 \subsubsection{Unified Memory}
 When CUDA code is executed on a 64bit host system, the developer can use a single memory address space for host and device memory.
