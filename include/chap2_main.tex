@@ -131,6 +131,9 @@ See the following diagram for the memory layout of an example allocation of 32 G
         \end{rightwordgroup}\\
     \end{bytefield}
 \end{center}
+Since a pointer analysis in general does not create new load or store relations in the constraint graph, these memory regions do not increase in size after initialization.
+Notably the pointer relations are split into three separate memory regions. This is needed for diff-points calculations. This specific optimization was inspired by \cite{mendez2010parallel} and will be explained in detail in \autoref{sec:memory}.
+After memory allocation is completed, CUDA streams are initialized for concurrent write operations into each memory region, as well as one stream for each of the available devices to enable computation on multiple GPUs in parallel.
 
 \begin{center}
     \begin{bytefield}{32}
