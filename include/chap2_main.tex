@@ -200,6 +200,33 @@ The base value of each sparse bitvector represent the current offset for all bit
 Similar to linked lists, sparse bitvectors reference the next sparse bitvector in a field. This allows iteration through adjacent outgoing edges for a given node by working through the next bitvectors until there is no next bitvector defined.
 The head bitvector for each node is stored in a pre defined memory location, which is directly derivable from the node index.
 The exact position for each node in each memory partition can be calculated by multiplying the node index with the width of a sparse bitvector. This offset is then added to the overall offset of the memory partition to find the head bitvector for a specific edge type, see \autoref{lst:getindex} for the implementation in PTAGPU.
+\begin{listing}
+    \begin{minted}{c++}
+// src it the node for which we want to find the head bitvector
+// rel is the andersen relation for which we want to find the outgoing edges
+__host__ __device__ index_t getIndex(uint src, uint rel)
+{
+    switch (rel)
+    {
+    case PTS:
+        return OFFSET_PTS + (ELEMENT_WIDTH * src);
+    case PTS_CURR:
+        return OFFSET_PTS_CURR + (ELEMENT_WIDTH * src);
+    case PTS_NEXT:
+        return OFFSET_PTS_NEXT + (ELEMENT_WIDTH * src);
+    case COPY:
+        return OFFSET_COPY + (ELEMENT_WIDTH * src);
+    case LOAD:
+        return OFFSET_LOAD + (ELEMENT_WIDTH * src);
+    case STORE:
+        return OFFSET_STORE + (ELEMENT_WIDTH * src);
+    }
+    return src * ELEMENT_WIDTH;
+}
+    \end{minted}
+    \caption{Calculating the correct index of a nodes head bitvector in unified memory.}
+    \label{lst:getindex}
+\end{listing}
 \begin{center}
     \definecolor{lightcyan}{rgb}{0.84,1,1}
     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
