@@ -113,10 +113,9 @@ This includes various counter variables for the number of nodes in the graph, as
 When the counter for the number of nodes is first initialized the node count is read from the constraint graph and increased by 20 percent to reserve headroom for new nodes that might be added to the constraint graph during the execution of the algorithm.
 This ensures that each node has a well defined place in memory that can not be overwritten by subsequent nodes.
 In the current implementation, the algorithm allocates a fixed amount of unified memory accessible from the CPU and GPU. While this requires overprovisioning of memory for a given analysis without knowing the exact amount needed for the pointer analysis, dynamic allocation proves to be very challenging as it is difficult to deduce the exact required amount of GPU memory from a given constraint graph for pointer analysis.
-
-
-based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
-
+Furthermore the allocated unified memory is further split into partitions of fixed size for the individual relations of the Andersen analysis.
+This includes three memory regions for pointer relations, one for copy relations and two regions for load and store relations between nodes.
+See the following diagram for the memory layout of an example allocation of 32 GiB of unified memory.
 \begin{center}
     \begin{bytefield}{32}
         \begin{rightwordgroup}{includes all pointer relations\\that have been computed\\at any stage}
