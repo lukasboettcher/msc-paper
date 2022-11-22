@@ -91,6 +91,22 @@ Crucially this keeps large data structures intact without splitting and partitio
 This mirrors some of the core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
 Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this enables us to expand the scope of our analysis without requiring specialized GPU hardware.
 
+\subsubsection{CUDA Streams}
+GPUs are massively parallel. Oftentimes developers do want to perform multiple computations encapsulated in kernels in parallel.
+These computations require memory operations before and after to load and store the data to operate on.
+Since most GPUs allow for concurrent memory and compute operations it is desirable to be able to efficiently schedule concurrent operations such that while one kernel executes, another performs memory operations.
+Because kernels are launched asynchronously, we can utilize CUDA streams to string together multiple compute and memory operations so they are executed in order without interfering with other streams.
+The GPU is then able to efficiently schedule multiple streams in order to maximize GPU utilization, see  \autoref{fig:cuda-stream} for an illustration.
+By default all cuda operations are executed on the default stream and thus memory operations block each other.
+Streams have to be created by the developer and are represented by structs in the program. These elements are then passed as arguments to the CUDA api function calls.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/cuda-stream.png}
+    \caption[CUDA strean illustration]{CUDA Stream: Serial Model vs Concurrent Model by Lei Mao łicensed under \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}; an illustration for the advantages of the CUDA stream api.}
+    \label{fig:cuda-stream}
+\end{figure}
+
 \subsection{Initialization of CUDA code}
 As soon as the constraint graph is handed over to the CUDA section of the code some global state is initialized with the information from the constraint graph.
 This includes various counter variables for the number of nodes in the graph, as well as the initial unified memory allocations.
