@@ -190,6 +190,16 @@ After memory allocation is completed, CUDA streams are initialized for concurren
     \label{fig:edge-insert}
 \end{figure}
 
+\subsection{Sparse Bitvectors}
+At the core of PTAGPU all edges of the constraint graph are stored in sparse bitvectors.
+Sparse bitvectors are a data structure that can be used for storing binary values, such as adjacency information in a graph.
+Individual bitvectors contain three separate component, a base value, a set of bits and a next pointer.
+For the bitvectors to efficiently work, the entire codomain of the directed edge relation of a graph is split into evenly sized partitions.
+The edges of each partition, if it contains edges, are then stored in the bits of a bitvector. If we omit empty partitions of the edge codomain, we create a set of sparse bitvectors.
+The base value of each sparse bitvector represent the current offset for all bits in the bitvector.
+Similar to linked lists, sparse bitvectors reference the next sparse bitvector in a field. This allows iteration through adjacent outgoing edges for a given node by working through the next bitvectors until there is no next bitvector defined.
+The head bitvector for each node is stored in a pre defined memory location, which is directly derivable from the node index.
+The exact position for each node in each memory partition can be calculated by multiplying the node index with the width of a sparse bitvector. This offset is then added to the overall offset of the memory partition to find the head bitvector for a specific edge type, see \autoref{lst:getindex} for the implementation in PTAGPU.
 \begin{center}
     \definecolor{lightcyan}{rgb}{0.84,1,1}
     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
