@@ -135,37 +135,52 @@ Since a pointer analysis in general does not create new load or store relations 
 Notably the pointer relations are split into three separate memory regions. This is needed for diff-points calculations. This specific optimization was inspired by \cite{mendez2010parallel} and will be explained in detail in \autoref{sec:memory}.
 After memory allocation is completed, CUDA streams are initialized for concurrent write operations into each memory region, as well as one stream for each of the available devices to enable computation on multiple GPUs in parallel.
 
-\begin{center}
-    \begin{bytefield}{32}
-        \bitheader{0-31} \\
-        \bitbox{4}{Four} & \bitbox{8}{Eight} &
-        \bitbox{16}{Sixteen} & \bitbox{4}{Four}
-    \end{bytefield}
-\end{center}
-\blindtext[1]
-\begin{center}
-    \definecolor{lightcyan}{rgb}{0.84,1,1}
-    \definecolor{lightgreen}{rgb}{0.64,1,0.71}
-    \definecolor{lightred}{rgb}{1,0.7,0.71}
-    \begin{bytefield}[bitheight=\widthof{~Base~},
-            boxformatting={\centering\small},rightcurly=., rightcurlyspace=0pt]{32}
-        % \bitlabel{29}{Data} & \bitlabel{1}{Base} & \bitlabel{2}{Next} \\
-        \bitheader{0,28,29,30,31} \\
-        \begin{rightwordgroup}{
-                \begin{tikzpicture}
-                    \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
-                    \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
-                    \node[node] (A) at (0,0) {\small$\%1$};
-                    \node[node] (B) at (2,0) {\small$\%2$};
-                    \path [->] (A) edge[bend left] node[linenode] {$p$} (B);
-                \end{tikzpicture}
-            }
-            \bitbox{29}[bgcolor=lightred]{Data} &
-            \bitbox{1}[bgcolor=lightcyan]{\rotatebox{90}{Base}} &
-            \bitbox{2}[bgcolor=lightgreen]{\rotatebox{90}{Next}}
-        \end{rightwordgroup}
-    \end{bytefield}
-\end{center}
+
+% This state is needed for the 
+
+% initializing cuda V var, overhead for new nodes
+
+% subsec unified memory explain
+
+% subsec explain sparse bv layout
+
+% go through idea of inv edges for concurrent rewriting
+
+% based on \cite{mendez2010parallel} and \cite{mendez2012gpu}
+
+
+
+% \begin{center}
+%     \begin{bytefield}{32}
+%         \bitheader{0-31} \\
+%         \bitbox{4}{Four} & \bitbox{8}{Eight} &
+%         \bitbox{16}{Sixteen} & \bitbox{4}{Four}
+%     \end{bytefield}
+% \end{center}
+% \blindtext[1]
+% \begin{center}
+%     \definecolor{lightcyan}{rgb}{0.84,1,1}
+%     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
+%     \definecolor{lightred}{rgb}{1,0.7,0.71}
+%     \begin{bytefield}[bitheight=\widthof{~Base~},
+%             boxformatting={\centering\small},rightcurly=., rightcurlyspace=0pt]{32}
+%         % \bitlabel{29}{Data} & \bitlabel{1}{Base} & \bitlabel{2}{Next} \\
+%         \bitheader{0,28,29,30,31} \\
+%         \begin{rightwordgroup}{
+%                 \begin{tikzpicture}
+%                     \tikzstyle{node}=[circle, draw=blue!50, fill=blue!20, inner sep=1pt, minimum size=6mm]
+%                     \tikzstyle{linenode}=[pos=0.5,fill=white,inner sep=2pt,outer sep=2pt]
+%                     \node[node] (A) at (0,0) {\small$\%1$};
+%                     \node[node] (B) at (2,0) {\small$\%2$};
+%                     \path [->] (A) edge[bend left] node[linenode] {$p$} (B);
+%                 \end{tikzpicture}
+%             }
+%             \bitbox{29}[bgcolor=lightred]{Data} &
+%             \bitbox{1}[bgcolor=lightcyan]{\rotatebox{90}{Base}} &
+%             \bitbox{2}[bgcolor=lightgreen]{\rotatebox{90}{Next}}
+%         \end{rightwordgroup}
+%     \end{bytefield}
+% \end{center}
 \begin{center}
     \definecolor{lightcyan}{rgb}{0.84,1,1}
     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
