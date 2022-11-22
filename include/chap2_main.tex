@@ -82,7 +82,7 @@ As a result it is for example more efficient to load a single byte of memory per
 In terms of time needed per instruction, global memory operations are typically two orders of magnitude slower compared to operations on SM registers or shared memory in L1 cache. For this reason CUDA programs can perform exponentially worse if memory accesses are random or strided inefficiently instead of coalesced.
 
 \subsubsection{Unified Memory}
-When CUDA code is executed on a 64bit host system, the developer can use a single memory address space for host and device memory.
+When CUDA code is executed on a 64-bit host system, the developer can use a single memory address space for host and device memory.
 Using this unified memory address space allows memory access from both CPU and GPU in the same address space without explicit memory copy operations.
 The memory in question is moved implicitly to the device that performs the read operation. The CUDA API also allows the developer to assign preferred residency for specific memory regions, as well as prefetching memory asynchronously for a device. When prefetching is properly employed, unified memory achieves the same performance as dedicated device memory \cite{cudaunifiedmem}.
 The major advantage of unified memory is the fact that the memory allocation size is only limited by system memory, not device memory.
