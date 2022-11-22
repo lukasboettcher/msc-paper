@@ -227,6 +227,16 @@ __host__ __device__ index_t getIndex(uint src, uint rel)
     \caption{Calculating the correct index of a nodes head bitvector in unified memory.}
     \label{lst:getindex}
 \end{listing}
+Following, each unit in the sparse bitvector linked list will be called an element as is conventional for linked lists.
+When deciding on the memory characteristics of the individual elements, the traits of the CUDA api need to be taken into consideration.
+One possible optimization are coalesced memory accesses, where consecutive threads in a Warp access consecutive memory locations.
+Furthermore we can optimize the memory operations of a Warp such that we access 128 bytes in total per Warp, since this allows us to fully saturates the memory controller while only requiring a single coalesced memory transaction \cite{mendez2012gpu}.
+If we take the optimal memory transaction of 128 bytes and split it evenly across all 32 threads of a Warp, we get 4 bytes of memory associated with each thread.
+As a result we set the size of each element to 128 bytes and each thread in a Warp manages a single word or 4 bytes of the element.
+Coincidentally an unsigned integer is 4 bytes wide on 64-bit systems, thus each thread accesses its memory in the form of an unsinged integer.
+Using unsigned integers also has the advantage of allowing for simple bitwise operations, which are required since we store individual bits in the 4 bytes of memory instead of numerical values for most of the words in each element.
+Numerical values are only stored in the base and next words of the element.
+Each sparse bitvector element has the following layout.
 \begin{center}
     \definecolor{lightcyan}{rgb}{0.84,1,1}
     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
