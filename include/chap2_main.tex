@@ -256,6 +256,11 @@ This sparse bitvector layout is inspired by the layout put presented in \cite{me
 The notable difference being a switch from 32-bit to 64-bit addresses.
 This is a requirement for using an address space larger than 16GiB, since we are addressing 4-byte wide words.
 While this reduces the data density of each bitvector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^66$ bytes, is worth the tradeoff as it eliminates any practical upper limits on memory allocation.
+\subsubsection{Inserting new Bitvectors}
+If our algorithm ever reaches a point where we need to add a new edge into an element with a mismatched base, we are required to create a new element with the correct base and append it to the likned list of bitvectors by referencing the correct memory address in the next field.
+Since we are operating on multiple nodes concurrently, we need to keep track of the already occupied memory for each of the memory partitions. This is achieved by utilizing some of the counters from the CUDA initialization.
+These are incremented via atomic CUDA instructions each time a new element is created.
+Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
 \subsection{Concurrent Graph Rewriting}
 
