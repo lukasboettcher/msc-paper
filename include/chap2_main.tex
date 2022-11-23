@@ -192,7 +192,7 @@ After memory allocation is completed, CUDA streams are initialized for concurren
 
 \subsection{Sparse Bitvectors}
 At the core of PTAGPU all edges of the constraint graph are stored in sparse bitvectors.
-Sparse bitvectors are a data structure that can be used for storing binary values, such as adjacency information in a graph.
+Sparse bitvectors are a data structure that can be used for storing binary values, such as adjacency information of a graph. Sparse bitvectors are especially suited to represent edges of very sparse graphs and allow for dynamic addition of new edges and nodes, something other sparse graph representation such as the compressed sparse row format do not facilitate. Since the constraint graph of pointer analysis problems is typically very sparse \cite{mendez2012gpu}, sparse bitvectors are an ideal data structure for pointer analysis on the GPU.
 Individual bitvectors contain three separate component, a base value, a set of bits and a next pointer.
 For the bitvectors to efficiently work, the entire codomain of the directed edge relation of a graph is split into evenly sized partitions.
 The edges of each partition, if it contains edges, are then stored in the bits of a bitvector. If we omit empty partitions of the edge codomain, we create a set of sparse bitvectors.
