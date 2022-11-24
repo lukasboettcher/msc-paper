@@ -386,7 +386,7 @@ Top-level variables' values reside in registers and are conceptually ephemeral w
 The connection between address-taken and top-level variables in the LLVM-IR is established by the \verb|alloca| instruction which maps a top-level variable to a memory location represented by an address-taken variable.
 Following is an interpretation of the LLVM instructions for Andersen's pointer analysis.
 
-\paragraph{Load Instruction}
+\paragraph{Alloca Instruction}
 The LLVM \verb|alloca| instruction is used to allocate memory on the stack.
 \begin{minted}{llvm}
     ; allocate a pointer to a 32 bit integer on the stack 
