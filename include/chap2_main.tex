@@ -182,14 +182,6 @@ Finally the entire allocation of unified memory is set to ones by \verb|cudaMems
 %     \end{bytefield}
 % \end{center}
 
-\subsection{Edge Insertion}
-\begin{figure}
-    \centering
-    \includegraphics[width=1.\textwidth]{img/edge-insertion.png}
-    \caption[Diagram for Edge Insertion]{Preprocessing of edges during edge insertion.}
-    \label{fig:edge-insert}
-\end{figure}
-
 \subsection{Sparse Bitvectors}
 At the core of PTAGPU all edges of the constraint graph are stored in sparse bitvectors.
 Sparse bitvectors are a data structure that can be used for storing binary values, such as adjacency information of a graph. Sparse bitvectors are especially suited to represent edges of very sparse graphs and allow for dynamic addition of new edges and nodes, something other sparse graph representation such as the compressed sparse row format do not facilitate. Since the constraint graph of pointer analysis problems is typically very sparse \cite{mendez2012gpu}, sparse bitvectors are an ideal data structure for pointer analysis on the GPU.
@@ -262,6 +254,7 @@ Since we are operating on multiple nodes concurrently, we need to keep track of 
 These are incremented via atomic CUDA instructions each time a new element is created.
 Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
+\subsection{Edge Insertion}
 \subsection{Concurrent Graph Rewriting}
 
 \subsubsection{Diffpoints Updates}\label{sec:memory}
