@@ -266,6 +266,8 @@ Given a set of edges of the same type to be processed by a single kernel, for ex
     \caption[Diagram for Edge Insertion]{Preprocessing of edges during edge insertion.}
     \label{fig:edge-insert}
 \end{figure}
+The pre-processing steps are made up of four steps, 1) the linear in-memory representation of the constraint graph is copied into device memory via \verb|cuda::memcpy| 2) all edge tuples $(src,dst)$ are sorted with $src$ as the key, 3) the algorithm iterates through all $(src,dst)$ pairs and eliminates all duplicates, 4) the algorithm iterates through all $(src,dst)$ pairs and saves the index each time src changes in a third offset array.
+Since we are operating on linear memory, we can utilize the CUDA thrust library to accelerate these operations on the GPU.
 \subsection{Concurrent Graph Rewriting}
 
 \subsubsection{Diffpoints Updates}\label{sec:memory}
