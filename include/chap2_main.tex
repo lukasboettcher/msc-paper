@@ -255,6 +255,17 @@ These are incremented via atomic CUDA instructions each time a new element is cr
 Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
 \subsection{Edge Insertion}
+With the concept of sparse bitvectors established and required variables initialized, the PTAGPU algorithm can begin inserting the linear in-memory representation of the constraint graph derived from SVF, see \autoref{sec:integsvf}, into sparse bitvectors.
+The core idea is to handle all edge labels concurrently in individual streams by invoking an edge insertion kernel for each type of edge.
+Inside each kernel each source node is processed by a single Warp which inserts the outgoing edges into the correct memory location of the correct element inside the sparse bitvector for the given source node.
+In order to efficiently distribute the work across all available Warps in all kernels, some pre-processing is needed before each kernel is launched.
+Given a set of edges of the same type to be processed by a single kernel, for example all store edges in the constraint graph, the pre-processing steps are illustrated in \autoref{fig:edge-insert}.
+\begin{figure}
+    \centering
+    \includegraphics[width=1.\textwidth]{img/edge-insertion.png}
+    \caption[Diagram for Edge Insertion]{Preprocessing of edges during edge insertion.}
+    \label{fig:edge-insert}
+\end{figure}
 \subsection{Concurrent Graph Rewriting}
 
 \subsubsection{Diffpoints Updates}\label{sec:memory}
