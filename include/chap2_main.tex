@@ -278,18 +278,30 @@ Insertion into the element first calculates the correct base and then sets the c
 \begin{center}
     \begin{tikzpicture}[squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}]
         \def\step{0.3}
+        \node[align=left,font = {\scriptsize}] at (20*\step,9*\step) {Example insertion of an edge pair $(3,66)$.\\This is achieved by finding the correct element in the sparse\\bitvector for node index 3 and setting the correct bit to 1 for node 66.\\\\1) Calculate $base = 66/(29*32) = 0$; $word = (66\%(29*32))/32 = 2$; $bit = 66\%32 = 2$\\2) Find the \verb|head element| for node 3 by using the getIndex function from \autoref{lst:getindex}.};
+        \draw [decorate,decoration = {calligraphic brace,aspect=0.28,amplitude=10pt},line width=0.5mm] (0*\step,3*\step) --  (32*\step,3*\step);
         \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,1.5*\step) {\tiny\r};
         \draw[step=\step] (0,0) grid (32*\step,1*\step);
-        % \foreach \r in {0,...,31} \node at (\r*\step+0.5*\step,0.5*\step) {\small1};
-        \node[draw,align=left,font = {\tiny}] at (40*\step,0.5*\step) {Element in a sparse bitvector};
+        \node at (29*\step+0.5*\step,0.5*\step) {\small U};\node at (30*\step+0.5*\step,0.5*\step) {\small U};\node at (31*\step+0.5*\step,0.5*\step) {\small U};
+        \node[draw,align=left,font = {\tiny}] at (40*\step,0.5*\step) {Head element in the sparse\\bitvector for node 3.};
 
         \draw (2*\step,0) -- (0,-3*\step);\draw (3*\step,0) -- (32*\step,-3*\step);
         
         \draw[step=\step] (0,-3*\step) grid (32*\step,-4*\step);
         \foreach \r in {0,...,31} \node at (\r*\step+0.5*\step,-3.5*\step) {\small1};
         \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-4.5*\step) {\tiny\r};
-        \node[draw,align=left,font = {\tiny}] at (40*\step,-3.5*\step) {UINT bit representation of\\2nd index in element};
+        \node[draw,align=left,font = {\tiny}] at (40*\step,-3.5*\step) {UINT bit representation of\\2nd index in element.\\Initially all bits are set to 1.};
+        \node[align=left,font = {\scriptsize}] at (19*\step,-8.5*\step) {Since the base at index 29 in the head element is uninitialized (all bits set to 1), \\we can overwrite the base with the base we calculated for node 66 in step 1.\\Additionally we set the second bit in the second word to 1.};
         
+        \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-12.5*\step) {\tiny\r};
+        \draw[step=\step] (0,-13*\step) grid (32*\step,-14*\step);
+        \node at (29*\step+0.5*\step,-13.5*\step) {\small0};\node at (30*\step+0.5*\step,-13.5*\step) {\small U};\node at (31*\step+0.5*\step,-13.5*\step) {\small U};
+        \draw (2*\step,-14*\step) -- (0,-17*\step);\draw (3*\step,-14*\step) -- (32*\step,-17*\step);
+        \draw[step=\step] (0,-17*\step) grid (32*\step,-18*\step);
+        \foreach \r in {0,...,1} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};\node at (2*\step+0.5*\step,-17.5*\step) {\small1};\foreach \r in {3,...,31} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};
+        \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-18.5*\step) {\tiny\r};
+        \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bitvector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|.};
+        \draw[-{Stealth[red]}] (2.5*\step,-15*\step) -- (2.5*\step,-16.5*\step);
     \end{tikzpicture}
 \end{center}
 
