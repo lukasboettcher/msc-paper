@@ -271,6 +271,7 @@ Since we are operating on linear memory, we can utilize the CUDA thrust library 
 Step 2 can be performed by the \verb|thrust::sort| algorithm and step 3 and 4 can be performed at the same time by \verb|thrust::unique_by_key_copy|.
 One small but important detail is that before we start the pre-processing we insert a pair of \verb|UINT_MAX| values into the array for the source indices and into the array for the destination indices.
 Having one additional pair assures that step 3 writes the end index for the last actual $(src,dst)$ pair into the offset array.
+
 After the pre-processing is done, all three arrays are fed into an insertion kernel that distributes all source nodes among the available Warps, which then insert the destinations indices into the elements of the sparse bitvector.
 Insertion into the element first calculates the correct base and then sets the correct bit to one if an element already exists, else a new element is first created.
 
