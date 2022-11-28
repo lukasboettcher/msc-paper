@@ -304,6 +304,10 @@ Insertion into the element first calculates the correct base and then sets the c
         \draw[-{Stealth[red]}] (2.5*\step,-15*\step) -- (2.5*\step,-16.5*\step);
     \end{tikzpicture}
 \end{center}
+The previous example showcases the process for inserting a single edge into an empty sparse bitvector.
+Later insertions always check whether a base is already defined in each element of the sparse bitvector and insert the edges accordingly.
+The base of subsequent elements in the sparse bitvectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bitvector, elements might have to be shifted around.
+In practice these insertions are executed for each source node in parallel by multiple Warps on the GPU.
 
 \subsection{Concurrent Graph Rewriting}
 \subsubsection{Diffpoints Updates}\label{sec:memory}
