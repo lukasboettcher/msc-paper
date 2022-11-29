@@ -314,6 +314,14 @@ The base of subsequent elements in the sparse bitvectors is always sorted in asc
 In practice these insertions are executed for each source node in parallel by multiple Warps on the GPU.
 
 \subsection{Concurrent Graph Rewriting}
+As soon as all required edges from the constraint graph have been inserted into the correct sparse bitvectors, the Solver part of PTAGPU needs to apply the Andersen constraints from \autoref{tab:cfl-ander2} on the graph in order to calculate the correct points-to sets.
+As with all calculations on the GPU we need to explicitly take care of concurrency.
+Similar to edge insertion the ideal method of distributing work on the GPU is to assign units of work to individual Warps with minimal thread divergence.
+When applying the production rules introduced in \autoref{tab:cfl-ander2} we can achieve this by simply using a worklist to spread out all node indices from the constraint graph across all available Warps.
+This way each Warp handles the outgoing rewrite rules for a single node.
+Furthermore this removes any need for specialized scheduling, because in the case that one Warp takes comparatively more time than others, the other Warps simply request new node indeces to work on.
+The inherent synchronization of the worklist already takes care of optimally distributing the work.
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Integration with SVF}
