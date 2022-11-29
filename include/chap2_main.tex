@@ -300,7 +300,7 @@ Insertion into the element first calculates the correct base and then sets the c
         \draw[step=\step] (0,-17*\step) grid (32*\step,-18*\step);
         \foreach \r in {0,...,1} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};\node at (2*\step+0.5*\step,-17.5*\step) {\small1};\foreach \r in {3,...,31} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};
         \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-18.5*\step) {\tiny\r};
-        \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bitvector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|.};
+        \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bitvector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX| marked by a U.};
         \draw[-{Stealth[red]}] (2.5*\step,-15*\step) -- (2.5*\step,-16.5*\step);
     \end{tikzpicture}
 \end{center}
