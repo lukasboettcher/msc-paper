@@ -664,10 +664,10 @@ This proved to be a faster and more resource efficient approach compared to othe
             \textbf{Statement} & \textbf{Name} & \textbf{Base Fact}  & \textbf{Terminal Character} \\
             \hline                                                                                 \\
             $x = \&a$          & alloca        & alloca(a,x)         & a                           \\
-            $x = y$            & copy          & simpleCopy(x,y)     & c                           \\
-            $x = *y$           & load          & complexLoad(x,y)    & l                           \\
-            $*x = y$           & store         & complexStore(x,y)   & s                           \\
-            $x = y.f$          & field         & simpleField<N>(x,y) & f<N>                        \\
+            $x = y$            & copy          & simpleCopy(y,x)     & c                           \\
+            $x = *y$           & load          & complexLoad(y,x)    & l                           \\
+            $*x = y$           & store         & complexStore(y,x)   & s                           \\
+            $x = y.f$          & field         & simpleField<N>(y,x) & f<N>                        \\
         \end{tabular}
     \end{center}
 \end{table}
@@ -681,9 +681,9 @@ This proved to be a faster and more resource efficient approach compared to othe
             \textbf{Statement} & \textbf{Horn-clause rule}     & \textbf{Production} \\
             \hline                                                                   \\
             $x = \&a$          & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} alloca(a,x)} & $\{P\rightarrow \bar{a}\}$                          \\\hline
-            $x = y$            & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} simpleCopy(x,y),\\\hspace{1em} pointsTo(y,a)} &$\{P\rightarrow cP\}$    \\\hline
-            $x = *y$           & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} complexLoad(x,y),\\\hspace{1em} pointsTo(y,z),\\\hspace{1em} pointsTo(z,a)}    & $\{P\rightarrow lPP\}$                          \\\hline
-            $*x = y$           & \makecell[cl]{pointsTo(a,b):-                       \\\hspace{1em} complexStore(x,y),\\\hspace{1em} pointsTo(x,a),\\\hspace{1em} pointsTo(y,b)}   & $\{P\rightarrow \bar{P}sP\}$                          \\
+            $x = y$            & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} simpleCopy(y,x),\\\hspace{1em} pointsTo(y,a)} &$\{P\rightarrow \bar{c}P\}$    \\\hline
+            $x = *y$           & \makecell[cl]{pointsTo(x,a):-                       \\\hspace{1em} complexLoad(y,x),\\\hspace{1em} pointsTo(y,z),\\\hspace{1em} pointsTo(z,a)}    & $\{P\rightarrow \bar{l}PP\}$                          \\\hline
+            $*x = y$           & \makecell[cl]{pointsTo(a,b):-                       \\\hspace{1em} complexStore(y,x),\\\hspace{1em} pointsTo(x,a),\\\hspace{1em} pointsTo(y,b)}   & $\{P\rightarrow \bar{P}\bar{s}P\}$                          \\
         \end{tabularx}
     \end{center}
 \end{table}
