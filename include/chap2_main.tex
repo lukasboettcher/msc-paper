@@ -285,7 +285,7 @@ Insertion into the element first calculates the correct base and then sets the c
             \draw[step=\step] (0,0) grid (32*\step,1*\step);
             \node at (29*\step+0.5*\step,0.5*\step) {\small U};\node at (30*\step+0.5*\step,0.5*\step) {\small U};\node at (31*\step+0.5*\step,0.5*\step) {\small U};
             \node[draw,align=left,font = {\tiny}] at (40*\step,0.5*\step) {Head element in the sparse\\bitvector for node 3.};
-    
+            
             \draw (2*\step,0) -- (0,-3*\step);\draw (3*\step,0) -- (32*\step,-3*\step);
             
             \draw[step=\step] (0,-3*\step) grid (32*\step,-4*\step);
@@ -306,7 +306,7 @@ Insertion into the element first calculates the correct base and then sets the c
         \end{tikzpicture}
     \end{center}
     \caption{An example procedure for inserting a single edge into a sparse bitvector.}
-    \label{fig:edgeinsert} 
+    \label{fig:edgeinsert}
 \end{figure}
 The previous example in \autoref{fig:edgeinsert} showcases the process for inserting a single edge into an empty sparse bitvector.
 Later insertions always check whether a base is already defined in each element of the sparse bitvector and insert the edges accordingly.
