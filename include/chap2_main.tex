@@ -388,6 +388,26 @@ With this two step procedure in place, we can preserve the property that each Wa
     \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+    \caption{Copy Load Storecollect Kernel}\label{alg:ptagpu-copyload}
+    \begin{algorithmic}
+        \State \texttt{smem $\leftarrow$ allocate 256 bytes of shared memory per Warp}
+        \State \texttt{upperlimit $\leftarrow$ totalNodeCounter}
+        \State \texttt{src $\leftarrow$ incrementWorklist()}
+        \While{\texttt{src < upperlimit}}
+        \State \texttt{applyRewriteRule<Copy>(src,smem)} \algorithmiccomment{see Algorithm 7}
+        \State \texttt{applyRewriteRule<Load>(src,smem)}
+        \State \texttt{src $\leftarrow$ incrementWorklist()}
+        \EndWhile
+        \State \texttt{upperlimit $\leftarrow$ totalStoreCounter}
+        \State \texttt{src $\leftarrow$ incrementStoreWorklist()}
+        \While{\texttt{src < upperlimit}}
+        \State \texttt{applyRewriteRule<CollectStore>(src,smem)} \algorithmiccomment{collect store/pts pairs for store kernel}
+        \State \texttt{src $\leftarrow$ incrementStoreWorklist()}
+        \EndWhile
+        \State \texttt{reset worklists}
+    \end{algorithmic}
+\end{algorithm}
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
