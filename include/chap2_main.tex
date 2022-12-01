@@ -372,6 +372,22 @@ With this two step procedure in place, we can preserve the property that each Wa
         \State \texttt{free memory and pass results back to SVF}
     \end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}
+    \caption{Update Points Kernel}\label{alg:ptagpu-updatepts}
+    \begin{algorithmic}
+        \For{\texttt{each node i in constraint graph}}
+        \State \texttt{traverse nextPoints sparse bitvector for node i}
+        \State \texttt{collect all set bits}
+        \State \texttt{compute $\Delta \mathcal{P} = nextPoints\oplus oldPoints$} \algorithmiccomment{find all new bits via xor}
+        \State \texttt{update $currentPoints = \Delta \mathcal{P}$}
+        \If{$\Delta \mathcal{P} \neq \emptyset$}
+        \State \texttt{set done to $\mathbf{false}$}
+        \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
