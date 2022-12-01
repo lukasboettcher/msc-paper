@@ -422,6 +422,32 @@ With this two step procedure in place, we can preserve the property that each Wa
     \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+    \caption{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
+    \begin{algorithmic}
+        \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet}
+        \Procedure{\texttt{asyncCPU}}{\texttt{edgeSet *ptsSet, edgeSet *copySet}}
+        \State \texttt{\#pragma omp parallel for num\_threads(16)}
+        \For{\texttt{each GEP edge in constraint graph}}
+        \State \texttt{dstPTS $\leftarrow \emptyset$ }
+        \State \texttt{srcPTS $\leftarrow$ collectBitvectorTargets<PTS>(edge.src)}
+        \For{\texttt{id in srcPTS}}
+        \State \texttt{fieldOffsetNode $\leftarrow$ consCG->getGepObjVar(id, edge.offset)}
+        \State \texttt{\#pragma omp critical}
+        \State \texttt{append fieldOffsetNode to dstPTS}
+        \EndFor
+        \State \texttt{\#pragma omp critical}
+        \For{\texttt{id in dstPTS}}
+        \State \texttt{addPts(edge.dst,id)}
+        \EndFor
+        \EndFor
+        \State \texttt{updateCallGraph(getIndirectCallsites())} \algorithmiccomment{these are SVF superclass methods}
+        \State \texttt{// some of getIndirectCallsites's internal function calls are}
+        \State \texttt{// overwritten to use unified memory instead of SVF data structures}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
