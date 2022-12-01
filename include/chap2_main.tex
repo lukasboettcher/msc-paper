@@ -473,6 +473,29 @@ With this two step procedure in place, we can preserve the property that each Wa
     \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+    \caption{\texttt{template<Type> collectBitvectorTargets} procedure\\
+        \begin{minipage}[t]{0.1\textwidth}
+            \textbf{Input:}
+        \end{minipage}
+        \begin{minipage}[t]{0.8\textwidth}
+            to: currently processing node\\
+            bits: of the head element in to's sparse bitvector\\
+            smem: shared memory
+        \end{minipage}
+    }\label{alg:ptagpu-collectbv}
+    \begin{algorithmic}
+        \If{\texttt{bits $\neq$ 0}}
+        \For{\texttt{i = 0\dots 31}}
+        \If{\texttt{(1<<i) $\wedge$ bits}} \algorithmiccomment{check if bit is set}
+        \State \texttt{target $\leftarrow$ base * (29*32) + threadIdx.x * 32 + i}
+        \State \texttt{append target to smem} \algorithmiccomment{target represents the destination of the edge}
+        \EndIf
+        \EndFor
+        \EndIf
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
