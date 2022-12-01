@@ -448,6 +448,31 @@ With this two step procedure in place, we can preserve the property that each Wa
     \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+    \caption{\texttt{template<Type> applyRewriteRule} procedure\\
+        \begin{minipage}[t]{0.1\textwidth}
+            \textbf{Input:}
+        \end{minipage}
+        \begin{minipage}[t]{0.8\textwidth}
+            src: currently processing node\\
+            smem: shared memory
+        \end{minipage}
+    }\label{alg:ptagpu-applyrewrite}
+    \begin{algorithmic}
+        \State \texttt{index $\leftarrow$ getIndex(src)}
+        \Repeat
+        \State \texttt{bits $\leftarrow$ memory[index + threadIdx.x]}
+        \State \texttt{collectBitvectorTargets<Type>(src,bits,smem)} \algorithmiccomment{Algorithm 8}
+        \State \texttt{index $\leftarrow$ nextBits}
+        \Until{\texttt{index $\neq$ ULLONG\_MAX}}
+        \If{\texttt{Type = StoreCollect}}
+        \State \texttt{insert all pairs $(src,smem[:])$ into store map} \algorithmiccomment{later used in the store kernel}
+        \Else
+        \State \texttt{mergeBitvectors(src,smem)} \algorithmiccomment{Algorithm 9}
+        \EndIf
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
