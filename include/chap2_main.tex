@@ -408,6 +408,20 @@ With this two step procedure in place, we can preserve the property that each Wa
         \State \texttt{reset worklists}
     \end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}
+    \caption{Store Kernel}\label{alg:ptagpu-store}
+    \begin{algorithmic}
+        \State \texttt{smem $\leftarrow$ allocate 256 bytes of shared memory per Warp}
+        \For{\texttt{some x of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
+        \For{\texttt{each unique y of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
+        \State \texttt{append y to smem}
+        \EndFor
+        \State \texttt{mergeBitvectors(x,smem)} \algorithmiccomment{see Algorithm 9}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
