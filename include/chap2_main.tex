@@ -496,6 +496,41 @@ With this two step procedure in place, we can preserve the property that each Wa
     \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+    \caption{\texttt{mergeBitvectors} procedure\\
+        \begin{minipage}[t]{0.1\textwidth}
+            \textbf{Input:}
+        \end{minipage}
+        \begin{minipage}[t]{0.8\textwidth}
+            to: node that outgoing edges are merged into\\
+            smem: array of nodes whose outgoing edges are to be merged with to
+        \end{minipage}
+    }\label{alg:ptagpu-mergebv}
+    \begin{algorithmic}
+        \For{\texttt{from $\leftarrow$ smem}}
+        \State \texttt{toIndex $\leftarrow$ getIndex(to)} \algorithmiccomment{find the index of the head element}
+        \State \texttt{fromIndex $\leftarrow$ getIndex(from)}
+        \While{\texttt{next element $\neq$ ULLONG\_MAX}}
+        
+        \If{\texttt{fromBase = toBase}}
+        \State \texttt{merge element at fromIndex into toIndex}
+        \ElsIf{\texttt{fromBase < toBase}}
+        \State \texttt{insert new element before toIndex} \algorithmiccomment{elements are sorted by base}
+        \Else
+        \If{\texttt{toIndex has next element}}
+        \State \texttt{toIndex $\leftarrow$ toNext}
+        \Else
+        \State \texttt{create new element after toIndex and insert fromIndex}
+        \EndIf
+        \EndIf
+        
+        \State \texttt{toIndex $\leftarrow$ toNext} \algorithmiccomment{read next elements in sparse bitvectors}
+        \State \texttt{fromIndex $\leftarrow$ fromNext}
+        \EndWhile
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
 \subsubsection{Diffpoints Updates}\label{sec:memory}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
