@@ -352,12 +352,8 @@ The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \aut
 One remaining problem is, that the store rewrite rule currently require inverse point-to edge information which, if additionally stored, would greatly increase the required memory by keeping track of outgoing and incoming points-to edges at the same time for each node.
 The proposed solution to this problem from \cite{mendez2012gpu} is to apply the store rewrite rules in two steps. First all node pairs $(x,y)$ are collected such that y has outgoing store edges and points to x. Second all pairs with matching x are assigned to the same Warp and the resulting inverse copy edges are added to the sparse bitvectors of x, denoting the destinations of the outgoing inverse store edges from node y.
 Using this method requires one additional step compared to the copy and load rules but this step can be processed very efficiently with thrust library calls, similar to the edge insertion routine.
-With this two step procedure in place, we can preserve the property that each Warp only appends outgoing edges to the sparse bitvector of it's currently assigned node and refrain from explicit synchronization.
+With this two step procedure in place, we can preserve the property that each Warp only appends outgoing edges to the sparse bitvector of it's currently assigned node.
 \subsubsection{Rule Application Algorithm}\label{sec:main-algo}
-With both data structures and graph rewrite rules in place and optimized for operation on the GPU, the main algorithm of PTAGPU can be launched.
-
-dimensions config of kernels todo
-
 \begin{algorithm}
     \caption{Main Algorithm of PTAGPU}\label{alg:ptagpu-main}
     \begin{algorithmic}
