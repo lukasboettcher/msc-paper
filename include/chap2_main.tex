@@ -571,6 +571,10 @@ Async futures are a feature of the C++ programming language that allows for the 
     int final_result = result.get();
     std::cout << "The final result is: " << final_result << std::endl;
 \end{minted}
+To further improve the scalability of the CPU portion of PTAGPU, the asynchronously executed code is parallelized using OpenMP pragmas.
+The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
+As we do not make use of multiple CPU cores in any other part of the program, we can utilize a majority of the available CPU cores for the async execution.
+The calculation that is performed on the CPU reads the available points-to information to resolve all getelementpointer, edges in the constraint graph.
 \subsection{Integration with SVF}
 alias method
 \subsubsection{Parallelizing SVF}
