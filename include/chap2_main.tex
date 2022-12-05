@@ -552,6 +552,25 @@ This includes not only all GPU cores, but also all CPU cores.
 To achieve this, parts of the main loop, see \autoref{alg:ptagpu-main}, are split into an asynchronous CPU execution.
 This asynchronous CPU part is implemented with async futures.
 Async futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using async futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogenous compute capabilities. See the following basic example.
+\begin{minted}{c++}
+    // Launch an asynchronous task
+    std::future<int> result = std::async([]() {
+        // Perform some long-running computation
+        int sum = 0;
+        for (int i = 0; i < 1000000000; ++i)
+        {
+            sum += i;
+        }
+        return sum;
+    });
+
+    // Do something else in the meantime
+    std::cout << "Hello, world!" << std::endl;
+
+    // Wait for the asynchronous task to complete
+    int final_result = result.get();
+    std::cout << "The final result is: " << final_result << std::endl;
+\end{minted}
 \subsection{Integration with SVF}
 alias method
 \subsubsection{Parallelizing SVF}
