@@ -904,7 +904,7 @@ The properties that are of interest here are specifically the def-use chains of 
 The difficulty arises from the seeming ambiguity of indirect accesses to address-taken variables through loads and stores in the program.
 After connecting defs and uses of variables, the result is a value-flow graph, or sparse value-flow graph depending on the specified analysis details, that can then be used for more concrete analyses, e.g. use-after-free memory leak detection \cite{sui2014detecting} or fed back into a more precise pointer analysis algorithm to increase precision with the gained value-flow information.
 
-This thesis focuses on pointer analysis, thus, the details are pointer analyses inside SVF are especially relevant. SVF provides a wide set of pointer analyses to choose from, see \autoref{fig:pta-svf} taken from SVF's technical documentation \footnote{\url{https://github.com/svf-tools/SVF/wiki/Technical-documentation}}.
+This thesis focuses on pointer analysis, thus, the details of pointer analyses inside SVF are especially relevant. SVF provides a wide set of pointer analyses to choose from, see \autoref{fig:pta-svf} taken from SVF's technical documentation \footnote{\url{https://github.com/svf-tools/SVF/wiki/Technical-documentation}}.
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{img/pta-svf.png}
