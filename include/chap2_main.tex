@@ -547,6 +547,11 @@ See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main 
 \subsubsection{Diffpoints Updates}\label{sec:diffpts}
 delta updates
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
+PTAGPU strives to achieve optimal concurrent execution.
+This includes not only all GPU cores, but also all CPU cores.
+To achieve this, parts of the main loop, see \autoref{alg:ptagpu-main}, are split into an asynchronous CPU execution.
+This asynchronous CPU part is implemented with async futures.
+Async futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using async futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogenous compute capabilities. See the following basic example.
 \subsection{Integration with SVF}
 alias method
 \subsubsection{Parallelizing SVF}
