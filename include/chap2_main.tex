@@ -578,6 +578,10 @@ The calculation that is performed on the CPU reads the available points-to infor
 While other GPU implementations of Andersen's analysis, such as \cite{mendez2012gpu}, also perform the gep calculations on the GPU, this leaves the CPU mostly idle during the execution.
 Furthermore paralellizing the application of gep constraints is not as easily done for the copy, load and store constraints, since each gep instruction carries an offset value. Given the offset value and the points-to target of a node we need to calculate the correct abstract memory object that the offset references. This can be done on the GPU as demonstrated by \cite{mendez2012gpu}, but is more efficient to implement on a CPU, since gep instructions can reference random regions in memory.
 Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for gep constraint resolution, since PTAGPU is directly integrated into SVF, which already offers a variety of optimized methods for gep constraint resolution.
+Lastly the asynchronous CPU code also resolves all indirect callsites and updates the callgraph. 
+Arguably this is one of the most important aspects of PTAGPU that differentiates it from other implementations of Andersen's analysis on the GPU.
+Indirect callsite resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
+Since an over approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses.
 \subsection{Integration with SVF}
 alias method
 \subsubsection{Parallelizing SVF}
