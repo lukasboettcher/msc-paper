@@ -446,7 +446,7 @@ See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main 
         \State \texttt{srcPTS $\leftarrow$ collectBitvectorTargets<PTS>(edge.src)}
         \For{\texttt{id in srcPTS}}
         \State \texttt{fieldOffsetNode $\leftarrow$ consCG->getGepObjVar(id, edge.offset)}
-        \State \texttt{\#pragma omp critical}
+        \State \texttt{\#pragma omp critical} \algorithmiccomment{only executed by one thread at a time}
         \State \texttt{append fieldOffsetNode to dstPTS}
         \EndFor
         \State \texttt{\#pragma omp critical}
