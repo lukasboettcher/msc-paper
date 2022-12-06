@@ -357,9 +357,9 @@ With this two step procedure in place, we can preserve the property that each Wa
 With both data structures and graph rewrite rules in place and optimized for operation on the GPU, the main algorithm of PTAGPU can be launched.
 The pseudocode for the most important procedures of PTAGPU is available, the main loop can be found in \autoref{alg:ptagpu-main}.
 The first step is to execute the initialization steps from \autoref{sec:init}.
-Since we want to apply all rewrite rules of the Andersen style analysis until no more changes are applied, we perform the application of the rules in a while loop that breaks if no changes are detected in after one iteration finishes.
-We can observe the changes by counting the number of points-to edges present in all sparse bitvectors.
-While it might seem inefficient to iterate through all elements in each iteration of the loop, this can be done very efficiently, since we employ massively parallel GPU kernels.
+Since we want to apply all rewrite rules of the Andersen style analysis until no further changes are applied, we perform the application of the rules in a while loop that breaks if no changes are detected after one iteration finishes.
+We can observe the changes by counting the number of recently added points-to edges present in the newPts sparse bitvectors.
+While it might seem inefficient to count through all elements in each iteration of the loop, this can be done very efficiently, since we employ massively parallel GPU kernels.
 If changes to the points-to memory region have been detected, the algorithm continues with updating the newPts, currentPts and oldPts memory.
 This serves the purpose of preventing redundant work, by only applying rewrite rules on the points-to edges that have been added since the last iteration.
 This process is called a delta-update or diffpoints-update, the specifics of this optimization are presented in \autoref{sec:diffpts} and the pseudocode is available in \autoref{alg:ptagpu-updatepts}.
