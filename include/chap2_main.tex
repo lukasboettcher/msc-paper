@@ -334,7 +334,7 @@ See \autoref{fig:problem-rewrite} a) for an illustration of this problem from \c
 \end{figure}
 A key insight from \cite{mendez2012gpu} was that, "Parallel execution of the rewrite rules \dots requires synchronization in the graph data structure.".
 The intuitive solution to this problem is shown in \autoref{fig:problem-rewrite} b). For most constraints, simply inverting the edges is enough to allow for concurrent addition of new edges into the sparse bitvectors without mutatung other node's outgoing edges.
-The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \autoref{tab:rewrite-rules}.
+The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \autoref{tab:rewrite-rules}. These new rewrite rules can be interpreted as strictly unidirectional paths in the constraint graph.
 \begin{table}
     \begin{center}
         \caption{Final unidirectional, partly inverted Graph Rewriting Rules proposed by \cite{mendez2012gpu}.\\Field-sensitive rules are omitted, since they are exclusively handled on the CPU, see \autoref{sec:cpugpu}.}
