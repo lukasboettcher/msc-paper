@@ -395,6 +395,9 @@ Notably, applying the storeCollect rewrite rule, does not merge any sparse bitve
 After all rewrite rules are applied and worklists are reset, the first kernel execution concludes.
 
 Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store and points-to pairs previously collected are preprocessed by the thrust library, see \autoref{fig:edge-insert} for an overview of the preprocessing steps, and then fed into the second GPU kernel \autoref{alg:ptagpu-store} where the last rewrite rule is finally applied.
+
+After the second and final kernel execution, we await the conclusion of the asynchronous CPU procedure.
+Since the CPU procedure stores all new edges it finds in pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bitvectors by reusing the edge insertion code during initialization.
 \begin{algorithm}
     \caption{Main Algorithm of PTAGPU}\label{alg:ptagpu-main}
     \begin{algorithmic}
