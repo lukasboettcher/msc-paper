@@ -384,6 +384,15 @@ As a brief summary, the \verb|Copy Load Storecollect| kernel loops through all n
 The node that is assigned to a Warp at any time is called the origin node.
 As soon as a Warp receives an origin node from the constraint graph, the copy, load and the first step of the store rewrite rule are applied in this order. See \autoref{tab:rewrite-rules} for an overview of the rewrite rules that were established by \cite{mendez2012gpu}.
 Each rewrite rule is applied by a template function, see \autoref{alg:ptagpu-applyrewrite}. Template functions are a C++ construct that allows using placeholder parameters. Each function invocation with different template parameters results in a different symbol during compilation. While using templates in C++ is good practice for writing reusable, efficient, and error-free code, here we use the fact that CUDA supports templates in device function to prevent the PTX compiler from assuming recursion and falsely limiting the available number of threads to prevent register exhaustion.
+
+Inside the \verb|applyRewriteRule| function, depending on the current rewrite rule, the destinations of all outgoing edges of a certain type are collected by the \verb|collectBitvectorTargets| function, see \autoref{alg:ptagpu-collectbv}.
+The destinations of the outgoing edges are collected by traversing the correct sparse bitvector of the origin node, element by element.
+Following this, all outgoing edges of the collected destination nodes are merged with the outgoing edges of the current origin node of the Warp.
+For example, applying the copy rewrite rule $origin \xrightarrow{c^{-1}} y \xrightarrow{p} z \mathrel{\leadsto} origin \xrightarrow{p} z$ PTAGPU first collects all targets of the outgoing inverse copy edges, then merges all the outgoing points-to edges from the collected nodes with the outgoing points-to edges of the origin node.
+This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu-mergebv}, at the end of the \verb|applyRewriteRule| function.
+In principle the bitwise merging of two sparse bitvectors works exactly the same as during edge insertion, shown in \autoref{fig:edgeinsert}, during initialization.
+Notably, applying the storeCollect rewrite rule, does not merge any sparse bitvectors, but instead collects store and points-to pairs which are later processed in another kernel for the reasons outlined in the beginning of \autoref{sec:concurrgraph}.
+After all rewrite rules are applied and worklists are reset, the first kernel execution concludes.
 \begin{algorithm}
     \caption{Main Algorithm of PTAGPU}\label{alg:ptagpu-main}
     \begin{algorithmic}
