@@ -438,7 +438,7 @@ See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main 
 \begin{algorithm}
     \caption{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
     \begin{algorithmic}
-        \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet}
+        \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet} \algorithmiccomment{\small type for adjacency information\normalsize}
         \Procedure{\texttt{asyncCPU}}{\texttt{edgeSet *ptsSet, edgeSet *copySet}}
         \State \texttt{\#pragma omp parallel for num\_threads(16)}
         \For{\texttt{each GEP edge in constraint graph}}
