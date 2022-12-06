@@ -313,7 +313,7 @@ Later insertions always check whether a base is already defined in each element 
 The base of subsequent elements in the sparse bitvectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bitvector, elements might have to be shifted around.
 In practice these insertions are executed for each source node in parallel by multiple Warps on the GPU.
 
-\subsection{Concurrent Graph Rewriting}
+\subsection{Concurrent Graph Rewriting}\label{sec:concurrgraph}
 As soon as all required edges from the constraint graph have been inserted into the correct sparse bitvectors, the Solver part of PTAGPU needs to apply the Andersen constraints from \autoref{tab:cfl-ander2} on the graph in order to calculate the correct points-to sets.
 As with all calculations on the GPU we need to explicitly take care of concurrency.
 Similar to edge insertion the ideal method of distributing work on the GPU is to assign units of work to individual Warps with minimal thread divergence.
@@ -322,9 +322,9 @@ This way each Warp handles the outgoing rewrite rules for a single node.
 Furthermore this removes any need for specialized scheduling, because in the case that one Warp takes comparatively more time than others, the other Warps simply request new node indeces to work on.
 The inherent synchronization of the worklist already takes care of optimally distributing the work.
 
-Unfortunately we cannot simply use the production rules from the context free grammar approach in \autoref{tab:cfl-ander2}. The reason being that these rules can not be mapped onto strictly unidirectional paths in the graph.
+Unfortunately we cannot simply use the production rules from the context free grammar approach in \autoref{tab:cfl-ander2}. The reason being that these rules can not be mapped onto strictly unidirectional rewrite paths in the graph.
 As an example, consider the copy production rule $P\rightarrow \bar{C}P$. If we interpret this production rule in the context of graph rewriting, we get that for every node v with an outgoing copy edge to node x and an outgoing points-to edge to w, we need to add a new points-to edge from x to w.
-The problem arises when multiple Warps operating on outgoing edges of different nodes, simultaneously try to mutate anther node's outgoing edges.
+The problem arises when multiple Warps operating on outgoing edges of different nodes, simultaneously try to mutate another node's outgoing edges.
 See \autoref{fig:problem-rewrite} a) for an illustration of this problem from \cite{mendez2012gpu}.
 \begin{figure}
     \centering
