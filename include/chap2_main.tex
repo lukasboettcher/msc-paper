@@ -398,6 +398,9 @@ Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store
 
 After the second and final kernel execution, we await the conclusion of the asynchronous CPU procedure.
 Since the CPU procedure stores all new edges it finds in pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bitvectors by reusing the edge insertion code during initialization.
+
+At the end of each iteration of the main loop PTAGPU optionally presents the current memory usage and distribution among the memory regions for debugging end evaluation purposes. This includes statistics for the elapsed time of each component in PTAGPU - as measured by the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
+
 \begin{algorithm}
     \caption{Main Algorithm of PTAGPU}\label{alg:ptagpu-main}
     \begin{algorithmic}
