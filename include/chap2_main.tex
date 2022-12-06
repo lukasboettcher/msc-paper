@@ -393,7 +393,7 @@ See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main 
         \State \texttt{traverse nextPoints sparse bitvector for node i}
         \State \texttt{collect all set bits}
         \State \texttt{compute $\Delta \mathcal{P} = nextPoints\oplus oldPoints$} \algorithmiccomment{find all new bits via xor}
-        \State \texttt{update $currentPoints = \Delta \mathcal{P}$}
+        \State \texttt{update $currentPoints = \Delta \mathcal{P}$; $oldPoints = \Delta \mathcal{P} \cup oldPoints$; $newPoints = \emptyset$}
         \If{$\Delta \mathcal{P} \neq \emptyset$}
         \State \texttt{set done to $\mathbf{false}$}
         \EndIf
