@@ -627,6 +627,10 @@ On its own the constraint graph in the form of sparse bitvectors is not digestib
 Internally the \verb|PointerAnalysis| superclass inside SVF provides an \verb|alias| method that takes two node indices and outputs the alias relation of both nodes.
 To provide pointer information for SVF, PTAGPU overwrites the alias method with its own implementation that reads points-to edges from the sparse bitvectors inside unified memory and outputs one of the possible alias relations from \autoref{eq:alias1} and \autoref{eq:alias2}.
 One of the consumers of this information is the SVF test suite\footnote{\url{https://github.com/SVF-tools/Test-Suite}} which will be used in \autoref{sec:testsuite} for verifying the results PTAGPU produces against a know corpus of test programs that include various pointer relations.
+
+Beyond points-to information, the \verb|updateCallGraph| method in \autoref{alg:ptagpu-cpu}, which resolves indirect callsites, also requires access to the points-to information of PTAGPU. To facilitate this, some of the SVF implementations for callsite resolution are overwritten in PTAGPU to redirect the reading of points-to information into the unified memory.
+The benefit of using C++ polymorphism to overwrite these internal methods from SVF is that the points-to information can remain in unified memory and does not have to be explicitly written back into main memory.
+This improves performance without impeding the functions of SVF.
 \section{Experimental Results}
 \subsection{Test Suite}
 \subsection{Benchmark Suite}
