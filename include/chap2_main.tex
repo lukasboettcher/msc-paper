@@ -589,6 +589,9 @@ $$\Delta \mathcal{P} = nextPoints\oplus oldPoints$$
 $$currentPoints = \Delta \mathcal{P}\wedge oldPoints = \Delta \mathcal{P} \cup oldPoints\wedge newPoints = \emptyset$$
 After the update at the beginning of each iteration, all procedures apply the rewrite rules on the $\mathtt{currentPoints}$ set.
 With diffpoints in place we can ensure that each rewrite rule is only processed once, since any points-to edges are only in the set $\mathtt{currentPoints}$ exactly once.
+
+One problem that arises from using diffpoints, is the fact that whenever a new copy edge is added into the constraint graph - which can happen dynamically by applying rewrite rules - the next iteration does not process all points-to edges that need to be considered because of the addition of the copy edge. Instead, only those points-to edges are processed, which are in $\mathtt{currentPoints}$. The straightforward solution to this problem is to always explicitly work through all points-to edges in $\mathtt{coldPoints}$ whenever a new copy edge is added.
+This ensures that no points-to edges are skipped during processing.
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
 PTAGPU strives to achieve optimal concurrent execution.
 This includes not only all GPU cores, but also all CPU cores.
