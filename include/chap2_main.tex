@@ -579,7 +579,16 @@ At the end of each iteration of the main loop PTAGPU optionally presents the cur
 \end{algorithm}
 
 \subsubsection{Diffpoints Updates}\label{sec:diffpts}
-delta updates
+If the main loop of PTAGPU were to repeatedly iterate and apply the same rewrite rules on every node, every iteration would repeat the work of the previous operation, making the algorithm very inefficient.
+This problem does not only apply to PTAGPU, all pointer analyses need to prevent excessive repeating of already finished work.
+As such many implementations use a concept called diffpoints or delta-updates that is meant to prevents redundant work. Also pointer analyses inside SVF make use of diffpoints in order to speed up the calculations.
+Diffpoints work by dividing the points-to relations calculated during application of the constraints into separate sets.
+One set describing all new edges that are calculated in the current iteration, one set for all points-to edges calculated in the previous iteration and one set for the bulk of all prior points-to edges.
+As can be seen in \autoref{alg:ptagpu-updatepts}, the update process between iterations be be realized by simple set operations or more optimized bitwise operations.
+$$\Delta \mathcal{P} = nextPoints\oplus oldPoints$$
+$$currentPoints = \Delta \mathcal{P}\wedge oldPoints = \Delta \mathcal{P} \cup oldPoints\wedge newPoints = \emptyset$$
+After the update at the beginning of each iteration, all procedures apply the rewrite rules on the $\mathtt{currentPoints}$ set.
+With diffpoints in place we can ensure that each rewrite rule is only processed once, since any points-to edges are only in the set $\mathtt{currentPoints}$ exactly once.
 \subsection{Combining CPU and GPU}\label{sec:cpugpu}
 PTAGPU strives to achieve optimal concurrent execution.
 This includes not only all GPU cores, but also all CPU cores.
