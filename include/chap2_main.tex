@@ -395,7 +395,23 @@ This process is called a delta-update or diffpoints-update, the specifics of thi
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+After delta-updates are done, all points-to edges that are new since the last iteration are present in the currentPts memory region.
+Before launching the first kernel for the rewrite rules, we can launch the CPU portion of our analysis asynchronously.
+In practice this is realized by using C++ asynchronous futures.
+See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main loop.
 
+While the asynchronous CPU code executes on a different set of CPU threads, the first GPU kernel can be launched.
+The parameters for CUDA kernel launches include the block- and gridsize, as well as amount of shared memory and stream assignments.
+% As PTAGPU was developed with current NVIDIA graphics cards in mind, compute capabilities 7.5 and 8.6 were targeted during compilation.
+Since GPUs have a set amount of SMs that can process thread blocks in parallel, it is a good idea to split the entire body of work into at least as many thread blocks as SMs are availavble.
+During development both an RTX 2080 and a RTX 3080 Ti with 48 and 82 SMs respectively were used. The PTAGPU algorithm queries the available GPUs' SM count and uses it as the gridsize.
+Because the first GPU kernel processes the bulk of all rewrite rules, it heavily uses registers in each thread during execution. An individual thread requires over 128 active registers to apply the rewrite rules. As such we are limited to 64K registers per thread block per the specifications of the CUDA compute capabilities 7.0 and up. Following this hardware limitation is the fact that we can at most create 256 threads per thread block in order to not overflow the available registers per SM.
+The result is a blocksize of 256, which is split into eight addressable Waps of size 32 each.
+
+PTAGPU also includes experimental support for multi-GPU CUDA execution. This requires a unique stream per device which are initialized in the initialization steps, see \autoref{sec:init}.
+This stream, together with 256 bytes of shared memory and the grid-/ blocksize specifications, make up the arguments for the first kernel launch. Later kernel launches, including the edge insertion kernel, follow the same process for finding optimal launch parameters. Furthermore CUDA provides helper functions such as \verb|cudaOccupancyMaxPotentialBlockSize| for finding the optimal grid- and blocksizes of a specific kernel.
+
+The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copyload} as well as subsequent device function invocations.
 \begin{algorithm}
     \caption{Copy Load Storecollect Kernel}\label{alg:ptagpu-copyload}
     \begin{algorithmic}
@@ -403,7 +419,7 @@ This process is called a delta-update or diffpoints-update, the specifics of thi
         \State \texttt{upperlimit $\leftarrow$ totalNodeCounter}
         \State \texttt{src $\leftarrow$ incrementWorklist()}
         \While{\texttt{src < upperlimit}}
-        \State \texttt{applyRewriteRule<Copy>(src,smem)} \algorithmiccomment{see Algorithm 7}
+        \State \texttt{applyRewriteRule<Copy>(src,smem)} \algorithmiccomment{see Algorithm 5}
         \State \texttt{applyRewriteRule<Load>(src,smem)}
         \State \texttt{src $\leftarrow$ incrementWorklist()}
         \EndWhile
