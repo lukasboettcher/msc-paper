@@ -21,8 +21,8 @@ The details of the implementation will be described in detail in \autoref{sec:de
 
 \section{Goal of the Algorithm}
 Our goal is to use the provided program assigment graph from SVF and the derived constraint graph to compute a points-to set for each pointer variable in the program.
-Overall our algorithm is supposed to serve as an initial pointer analysis pass in the SVF framework. Together with the pointer information we can then proceed to build an over approximated call graph.
-One might assume that no pointer information is needed for SVF to build a call graph for the program. Unfortunately indirect function invocations, where function are accessed by pointer dereferencing itself, requires us to build pointer information in order to create an over approximated sound call graph. The over approximate nature stems from the imprecision of Andersen's analysis. This limitation always remains, no matter the algorithm, since pointer analyses are fundamentally undecidable as was mentioned in \autoref{sec:pta}.
+Overall our algorithm is supposed to serve as an initial pointer analysis pass in the SVF framework. Together with the pointer information we can then proceed to build an over-approximated call graph.
+One might assume that no pointer information is needed for SVF to build a call graph for the program. Unfortunately indirect function invocations, where function are accessed by pointer dereferencing itself, requires us to build pointer information in order to create an over-approximated sound call graph. The over-approximate nature stems from the imprecision of Andersen's analysis. This limitation always remains, no matter the algorithm, since pointer analyses are fundamentally undecidable as was mentioned in \autoref{sec:pta}.
 It is important to consider that the initial pointer analysis does not directly produce any valuable information in terms of static analysis purposes. Instead we use the pointer information produced by the initial analysis for the call graph which is then used to refine the analysis result by applying a more precise flow- and/or context-sensitive analysis that produces the relevant results, which can then be used to derive value flow information that can directly be used for actual analysis purposes.
 Since we are applying a more precise pointer analysis at a later stage anyways one might argue that it would be wise to start off with such an analysis. For small programs this is a viable strategy, unfortunately these more precise analyses are currently not scalable for a whole program analysis and are only applied on-demand \cite{sui2016svf}. This is also one of the motivations for trying to accelerate the initial Anderen analysis specifically since it is performed on the entire program and thus can in theory profit from the paralellism of GPUs.
 
@@ -620,10 +620,7 @@ Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for g
 Lastly the asynchronous CPU code also resolves all indirect callsites and updates the callgraph. 
 Arguably this is one of the most important aspects of PTAGPU that differentiates it from other implementations of Andersen's analysis on the GPU.
 Indirect callsite resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
-Since an over approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses.
-\subsection{Integration with SVF}
-alias method
-\subsubsection{Parallelizing SVF}
+Since an over-approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses inside SVF.
 \section{Experimental Results}
 \subsection{Test Suite}
 \subsection{Benchmark Suite}
