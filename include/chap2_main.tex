@@ -356,62 +356,17 @@ With this two step procedure in place, we can preserve the property that each Wa
 \subsubsection{Rule Application Algorithm}\label{sec:main-algo}
 With both data structures and graph rewrite rules in place and optimized for operation on the GPU, the main algorithm of PTAGPU can be launched.
 The pseudocode for the most important procedures of PTAGPU is available, the main loop can be found in \autoref{alg:ptagpu-main}.
-The first step is to execute the initialization steps from \autoref{sec:init}.
-Since we want to apply all rewrite rules of the Andersen style analysis until no further changes are applied, we perform the application of the rules in a while loop that breaks if no changes are detected after one iteration finishes.
-We can observe the changes by counting the number of recently added points-to edges present in the newPts sparse bitvectors.
-While it might seem inefficient to count through all elements in each iteration of the loop, this can be done very efficiently, since we employ massively parallel GPU kernels.
-If changes to the points-to memory region have been detected, the algorithm continues with updating the newPts, currentPts and oldPts memory.
-This serves the purpose of preventing redundant work, by only applying rewrite rules on the points-to edges that have been added since the last iteration.
-This process is called a delta-update or diffpoints-update, the specifics of this optimization are presented in \autoref{sec:diffpts} and the pseudocode is available in \autoref{alg:ptagpu-updatepts}.
-After delta-updates are done, all points-to edges that are new since the last iteration are present in the currentPts memory region.
-Before launching the first kernel for the rewrite rules, we can launch the CPU portion of our analysis asynchronously.
-In practice this is realized by using C++ asynchronous futures.
-See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main loop.
-
-While the asynchronous CPU code executes on a different set of CPU threads, the first GPU kernel can be launched.
-The parameters for CUDA kernel launches include the block- and gridsize, as well as amount of shared memory and stream assignments.
-% As PTAGPU was developed with current NVIDIA graphics cards in mind, compute capabilities 7.5 and 8.6 were targeted during compilation.
-Since GPUs have a set amount of SMs that can process thread blocks in parallel, it is a good idea to split the entire body of work into at least as many thread blocks as SMs are availavble.
-During development both an RTX 2080 and a RTX 3080 Ti with 48 and 82 SMs respectively were used. The PTAGPU algorithm queries the available GPUs' SM count and uses it as the gridsize.
-Because the first GPU kernel processes the bulk of all rewrite rules, it heavily uses registers in each thread during execution. An individual thread requires over 128 active registers to apply the rewrite rules. As such we are limited to 64K registers per thread block per the specifications of the CUDA compute capabilities 7.0 and up. Following this hardware limitation is the fact that we can at most create 256 threads per thread block in order to not overflow the available registers per SM.
-The result is a blocksize of 256, which is split into eight addressable Waps of size 32 each.
-
-PTAGPU also includes experimental support for multi-GPU CUDA execution. This requires a unique stream per device which are initialized in the initialization steps, see \autoref{sec:init}.
-This stream, together with 256 bytes of shared memory and the grid-/ blocksize specifications, make up the arguments for the first kernel launch. Later kernel launches, including the edge insertion kernel, follow the same process for finding optimal launch parameters. Furthermore CUDA provides helper functions such as \verb|cudaOccupancyMaxPotentialBlockSize| for finding the optimal grid- and blocksizes of a specific kernel.
-
-The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copyload} as well as subsequent device function invocations.
-As a brief summary, the \verb|Copy Load Storecollect| kernel loops through all nodes in the constraint graph and assigns them to available Warps by using a worklist approach.
-The node that is assigned to a Warp at any time is called the origin node.
-As soon as a Warp receives an origin node from the constraint graph, the copy, load and the first step of the store rewrite rule are applied in this order. See \autoref{tab:rewrite-rules} for an overview of the rewrite rules that were established by \cite{mendez2012gpu}.
-Each rewrite rule is applied by a template function, see \autoref{alg:ptagpu-applyrewrite}. Template functions are a C++ construct that allows using placeholder parameters. Each function invocation with different template parameters results in a different symbol during compilation. While using templates in C++ is good practice for writing reusable, efficient, and error-free code, here we use the fact that CUDA supports templates in device function to prevent the PTX compiler from assuming recursion and falsely limiting the available number of threads to prevent register exhaustion.
-
-Inside the \verb|applyRewriteRule| function, depending on the current rewrite rule, the destinations of all outgoing edges of a certain type are collected by the \verb|collectBitvectorTargets| function, see \autoref{alg:ptagpu-collectbv}.
-The destinations of the outgoing edges are collected by traversing the correct sparse bitvector of the origin node, element by element.
-Following this, all outgoing edges of the collected destination nodes are merged with the outgoing edges of the current origin node of the Warp.
-For example, applying the copy rewrite rule $origin \xrightarrow{c^{-1}} y \xrightarrow{p} z \mathrel{\leadsto} origin \xrightarrow{p} z$ PTAGPU first collects all targets of the outgoing inverse copy edges, then merges all the outgoing points-to edges from the collected nodes with the outgoing points-to edges of the origin node.
-This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu-mergebv}, at the end of the \verb|applyRewriteRule| function.
-In principle the bitwise merging of two sparse bitvectors works exactly the same as during edge insertion, shown in \autoref{fig:edgeinsert}, during initialization.
-Notably, applying the storeCollect rewrite rule, does not merge any sparse bitvectors, but instead collects store and points-to pairs which are later processed in another kernel for the reasons outlined in the beginning of \autoref{sec:concurrgraph}.
-After all rewrite rules are applied and worklists are reset, the first kernel execution concludes.
-
-Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store and points-to pairs previously collected are preprocessed by the thrust library, see \autoref{fig:edge-insert} for an overview of the preprocessing steps, and then fed into the second GPU kernel \autoref{alg:ptagpu-store} where the last rewrite rule is finally applied.
-
-After the second and final kernel execution, we await the conclusion of the asynchronous CPU procedure.
-Since the CPU procedure stores all new edges it finds in pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bitvectors by reusing the edge insertion code during initialization.
-
-At the end of each iteration of the main loop PTAGPU optionally presents the current memory usage and distribution among the memory regions for debugging end evaluation purposes. This includes statistics for the elapsed time of each component in PTAGPU - as measured by the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
-
 \begin{algorithm}
     \caption{Main Algorithm of PTAGPU}\label{alg:ptagpu-main}
     \begin{algorithmic}
         \State \texttt{initialization steps}
         \While{\texttt{new points-to edges written into memory} $\wedge$ not done}
         \State \texttt{run updatepts kernel} \algorithmiccomment{see Algorithm 3}
-        \State \texttt{launch CPU code asynchronously} \algorithmiccomment{see Algorithm 6}
+        \State \texttt{launch CPU code asynchronously} \algorithmiccomment{see Algorithm 9}
         \State \texttt{run copy/load/storecollect kernel} \algorithmiccomment{see Algorithm 4}
         \State \texttt{sort $(x,y)$ pairs for the store constraints}
         \State \texttt{split pairs by unique x component}
-        \State \texttt{run store kernel} \algorithmiccomment{see Algorithm 5}
+        \State \texttt{run store kernel} \algorithmiccomment{see Algorithm 8}
         \State \texttt{await asynchronous CPU execution}
         \State \texttt{insert new edges found by CPU code}
         \State \texttt{report memory statistics and new edge count} \algorithmiccomment{optional}
@@ -419,7 +374,13 @@ At the end of each iteration of the main loop PTAGPU optionally presents the cur
         \State \texttt{free memory and pass results back to SVF}
     \end{algorithmic}
 \end{algorithm}
-
+The first step is to execute the initialization steps from \autoref{sec:init}.
+Since we want to apply all rewrite rules of the Andersen style analysis until no further changes are applied, we perform the application of the rules in a while loop that breaks if no changes are detected after one iteration finishes.
+We can observe the changes by counting the number of recently added points-to edges present in the newPts sparse bitvectors.
+While it might seem inefficient to count through all elements in each iteration of the loop, this can be done very efficiently, since we employ massively parallel GPU kernels.
+If changes to the points-to memory region have been detected, the algorithm continues with updating the newPts, currentPts and oldPts memory.
+This serves the purpose of preventing redundant work, by only applying rewrite rules on the points-to edges that have been added since the last iteration.
+This process is called a delta-update or diffpoints-update, the specifics of this optimization are presented in \autoref{sec:diffpts} and the pseudocode is available in \autoref{alg:ptagpu-updatepts}.
 \begin{algorithm}
     \caption{Update Points Kernel}\label{alg:ptagpu-updatepts}
     \begin{algorithmic}
