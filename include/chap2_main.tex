@@ -432,46 +432,10 @@ The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copy
         \State \texttt{reset worklists}
     \end{algorithmic}
 \end{algorithm}
-
-\begin{algorithm}
-    \caption{Store Kernel}\label{alg:ptagpu-store}
-    \begin{algorithmic}
-        \State \texttt{smem $\leftarrow$ allocate 256 bytes of shared memory per Warp}
-        \For{\texttt{some x of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
-        \For{\texttt{each unique y of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
-        \State \texttt{append y to smem}
-        \EndFor
-        \State \texttt{mergeBitvectors(x,smem)} \algorithmiccomment{see Algorithm 9}
-        \EndFor
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-    \caption{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
-    \begin{algorithmic}
-        \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet} \algorithmiccomment{\small type for adjacency information\normalsize}
-        \Procedure{\texttt{asyncCPU}}{\texttt{edgeSet *ptsSet, edgeSet *copySet}}
-        \State \texttt{\#pragma omp parallel for num\_threads(16)}
-        \For{\texttt{each GEP edge in constraint graph}}
-        \State \texttt{dstPTS $\leftarrow \emptyset$ }
-        \State \texttt{srcPTS $\leftarrow$ collectBitvectorTargets<PTS>(edge.src)}
-        \For{\texttt{id in srcPTS}}
-        \State \texttt{fieldOffsetNode $\leftarrow$ consCG->getGepObjVar(id, edge.offset)}
-        \State \texttt{\#pragma omp critical} \algorithmiccomment{only executed by one thread at a time}
-        \State \texttt{append fieldOffsetNode to dstPTS}
-        \EndFor
-        \State \texttt{\#pragma omp critical}
-        \For{\texttt{id in dstPTS}}
-        \State \texttt{addPts(edge.dst,id)}
-        \EndFor
-        \EndFor
-        \State \texttt{updateCallGraph(getIndirectCallsites())} \algorithmiccomment{these are SVF superclass methods}
-        \State \texttt{// some of getIndirectCallsites's internal function calls are}
-        \State \texttt{// overwritten to use unified memory instead of SVF data structures}
-        \EndProcedure
-    \end{algorithmic}
-\end{algorithm}
-
+As a brief summary, the \verb|Copy Load Storecollect| kernel loops through all nodes in the constraint graph and assigns them to available Warps by using a worklist approach.
+The node that is assigned to a Warp at any time is called the origin node.
+As soon as a Warp receives an origin node from the constraint graph, the copy, load and the first step of the store rewrite rule are applied in this order. See \autoref{tab:rewrite-rules} for an overview of the rewrite rules that were established by \cite{mendez2012gpu}.
+Each rewrite rule is applied by a template function, see \autoref{alg:ptagpu-applyrewrite}.
 \begin{algorithm}
     \caption{\texttt{template<Type> applyRewriteRule} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
@@ -486,17 +450,19 @@ The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copy
         \State \texttt{index $\leftarrow$ getIndex(src)}
         \Repeat
         \State \texttt{bits $\leftarrow$ memory[index + threadIdx.x]}
-        \State \texttt{collectBitvectorTargets<Type>(src,bits,smem)} \algorithmiccomment{Algorithm 8}
+        \State \texttt{collectBitvectorTargets<Type>(src,bits,smem)} \algorithmiccomment{see Algorithm 6}
         \State \texttt{index $\leftarrow$ nextBits}
         \Until{\texttt{index $\neq$ ULLONG\_MAX}}
         \If{\texttt{Type = StoreCollect}}
         \State \texttt{insert all pairs $(src,smem[:])$ into store map} \algorithmiccomment{later used in the store kernel}
         \Else
-        \State \texttt{mergeBitvectors(src,smem)} \algorithmiccomment{Algorithm 9}
+        \State \texttt{mergeBitvectors(src,smem)} \algorithmiccomment{see Algorithm 7}
         \EndIf
     \end{algorithmic}
 \end{algorithm}
+Template functions are a C++ construct that allows using placeholder parameters. Each function invocation with different template parameters results in a different symbol during compilation. While using templates in C++ is good practice for writing reusable, efficient, and error-free code, here we use the fact that CUDA supports templates in device function to prevent the PTX compiler from assuming recursion and falsely limiting the available number of threads to prevent register exhaustion.
 
+Inside the \verb|applyRewriteRule| function, depending on the current rewrite rule, the destinations of all outgoing edges of a certain type are collected by the \verb|collectBitvectorTargets| function, see \autoref{alg:ptagpu-collectbv}.
 \begin{algorithm}
     \caption{\texttt{template<Type> collectBitvectorTargets} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
@@ -519,7 +485,10 @@ The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copy
         \EndIf
     \end{algorithmic}
 \end{algorithm}
-
+The destinations of the outgoing edges are collected by traversing the correct sparse bitvector of the origin node, element by element.
+Following this, all outgoing edges of the collected destination nodes are merged with the outgoing edges of the current origin node of the Warp.
+For example, applying the copy rewrite rule $origin \xrightarrow{c^{-1}} y \xrightarrow{p} z \mathrel{\leadsto} origin \xrightarrow{p} z$ PTAGPU first collects all targets of the outgoing inverse copy edges, then merges all the outgoing points-to edges from the collected nodes with the outgoing points-to edges of the origin node.
+This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu-mergebv}, at the end of the \verb|applyRewriteRule| function.
 \begin{algorithm}
     \caption{\texttt{mergeBitvectors} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
@@ -554,6 +523,28 @@ The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copy
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+In principle the bitwise merging of two sparse bitvectors works exactly the same as during edge insertion, shown in \autoref{fig:edgeinsert}, during initialization.
+Notably, applying the storeCollect rewrite rule, does not merge any sparse bitvectors, but instead collects store and points-to pairs which are later processed in another kernel for the reasons outlined in the beginning of \autoref{sec:concurrgraph}.
+After all rewrite rules are applied and worklists are reset, the first kernel execution concludes.
+
+Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store and points-to pairs previously collected are preprocessed by the thrust library, see \autoref{fig:edge-insert} for an overview of the preprocessing steps, and then fed into the second GPU kernel \autoref{alg:ptagpu-store} where the last rewrite rule is finally applied.
+\begin{algorithm}
+    \caption{Store Kernel}\label{alg:ptagpu-store}
+    \begin{algorithmic}
+        \State \texttt{smem $\leftarrow$ allocate 256 bytes of shared memory per Warp}
+        \For{\texttt{some x of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
+        \For{\texttt{each unique y of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
+        \State \texttt{append y to smem}
+        \EndFor
+        \State \texttt{mergeBitvectors(x,smem)} \algorithmiccomment{see Algorithm 7}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+After the second and final kernel execution, we await the conclusion of the asynchronous CPU procedure.
+Since the CPU procedure stores all new edges it finds in pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bitvectors by reusing the edge insertion code during initialization.
+
+At the end of each iteration of the main loop PTAGPU optionally presents the current memory usage and distribution among the memory regions for debugging end evaluation purposes. This includes statistics for the elapsed time of each component in PTAGPU - as measured by the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
 
 \subsubsection{Diffpoints Updates}\label{sec:diffpts}
 If the main loop of PTAGPU were to repeatedly iterate and apply the same rewrite rules on every node, every iteration would repeat the work of the previous operation, making the algorithm very inefficient.
@@ -596,6 +587,31 @@ Async futures are a feature of the C++ programming language that allows for the 
 \end{minted}
 To further improve the scalability of the CPU portion of PTAGPU, the asynchronously executed code is parallelized using OpenMP pragmas.
 The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
+\begin{algorithm}
+    \caption{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
+    \begin{algorithmic}
+        \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet} \algorithmiccomment{\small type for adjacency information\normalsize}
+        \Procedure{\texttt{asyncCPU}}{\texttt{edgeSet *ptsSet, edgeSet *copySet}}
+        \State \texttt{\#pragma omp parallel for num\_threads(16)}
+        \For{\texttt{each GEP edge in constraint graph}}
+        \State \texttt{dstPTS $\leftarrow \emptyset$ }
+        \State \texttt{srcPTS $\leftarrow$ collectBitvectorTargets<PTS>(edge.src)}
+        \For{\texttt{id in srcPTS}}
+        \State \texttt{fieldOffsetNode $\leftarrow$ consCG->getGepObjVar(id, edge.offset)}
+        \State \texttt{\#pragma omp critical} \algorithmiccomment{only executed by one thread at a time}
+        \State \texttt{append fieldOffsetNode to dstPTS}
+        \EndFor
+        \State \texttt{\#pragma omp critical}
+        \For{\texttt{id in dstPTS}}
+        \State \texttt{addPts(edge.dst,id)}
+        \EndFor
+        \EndFor
+        \State \texttt{updateCallGraph(getIndirectCallsites())} \algorithmiccomment{these are SVF superclass methods}
+        \State \texttt{// some of getIndirectCallsites's internal function calls are}
+        \State \texttt{// overwritten to use unified memory instead of SVF data structures}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
 As we do not make use of multiple CPU cores in any other part of the program, we can utilize a majority of the available CPU cores for the async execution.
 The calculation that is performed on the CPU reads the available points-to information to resolve all getelementpointer, edges in the constraint graph.
 While other GPU implementations of Andersen's analysis, such as \cite{mendez2012gpu}, also perform the gep calculations on the GPU, this leaves the CPU mostly idle during the execution.
