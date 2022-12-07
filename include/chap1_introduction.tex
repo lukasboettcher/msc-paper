@@ -286,7 +286,7 @@ In Wave Propagation the procedure is separated into an insertion phase and a pro
 The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
 
 \begin{algorithm}
-    \caption{General Wave Propagation Algorithm \\ \textbf{Input:} Constraint Graph $G=(V,E)$ \\ \textbf{Output:} Modified Constraint Graph $G=(V,E)$ and points-to information.}\label{alg:waveprop}
+    \caption[General Wave Propagation Algorithm]{General Wave Propagation Algorithm \\ \textbf{Input:} Constraint Graph $G=(V,E)$ \\ \textbf{Output:} Modified Constraint Graph $G=(V,E)$ and points-to information.}\label{alg:waveprop}
     \begin{algorithmic}
         \State Detect strongly connected components and find topological sorting for $G$. \\ Build topological node stack $T$.
         \Repeat
@@ -474,7 +474,7 @@ An example for applying the constraint rules according to the Andersen algorithm
 The edge labels of the constraint graph are \verb|p|, \verb|s|, \verb|l|, \verb|c| corresponding to points-to (inverse alloca), store, load and copy constraints.
 Furthermore the copy edges are immediately converted into point-to edges in order to simplify the constraint graph in this example and reduce the number of steps.
 \begin{table}
-    \caption{Applying Andersen Constraints}
+    \caption{Example for Applying Andersen Constraints}
     \centering
     \label{tab:applyander}
     \begin{tabular}{p{0.5\textwidth} c c}
@@ -657,7 +657,7 @@ The first time this approach was mentioned in the context of a pointer analysis 
 This proved to be a faster and more resource efficient approach compared to other demand-driven alias analyses at the time.
 \begin{table}
     \begin{center}
-        \caption{Context-free Grammar Nonterminals and Base Facts for each Andersen Constraint.\\Field-sensitive base facts are implemented by a template e.g. one for each possible offset value N.}
+        \caption[Overview of CFG Terminals for Andersen Constraints]{Context-free Grammar Terminals and Base Facts for each Andersen Constraint.\\Field-sensitive base facts are implemented by a template e.g. one for each possible offset value N.}
         \label{tab:cfl-ander}
         \begin{tabular}{l|l|l|l}
             \hline                                                                                 \\
@@ -674,7 +674,7 @@ This proved to be a faster and more resource efficient approach compared to othe
 
 \begin{table}
     \begin{center}
-        \caption{Context-free Grammar Productions and Horn-clauses for each Andersen Constraint.\\Field-sensitive rules are omitted for simplicity.}
+        \caption[Overview of CFG Productions for Andersen Constraints]{Context-free Grammar Productions and Horn-clauses for each Andersen Constraint.\\Field-sensitive rules are omitted for simplicity.}
         \label{tab:cfl-ander2}
         \begin{tabularx}{1\textwidth} {X|X|X}
             \hline                                                                   \\
@@ -879,7 +879,7 @@ This gives SVF a degree of modularity that other current static analysis framewo
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/svf.png}
-    \caption{Overview of SVF from \cite{sui2016svf}}
+    \caption[Overview of the SVF library]{Overview of the SVF library from \cite{sui2016svf}}
     \label{fig:svf}
 \end{figure}
 
@@ -890,7 +890,7 @@ See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{t
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/pag.png}
-    \caption{The PAG for the Example from \autoref{tab:applyander} computed by SVF.
+    \caption[An example PAG as produced by SVF]{The PAG for the Example from \autoref{tab:applyander} computed by SVF.
         Green edges representing an alloca instruction, blue edges stores and red edges loads.}
     \label{fig:pag}
 \end{figure}
@@ -929,7 +929,7 @@ In terms of data structures, Graspan has specific requirements. The graph data i
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/graspan-g.png}
-    \caption{Data structure for the constraint graph in the Graspan GPU version, from \cite{zuo2021systemizing}}
+    \caption[Graspan GPU Data Structure for the Constraint Graph]{Data structure for the constraint graph in the Graspan GPU version, from \cite{zuo2021systemizing}}
     \label{fig:graspan-g}
 \end{figure}
 

@@ -74,7 +74,7 @@ Consequently, how we access the GPU memory is very important for the overall per
 \begin{figure}
     \centering
     \includegraphics[width=.7\textwidth]{img/cuda.png}
-    \caption{Diagram of the CUDA memory architecture for an A100 GPU.\\Taken from \cite{cudarefresher}.}
+    \caption[Diagram of the CUDA memory architecture for an A100]{Diagram of the CUDA memory architecture for an A100 GPU.\\Taken from \cite{cudarefresher}.}
     \label{fig:cuda-arch}
 \end{figure}
 The GPU memory controller on modern graphics cards can typically execute memory read or write operations in granularities of 32 bytes up to 128 bytes in total.
@@ -337,7 +337,7 @@ The intuitive solution to this problem is shown in \autoref{fig:problem-rewrite}
 The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \autoref{tab:rewrite-rules}. These new rewrite rules can be interpreted as strictly unidirectional paths in the constraint graph.
 \begin{table}
     \begin{center}
-        \caption{Final unidirectional, partly inverted Graph Rewriting Rules proposed by \cite{mendez2012gpu}.\\Field-sensitive rules are omitted, since they are exclusively handled on the CPU, see \autoref{sec:cpugpu}.}
+        \caption[List of Graph Rewriting Rules in use by PTAGPU]{Final unidirectional, partly inverted Graph Rewriting Rules proposed by \cite{mendez2012gpu}.\\Field-sensitive rules are omitted, since they are exclusively handled on the CPU, see \autoref{sec:cpugpu}.}
         \label{tab:rewrite-rules}
         \begin{tabular}{l|l|l}
             \hline                                                                                                                             \\
@@ -437,7 +437,7 @@ The node that is assigned to a Warp at any time is called the origin node.
 As soon as a Warp receives an origin node from the constraint graph, the copy, load and the first step of the store rewrite rule are applied in this order. See \autoref{tab:rewrite-rules} for an overview of the rewrite rules that were established by \cite{mendez2012gpu}.
 Each rewrite rule is applied by a template function, see \autoref{alg:ptagpu-applyrewrite}.
 \begin{algorithm}
-    \caption{\texttt{template<Type> applyRewriteRule} procedure\\
+    \caption[applyRewriteRule Procedure Pseudocode]{\texttt{template<Type> applyRewriteRule} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
             \textbf{Input:}
         \end{minipage}
@@ -464,7 +464,7 @@ Template functions are a C++ construct that allows using placeholder parameters.
 
 Inside the \verb|applyRewriteRule| function, depending on the current rewrite rule, the destinations of all outgoing edges of a certain type are collected by the \verb|collectBitvectorTargets| function, see \autoref{alg:ptagpu-collectbv}.
 \begin{algorithm}
-    \caption{\texttt{template<Type> collectBitvectorTargets} procedure\\
+    \caption[collectBitvectorTargets Procedure Pseudocode]{\texttt{template<Type> collectBitvectorTargets} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
             \textbf{Input:}
         \end{minipage}
@@ -490,7 +490,7 @@ Following this, all outgoing edges of the collected destination nodes are merged
 For example, applying the copy rewrite rule $origin \xrightarrow{c^{-1}} y \xrightarrow{p} z \mathrel{\leadsto} origin \xrightarrow{p} z$ PTAGPU first collects all targets of the outgoing inverse copy edges, then merges all the outgoing points-to edges from the collected nodes with the outgoing points-to edges of the origin node.
 This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu-mergebv}, at the end of the \verb|applyRewriteRule| function.
 \begin{algorithm}
-    \caption{\texttt{mergeBitvectors} procedure\\
+    \caption[mergeBitvectors Procedure Pseudocode]{\texttt{mergeBitvectors} procedure\\
         \begin{minipage}[t]{0.1\textwidth}
             \textbf{Input:}
         \end{minipage}
@@ -529,7 +529,7 @@ After all rewrite rules are applied and worklists are reset, the first kernel ex
 
 Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store and points-to pairs previously collected are preprocessed by the thrust library, see \autoref{fig:edge-insert} for an overview of the preprocessing steps, and then fed into the second GPU kernel \autoref{alg:ptagpu-store} where the last rewrite rule is finally applied.
 \begin{algorithm}
-    \caption{Store Kernel}\label{alg:ptagpu-store}
+    \caption[Store Kernel Pseudocode]{Store Kernel}\label{alg:ptagpu-store}
     \begin{algorithmic}
         \State \texttt{smem $\leftarrow$ allocate 256 bytes of shared memory per Warp}
         \For{\texttt{some x of collected $(x,y)$ pts/$\text{store}^{-1}$ pairs}}
@@ -588,7 +588,7 @@ Async futures are a feature of the C++ programming language that allows for the 
 To further improve the scalability of the CPU portion of PTAGPU, the asynchronously executed code is parallelized using OpenMP pragmas.
 The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
 \begin{algorithm}
-    \caption{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
+    \caption[CPU Async Procedure Pseudocode]{\texttt{CPU async} procedure}\label{alg:ptagpu-cpu}
     \begin{algorithmic}
         \State \texttt{typedef pair<vector<uint>,vector<uint>> edgeSet} \algorithmiccomment{\small type for adjacency information\normalsize}
         \Procedure{\texttt{asyncCPU}}{\texttt{edgeSet *ptsSet, edgeSet *copySet}}
