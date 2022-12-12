@@ -650,5 +650,20 @@ This check directly reads the points-to relations from unified memory and report
 Note that the lack of precision of our whole program analysis prevents us from making any definitive statements about whether or not two variables have to alias, only that they may alias. For this reason any must alias constraints are interpreted as may alias constraints in our pointer analysis.
 As an example, see the following test program in \autoref{lst:testcase} that checks whether a pointer analysis in SVF correctly resolves load and store constraints.
 
+\begin{listing}
+    \begin{minted}{c}
+    int main()
+    {
+        int a,b,*c,*d;
+        c = &a;
+        d = &a;
+        MUSTALIAS(c,d); // c and d may alias each other
+        NOALIAS(&b,d); // the address of b and d must not alias
+    }
+        \end{minted}
+    \caption{A unit test in the PTABENCH test suite.}
+    \label{lst:testcase}
+\end{listing}
+
 \subsection{Benchmark Suite}
 \section{Evaluation}
