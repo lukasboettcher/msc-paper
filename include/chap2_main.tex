@@ -637,5 +637,12 @@ Following, the experimental results are split into correctness testing and perfo
 While for correctness testing a pre defined test suite was used, a collection of current open source programs of varying complexity was compiled for real world performance testing.
 
 \subsection{Test Suite}\label{sec:testsuite}
+For correctness testing the PTABENCH\footnote{\url{https://github.com/SVF-tools/Test-Suite}}, a sub project of the SVF framework, was used.
+The PTABENCH repository includes a set of small test programs that are compiled into LLVM bitcode. These test programs contain a set of constraints that represent a state that should be reached by the repsective analyses.
+The test suite implements unit tests for all variants of pointer analysis included in SVF as well as more complex analyses, such as memory leak detection and multithreaded flow analyses. 
+Part of the test corpus are specific edge cases that test quirks of real programs, such as SPEC CPU2000, in order to ensure all analyses produce sound results.
+As part of PTAGPU, testing with PTABENCH was enabled to apply the unit tests and test whether or not sound results are produced.
+This was achieved by overwriting parts of the test invocation implementation inside SVF as alluded to in \autoref{sec:feedingback}.
+
 \subsection{Benchmark Suite}
 \section{Evaluation}
