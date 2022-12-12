@@ -678,5 +678,11 @@ As an example, see the following test program in \autoref{lst:testcase} that che
     \label{lst:testbash}
 \end{listing}
 
+When executing the PTABENCH test suite while using PTAGPU as the pointer analysis backend, all 107 unit tests applicable to pointer analyses successfully produce the expected results with regards to pointer and indirect callsite information.
+The results can be replicated within the source code either by applying the test suite manually with a simple bash script like the one in \autoref{lst:testbash} or by using the CTest library of CMAKE and building the \verb|test| target.
+From this it is concluded that PTAGPU produces sound, field-sensitive pointer analysis results and does not reduce the accuracy of other pointer analyses in SVF in any way.
+Interestingly, the current state of the art pointer analysis implementation of SVF, the Andersen based wave propagation algorithm with diffpoints, successfully analyzes only 106 of the 107 unit tests.
+This discrepancy was not further investigated.
+
 \subsection{Benchmark Suite}
 \section{Evaluation}
