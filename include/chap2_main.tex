@@ -665,5 +665,18 @@ As an example, see the following test program in \autoref{lst:testcase} that che
     \label{lst:testcase}
 \end{listing}
 
+\begin{listing}
+    \begin{minted}{bash}
+    for i in Test-Suite/test_cases_bc/basic_c**/*; 
+        do build/ptagpu/runptagpu -stat=0 $i ; 
+        if [ $? -ne 0 ]; then
+            # break
+        fi
+    done
+    \end{minted}
+    \caption{Sample bash script for applying all unit tests on PTAGPU.}
+    \label{lst:testbash}
+\end{listing}
+
 \subsection{Benchmark Suite}
 \section{Evaluation}
