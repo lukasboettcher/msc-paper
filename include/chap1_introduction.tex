@@ -329,7 +329,7 @@ The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
 
 \subsection{LLVM - Generating Data for Analysis}
 By now the fundamentals of pointer analysis have been introduced, which unilaterally can be modeled as a graph problem.
-The missing part of the Introduction is where the underlying data for such a pointer analysis algorithm comes from or how it is derived from a given program that has to be analyzed.
+The missing part of the introduction is where the underlying data for such a pointer analysis algorithm comes from or how it is derived from a given program that has to be analyzed.
 Initially pointer analyses were solely implemented in compilers to detect errors and find possible optimizations during compilation. As compilers already employ an internal representation for the programs to be compiled, the data generation was not problematic.
 As the scope of pointer analyses expands from intraprocedural analysis part of a compiler towards standalone interprocedural whole program analyses it is clear, that a new representation for programs is needed, on which analyses can run - independent of compilations.
 
