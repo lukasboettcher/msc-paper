@@ -565,8 +565,10 @@ PTAGPU strives to achieve optimal concurrent execution.
 This includes not only all GPU cores, but also all CPU cores.
 To achieve this, parts of the main loop, see \autoref{alg:ptagpu-main}, are split into an asynchronous CPU execution.
 This asynchronous CPU part is implemented with async futures.
-Async futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using async futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogenous compute capabilities. See the following basic example.
-\begin{minted}{c++}
+Async futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using async futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogenous compute capabilities. See the following basic example in \autoref{lst:asynccpu}.
+
+\begin{listing}
+    \begin{minted}{c++}
     // Launch an asynchronous task
     std::future<int> result = std::async([]() {
         // Perform some long-running computation
@@ -584,7 +586,11 @@ Async futures are a feature of the C++ programming language that allows for the 
     // Wait for the asynchronous task to complete
     int final_result = result.get();
     std::cout << "The final result is: " << final_result << std::endl;
-\end{minted}
+    \end{minted}
+    \caption{C++ Sample illustrating Async Futures}
+    \label{lst:asynccpu}
+\end{listing}
+
 To further improve the scalability of the CPU portion of PTAGPU, the asynchronously executed code is parallelized using OpenMP pragmas.
 The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
 \begin{algorithm}
