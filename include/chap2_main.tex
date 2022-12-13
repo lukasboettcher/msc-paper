@@ -706,4 +706,6 @@ Since most of the selected benchmark programs use common open source toolchains,
 Each of the resulting bitcode files are provided together with the source code of PTAGPU.
 Furthermore, if a given project provided a test suite, that test suite was used to verify the functions of the compiled program to ensure that the compilation successfully produced a working binary, bitcode pair. 
 
+After the bitcode was generated, it was used as input for all three pointer analysis algorithms on both hardware setups if possible.
+Each analysis was performed 5 times to ensure the results are consistent and reliable and not falsified by external factors. This was necessary, since one of the hardware setups was part of a shared server.
 \section{Evaluation}
