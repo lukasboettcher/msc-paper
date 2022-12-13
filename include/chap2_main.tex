@@ -699,4 +699,8 @@ As PTAGPU and SVF rely on the LLVM project for data generation and input in the 
 The evaluation was performed on PTAGPU, the proposed algorithm of this thesis, and both the Andersen based wave propagation algorithm and the naive Andersen analysis of SVF.
 The Andersen wave propagation algorithm represents a highly optimized current state of the art inclusion-based, field-sensitive, context- and flow-insensitive pointer analysis.
 Furthermore the results will showcase the differences between sequential CPU implemantations and parallel GPU implementations.
+\subsubsection{Methodology}
+To generate the bitcode for the pointer analyses, each of the TODO benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalant bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
+Instead of manually intercepting each compiler launch for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bticode generating compiler flags during the build process.
+Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure scripts.
 \section{Evaluation}
