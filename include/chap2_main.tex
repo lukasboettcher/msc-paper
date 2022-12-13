@@ -708,4 +708,9 @@ Furthermore, if a given project provided a test suite, that test suite was used 
 
 After the bitcode was generated, it was used as input for all three pointer analysis algorithms on both hardware setups if possible.
 Each analysis was performed 5 times to ensure the results are consistent and reliable and not falsified by external factors. This was necessary, since one of the hardware setups was part of a shared server.
+
+\subsubsection{Hardware Setup}
+Two separate machines were used to evaluate the pointer analyses.
+Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs.
+Some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis and hence were only performed on machine B.
 \section{Evaluation}
