@@ -693,7 +693,7 @@ This discrepancy was not further investigated.
 \subsection{Benchmark Suite}
 To assess the performance of PTAGPU and establish a set of metrics that can be compared to other pointer analysis implementations, a suite of open source projects was compiled and used as input for pointer analyses.
 The collection of open source projects was selected to present a diverse set of code bases in terms of code style and size of the programs.
-The collection consists of N TODO programs, each varying in complexity. 
+The collection consists of 16 programs, each varying in complexity. See \autoref{tab:benchmarkprograms} for an overview of all the selected benchmark programs.
 As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, Fortran, and many other programming languages.
 
 The evaluation was performed on PTAGPU, the proposed algorithm of this thesis, and both the Andersen based wave propagation algorithm and the naive Andersen analysis of SVF.
@@ -729,7 +729,7 @@ Furthermore the results will showcase the differences between sequential CPU imp
 \end{table}
 
 \subsubsection{Methodology}
-To generate the bitcode for the pointer analyses, each of the TODO benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalant bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
+To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalant bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
 Instead of manually intercepting each compiler launch for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bticode generating compiler flags during the build process.
 Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure scripts.
 Each of the resulting bitcode files are provided together with the source code of PTAGPU.
