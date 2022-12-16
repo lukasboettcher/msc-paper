@@ -730,14 +730,15 @@ Furthermore the results will showcase the differences between sequential CPU imp
 
 \subsubsection{Methodology}
 To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalant bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
-Instead of manually intercepting each compiler launch for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bticode generating compiler flags during the build process.
+Instead of manually intercepting each compile operation for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bticode generating compiler flags during the build process.
 Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure scripts.
 Each of the resulting bitcode files are provided together with the source code of PTAGPU.
 Furthermore, if a given project provided a test suite, that test suite was used to verify the functions of the compiled program to ensure that the compilation successfully produced a working binary, bitcode pair. 
 
-After the bitcode was generated, it was used as input for all three pointer analysis algorithms on both hardware setups if possible.
+After the bitcode was generated, it was used as input for all three pointer analysis algorithms via a driver program that loads the bitcode into memory, initializes SVF and executes the correct pointer analysis.
 All analyses that were evaluated were compiled with gcc and the optimization flag \verb|-O2|.
 Each analysis was performed 5 times to ensure the results are consistent and reliable and not falsified by external factors. This was necessary, since one of the hardware setups was part of a shared server.
+The individual time measurements were performed by using the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
 
 \subsubsection{Hardware Setup}
 Two separate machines were used to evaluate the pointer analyses.
