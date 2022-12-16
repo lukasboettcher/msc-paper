@@ -742,6 +742,7 @@ The individual time measurements were performed by using the C++ chrono\footnote
 
 \subsubsection{Hardware Setup}
 Two separate machines were used to evaluate the pointer analyses.
-Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs.
-Some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis and hence were only performed on machine B.
+Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors capable of simultaneous multithreading, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs.
+Because some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis, the reported results were mostly gathered on machine B, except for TODO where the effect of the amount of available SMs on different GPUs was evaluated.
+
 \section{Evaluation}
