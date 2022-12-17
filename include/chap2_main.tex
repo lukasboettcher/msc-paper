@@ -694,7 +694,7 @@ This discrepancy was not further investigated.
 To assess the performance of PTAGPU and establish a set of metrics that can be compared to other pointer analysis implementations, a suite of open source projects was compiled and used as input for pointer analyses.
 The collection of open source projects was selected to present a diverse set of code bases in terms of code style and size of the programs.
 The collection consists of 16 programs, each varying in complexity. See \autoref{tab:benchmarkprograms} for an overview of all the selected benchmark programs.
-As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, Fortran, and many other programming languages.
+As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, Fortran, and many other systems programming languages.
 
 The evaluation was performed on PTAGPU, the proposed algorithm of this thesis, and both the Andersen based wave propagation algorithm and the naive Andersen analysis of SVF.
 The Andersen wave propagation algorithm represents a highly optimized current state of the art inclusion-based, field-sensitive, context- and flow-insensitive pointer analysis.
