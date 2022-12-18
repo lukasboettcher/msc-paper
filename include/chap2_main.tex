@@ -745,4 +745,33 @@ Two separate machines were used to evaluate the pointer analyses.
 Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors capable of simultaneous multithreading, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs.
 Because some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis, the reported results were mostly gathered on machine B, except for TODO where the effect of the amount of available SMs on different GPUs was evaluated.
 
+\subsubsection{Results}
+
+\begin{table}
+    \centering
+    \caption{Benchmark results comparing PTAGPU, Andersen Wavediff and naive Andersen analysis measured in seconds.}
+    \label{tab:benchmarkresults}
+    \begin{tabular}{||c S[table-format = 5.3] S[table-format = 4.3] S S[table-format = 2.2,retain-zero-exponent=true]||}
+        \hline
+        program      & {t-wavediff} & {t-ptagpu} & {speedup} & {difference ms} \\
+        \hline\hline
+        bash         & 16.222       & 15.489     & 1.05      & 7.33E+02        \\
+        bison        & 18.977       & 9.837      & 1.93      & 9.14E+03        \\
+        diff         & 1.469        & 4.231      & 0.35      & -2.76E+03       \\
+        git          & 557.953      & 4690.010   & 0.12      & -4.13E+06       \\
+        htop         & 2.912        & 5.275      & 0.55      & -2.36E+03       \\
+        httpd        & 5.321        & 6.414      & 0.83      & -1.09E+03       \\
+        nano         & 0.087        & 1.751      & 0.05      & -1.66E+03       \\
+        perl         & 103.338      & 45.093     & 2.29      & 5.82E+04        \\
+        php          & 645.697      & NaN        & NaN       & NaN             \\
+        postgres     & 997.355      & 465.527    & 2.14      & 5.32E+05        \\
+        python       & 536.515      & 203.649    & 2.63      & 3.33E+05        \\
+        redis-server & 8.679        & 11.592     & 0.75      & -2.91E+03       \\
+        vim          & 1052.995     & 268.628    & 3.92      & 7.84E+05        \\
+        vmlinux      & 32100.566    & NaN        & NaN       & NaN             \\
+        vmlinux-tiny & 91.479       & 188.315    & 0.49      & -9.68E+04       \\
+        zstd         & 11.063       & 13.172     & 0.84      & -2.11E+03       \\
+        \hline
+    \end{tabular}
+\end{table}
 \section{Evaluation}
