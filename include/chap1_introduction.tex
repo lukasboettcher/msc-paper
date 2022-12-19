@@ -225,8 +225,6 @@ As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows
 During execution an Andersen style pointer analysis repeatedly applies the constraints until a point is reached where no more changes are applied to the constraint graph at which point the execution concludes and the points-to sets for each variable are returned.
 \begin{table}
     \begin{center}
-        \caption{Constraints of an inclusion-based pointer analysis.}
-        \label{tab:ander}
         \begin{tabular}{l|l|l|l}
             \hline                                                                                                                          \\
             \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                              \\
@@ -238,6 +236,8 @@ During execution an Andersen style pointer analysis repeatedly applies the const
             $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                                     \\assigned to x.} & $pts(y.f) \subseteq pts(x)$                      \\
         \end{tabular}
     \end{center}
+    \caption{Constraints of an inclusion-based pointer analysis.}
+    \label{tab:ander}
 \end{table}
 
 \subsection{Steensgard's Analysis}
@@ -264,8 +264,6 @@ The trade-off for this faster algorithm is precision, since Steensgard's algorit
 
 \begin{table}
     \begin{center}
-        \caption{Constraints of an equality-based pointer analysis.}
-        \label{tab:steens}
         \begin{tabular}{l|l|l|l}
             \hline                                                                                                                  \\
             \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                      \\
@@ -277,6 +275,8 @@ The trade-off for this faster algorithm is precision, since Steensgard's algorit
             $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                             \\assigned to x.} & $pts(y.f) = pts(x)$                      \\
         \end{tabular}
     \end{center}
+    \caption{Constraints of an equality-based pointer analysis.}
+    \label{tab:steens}
 \end{table}
 
 \subsection{Wave Propagation}
@@ -657,8 +657,6 @@ The first time this approach was mentioned in the context of a pointer analysis 
 This proved to be a faster and more resource efficient approach compared to other demand-driven alias analyses at the time.
 \begin{table}
     \begin{center}
-        \caption[Overview of CFG Terminals for Andersen Constraints]{Context-free Grammar Terminals and Base Facts for each Andersen Constraint.\\Field-sensitive base facts are implemented by a template e.g. one for each possible offset value N.}
-        \label{tab:cfl-ander}
         \begin{tabular}{l|l|l|l}
             \hline                                                                                 \\
             \textbf{Statement} & \textbf{Name} & \textbf{Base Fact}  & \textbf{Terminal Character} \\
@@ -670,12 +668,12 @@ This proved to be a faster and more resource efficient approach compared to othe
             $x = y.f$          & field         & simpleField<N>(y,x) & f<N>                        \\
         \end{tabular}
     \end{center}
+    \caption[Overview of CFG Terminals for Andersen Constraints]{Context-free Grammar Terminals and Base Facts for each Andersen Constraint.\\Field-sensitive base facts are implemented by a template e.g. one for each possible offset value N.}
+    \label{tab:cfl-ander}
 \end{table}
 
 \begin{table}
     \begin{center}
-        \caption[Overview of CFG Productions for Andersen Constraints]{Context-free Grammar Productions and Horn-clauses for each Andersen Constraint.\\Field-sensitive rules are omitted for simplicity.}
-        \label{tab:cfl-ander2}
         \begin{tabularx}{1\textwidth} {X|X|X}
             \hline                                                                   \\
             \textbf{Statement} & \textbf{Horn-clause rule}     & \textbf{Production} \\
@@ -686,6 +684,8 @@ This proved to be a faster and more resource efficient approach compared to othe
             $*x = y$           & \makecell[cl]{pointsTo(a,b):-                       \\\hspace{1em} complexStore(y,x),\\\hspace{1em} pointsTo(x,a),\\\hspace{1em} pointsTo(y,b)}   & $\{P\rightarrow \bar{P}\bar{s}P\}$                          \\
         \end{tabularx}
     \end{center}
+    \caption[Overview of CFG Productions for Andersen Constraints]{Context-free Grammar Productions and Horn-clauses for each Andersen Constraint.\\Field-sensitive rules are omitted for simplicity.}
+    \label{tab:cfl-ander2}
 \end{table}
 \subsection{Context-free Path Queries via Matrix Multiplications}
 While the transformation of the Andersen problem statement into a reachability relation on top of a context-free language is a helpful mathematical abstraction, it does nothing to improve performance, scalability or precision of the algorithm.
