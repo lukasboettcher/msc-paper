@@ -776,6 +776,34 @@ To test how much the larger benchmark programs benefit from more graphics memory
     \label{tab:benchmarkresults}
 \end{table}
 
+\begin{table}
+    \centering
+    \begin{tabular}{||c S[table-format = 5.3] S[table-format = 3.3] S r||}
+        \hline
+        program      & {t-wavediff} & {t-ptagpu-a100} & {speedup} & {GPU memory}             \\
+        \hline\hline
+        bash         & 16.222       & 13.126          & 1.23      & \qty{1024.0}{\mebi\byte} \\
+        bison        & 18.977       & 7.599           & 2.49      & \qty{260}{\mebi\byte}    \\
+        diff         & 1.469        & 3.305           & 0.44      & \qty{71}{\mebi\byte}     \\
+        git          & 557.953      & 869.302         & 0.64      & \qty{21467}{\mebi\byte}  \\
+        htop         & 2.912        & 4.039           & 0.72      & \qty{93}{\mebi\byte}     \\
+        httpd        & 5.321        & 4.720           & 1.12      & \qty{160}{\mebi\byte}    \\
+        nano         & 0.087        & 1.626           & 0.05      & \qty{7}{\mebi\byte}      \\
+        perl         & 103.338      & 41.854          & 2.46      & \qty{3999}{\mebi\byte}   \\
+        php          & 645.697      & 500.086         & 1.29      & \qty{27561}{\mebi\byte}  \\
+        postgres     & 997.355      & 290.219         & 3.43      & \qty{16430}{\mebi\byte}  \\
+        python       & 536.515      & 172.701         & 3.10      & \qty{9016}{\mebi\byte}   \\
+        redis-server & 8.679        & 8.830           & 0.98      & \qty{207}{\mebi\byte}    \\
+        vim          & 1052.995     & 247.859         & 4.24      & \qty{11966}{\mebi\byte}  \\
+        vmlinux      & 32100.566    & {-$^c$}         & {-$^c$}   & {-$^a$}                  \\
+        vmlinux-tiny & 91.479       & 136.164         & 0.67      & \qty{2175}{\mebi\byte}   \\
+        zstd         & 11.063       & 9.795           & 1.12      & \qty{454}{\mebi\byte}    \\
+        \hline
+    \end{tabular}
+    \caption{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine C.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.\\The $^c$ denotes that the analysis ran out of memory.}
+    \label{tab:benchmarkresults-a100}
+\end{table}
+
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/stackedbar.png}
