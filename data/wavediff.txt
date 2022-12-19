@@ -1,0 +1,81 @@
+bench-results/bash.bc
+analysis time: 12921.184 ms
+total time: 16222.113 ms
+
+bench-results/bison.bc
+analysis time: 17209.094 ms
+total time: 18977.376 ms
+
+bench-results/diff.bc
+analysis time: 879.791 ms
+total time: 1469.056 ms
+
+bench-results/git.bc
+analysis time: 544465.294 ms
+total time: 557953.924 ms
+
+bench-results/htop.bc
+analysis time: 2235.136 ms
+total time: 2912.693 ms
+
+bench-results/httpd.bc
+analysis time: 3297.222 ms
+total time: 5321.631 ms
+
+bench-results/lingeling.bc
+analysis time: 6090.144 ms
+total time: 8251.460 ms
+
+bench-results/nano.ll
+analysis time: 27.551 ms
+total time: 87.438 ms
+
+bench-results/perl.bc
+analysis time: 96680.454 ms
+total time: 103338.824 ms
+
+bench-results/php.bc
+analysis time: 619427.662 ms
+total time: 645697.175 ms
+
+bench-results/php-cgi.bc
+analysis time: 621206.159 ms
+total time: 647438.210 ms
+
+bench-results/postgres.bc
+analysis time: 968545.228 ms
+total time: 997355.718 ms
+
+bench-results/python.bc
+analysis time: 523292.751 ms
+total time: 536515.479 ms
+
+bench-results/redis-server.bc
+analysis time: 5932.452 ms
+total time: 8679.144 ms
+
+bench-results/stockfish.bc
+
+bench-results/swap.bc
+analysis time: 0.705 ms
+total time: 3.323 ms
+
+bench-results/vim.bc
+analysis time: 1040935.656 ms
+total time: 1052995.525 ms
+
+bench-results/vmlinux.bc
+analysis time: 32017233.503 ms
+total time: 32100566.652 ms
+
+bench-results/vmlinux-tiny.bc
+analysis time: 85783.186 ms
+total time: 91479.697 ms
+
+bench-results/wireshark.bc
+analysis time: 678.843 ms
+total time: 1624.228 ms
+
+bench-results/zstd.bc
+analysis time: 7228.660 ms
+total time: 11063.214 ms

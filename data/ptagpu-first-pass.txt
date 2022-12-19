@@ -1,0 +1,186 @@
+git
+         PTS    11829778        KiB
+ PTS Current    2514738 KiB
+    PTS Next    5706179 KiB
+    Inv COPY    1670166 KiB
+    Inv LOAD    130424  KiB
+   Inv Store    130538  KiB
+        TOTAL:  21981825        KiB
+
+perl 
+         PTS    2513377 KiB
+ PTS Current    262435  KiB
+    PTS Next    648035  KiB
+    Inv COPY    537166  KiB
+    Inv LOAD    66888   KiB
+   Inv Store    67038   KiB
+        TOTAL:  4094943 KiB
+        
+time cuda init + uninit: 2939.635 ms
+time update: 3457.350 ms
+time kernel: 6125.819 ms
+time thrust: 767.334 ms
+time store : 2751.206 ms
+time svf   : 21457.059 ms
+        SVF gep time: 18962.7ms
+        SVF ind time: 5016.39ms
+time svf init: 775.915ms
+anderTime (w/o llvm pag setup): 38385.8ms
+total: 45093.4ms
+
+
+
+postgres
+         PTS    11389227        KiB
+ PTS Current    682534  KiB
+    PTS Next    2078225 KiB
+    Inv COPY    2244376 KiB
+    Inv LOAD    214842  KiB
+   Inv Store    215029  KiB
+        TOTAL:  16824235        KiB
+
+time cuda init + uninit: 25877.288 ms
+time update: 68414.531 ms
+time kernel: 187128.317 ms
+time thrust: 19408.425 ms
+time store : 32772.300 ms
+time svf   : 121585.912 ms
+        SVF gep time: 130620ms
+        SVF ind time: 42622.6ms
+time svf init: 2934.04ms
+anderTime (w/o llvm pag setup): 459296ms
+total: 484961ms
+
+
+python
+         PTS    5865752 KiB
+ PTS Current    675248  KiB
+    PTS Next    1462530 KiB
+    Inv COPY    1005837 KiB
+    Inv LOAD    111310  KiB
+   Inv Store    111401  KiB
+        TOTAL:  9232080 KiB
+
+time cuda init + uninit: 19471.777 ms
+time update: 16986.920 ms
+time kernel: 58586.492 ms
+time thrust: 20996.825 ms
+time store : 11975.691 ms
+time svf   : 77296.101 ms
+        SVF gep time: 80134ms
+        SVF ind time: 40908.2ms
+time svf init: 1497.24ms
+anderTime (w/o llvm pag setup): 207428ms
+total: 219853ms
+
+redis
+         PTS    48061   KiB
+ PTS Current    32045   KiB
+    PTS Next    33413   KiB
+    Inv COPY    35828   KiB
+    Inv LOAD    31124   KiB
+   Inv Store    31149   KiB
+        TOTAL:  211622  KiB
+
+time cuda init + uninit: 16469.697 ms
+time update: 710.907 ms
+time kernel: 99.981 ms
+time thrust: 1176.344 ms
+time store : 90.573 ms
+time svf   : 8074.585 ms
+        SVF gep time: 2493.08ms
+        SVF ind time: 240.691ms
+time svf init: 307.238ms
+anderTime (w/o llvm pag setup): 26963.4ms
+total: 29619ms
+
+
+vim
+         PTS    6903441 KiB
+ PTS Current    1355555 KiB
+    PTS Next    2584906 KiB
+    Inv COPY    1199598 KiB
+    Inv LOAD    104430  KiB
+   Inv Store    104549  KiB
+        TOTAL:  12252482        KiB
+
+time cuda init + uninit: 17328.248 ms
+time update: 11890.542 ms
+time kernel: 111956.018 ms
+time thrust: 11962.407 ms
+time store : 23654.708 ms
+time svf   : 128762.609 ms
+        SVF gep time: 138658ms
+        SVF ind time: 11243.5ms
+time svf init: 1166.48ms
+anderTime (w/o llvm pag setup): 307159ms
+total: 319283ms
+
+
+zstd
+         PTS    208640  KiB
+ PTS Current    56003   KiB
+    PTS Next    63372   KiB
+    Inv COPY    52218   KiB
+    Inv LOAD    42143   KiB
+   Inv Store    42151   KiB
+        TOTAL:  464530  KiB
+
+time cuda init + uninit: 17341.753 ms
+time update: 845.449 ms
+time kernel: 97.563 ms
+time thrust: 791.130 ms
+time store : 104.138 ms
+time svf   : 4349.360 ms
+        SVF gep time: 3218.45ms
+        SVF ind time: 189.922ms
+time svf init: 386.904ms
+anderTime (w/o llvm pag setup): 23942.2ms
+total: 27351.9ms
+
+vmlinux-tiny
+         PTS    1301183 KiB
+ PTS Current    136445  KiB
+    PTS Next    342305  KiB
+    Inv COPY    328805  KiB
+    Inv LOAD    58986   KiB
+   Inv Store    59027   KiB
+        TOTAL:  2226753 KiB
+
+time cuda init + uninit: 16663.650 ms
+time update: 11179.900 ms
+time kernel: 26462.390 ms
+time thrust: 17247.472 ms
+time store : 8233.858 ms
+time svf   : 115833.171 ms
+        SVF gep time: 36636.9ms
+        SVF ind time: 32682.4ms
+time svf init: 658.254ms
+anderTime (w/o llvm pag setup): 197543ms
+total: 202777ms
+
+
+php
+         PTS    18087210        KiB
+ PTS Current    2028435 KiB
+    PTS Next    4746860 KiB
+    Inv COPY    2884927 KiB
+    Inv LOAD    237326  KiB
+   Inv Store    237696  KiB
+        TOTAL:  28222457        KiB
+
+time cuda init + uninit: 24741.565 ms
+time update: 196464.492 ms
+time kernel: 54209644.324 ms
+time thrust: 20538.216 ms
+time store : 10727019.164 ms
+time svf   : 181431.933 ms
+        SVF gep time: 446809ms
+        SVF ind time: 181549ms
+time svf init: 2751.65ms
+anderTime (w/o llvm pag setup): 6.53675e+07ms
+total: 6.53935e+07ms
+
+real    1089m56.684s
+user    931m12.829s
+sys     8m56.835s

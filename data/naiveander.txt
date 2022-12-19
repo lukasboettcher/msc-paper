@@ -1,0 +1,53 @@
+./bash.bc
+analysis time: 98414.467 ms
+total time: 102195.752 ms
+
+./bison.bc
+analysis time: 117943.509 ms
+total time: 119999.054 ms
+
+./diff.bc
+analysis time: 869.563 ms
+total time: 1561.577 ms
+
+./htop.bc
+analysis time: 5008.726 ms
+total time: 5696.107 ms
+
+./httpd.bc
+analysis time: 808.873 ms
+total time: 2889.208 ms
+
+./nano.ll
+analysis time: 21.964 ms
+total time: 98.500 ms
+
+./perl.bc
+analysis time: 2681024.425 ms
+total time: 2688610.846 ms
+
+./php.bc
+analysis time: 6506152.841 ms
+total time: 6530636.248 ms
+
+./postgres.bc
+analysis time: 6455270.769 ms
+total time: 6481597.401 ms
+
+./python.bc
+analysis time: 1718594.681 ms
+total time: 1731373.999 ms
+
+./redis-server.bc
+analysis time: 2042.449 ms
+total time: 4834.759 ms
+
+./vim.bc
+
+./vmlinux-tiny.bc
+analysis time: 1404161.007 ms
+total time: 1410004.628 ms
+
+./zstd.bc
+analysis time: 4577.060 ms
+total time: 7958.999 ms
