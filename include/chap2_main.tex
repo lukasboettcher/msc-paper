@@ -751,24 +751,24 @@ Because some of the larger programs in the benchmark suite exceeded the 32 GiB o
     \centering
     \begin{tabular}{||c S[table-format = 5.3] S[table-format = 4.3] S S[table-format = 5.3] S[table-format = 5.1]||}
         \hline
-        program      & {t-wavediff} & {t-ptagpu} & {speedup} & {difference ms} \\
+        program      & {t-wavediff} & {t-ptagpu} & {speedup}  & {t-naive-ander} & {GPU memory} \\
         \hline\hline
-        bash         & 16.222       & 15.489     & 1.05      & 7.33E+02        \\
-        bison        & 18.977       & 9.837      & 1.93      & 9.14E+03        \\
-        diff         & 1.469        & 4.231      & 0.35      & -2.76E+03       \\
-        git          & 557.953      & 4690.010   & 0.12      & -4.13E+06       \\
-        htop         & 2.912        & 5.275      & 0.55      & -2.36E+03       \\
-        httpd        & 5.321        & 6.414      & 0.83      & -1.09E+03       \\
-        nano         & 0.087        & 1.751      & 0.05      & -1.66E+03       \\
-        perl         & 103.338      & 45.093     & 2.29      & 5.82E+04        \\
-        php          & 645.697      & NaN        & NaN       & NaN             \\
-        postgres     & 997.355      & 465.527    & 2.14      & 5.32E+05        \\
-        python       & 536.515      & 203.649    & 2.63      & 3.33E+05        \\
-        redis-server & 8.679        & 11.592     & 0.75      & -2.91E+03       \\
-        vim          & 1052.995     & 268.628    & 3.92      & 7.84E+05        \\
-        vmlinux      & 32100.566    & NaN        & NaN       & NaN             \\
-        vmlinux-tiny & 91.479       & 188.315    & 0.49      & -9.68E+04       \\
-        zstd         & 11.063       & 13.172     & 0.84      & -2.11E+03       \\
+        bash         & 16.222       & 15.489     & 1.05       & 102195.752      & \qty{1024}{\mebi\byte}    \\
+        bison        & 18.977       & 9.837      & 1.93       & 119999.054      & \qty{260}{\mebi\byte}     \\
+        diff         & 1.469        & 4.231      & 0.35       & 1561.577        & \qty{71}{\mebi\byte}      \\
+        git          & 557.953      & 4690.010   & 0.12       & 33404492.853    & \qty{21467}{\mebi\byte}   \\
+        htop         & 2.912        & 5.275      & 0.55       & 5696.107        & \qty{93}{\mebi\byte}      \\
+        httpd        & 5.321        & 6.414      & 0.83       & 2889.208        & \qty{160}{\mebi\byte}     \\
+        nano         & 0.087        & 1.751      & 0.05       & 98.5            & \qty{7}{\mebi\byte}       \\
+        perl         & 103.338      & 45.093     & 2.29       & 2688610.846     & \qty{3999}{\mebi\byte}    \\
+        php          & 645.697      & 64965.400  & 0.01       & 6530636.248     & \qty{27561}{\mebi\byte}   \\
+        postgres     & 997.355      & 465.527    & 2.14       & 6481597.401     & \qty{16430}{\mebi\byte}   \\
+        python       & 536.515      & 203.649    & 2.63       & 1731373.999     & \qty{9016}{\mebi\byte}    \\
+        redis-server & 8.679        & 11.592     & 0.75       & 4834.759        & \qty{207}{\mebi\byte}     \\
+        vim          & 1052.995     & 268.628    & 3.92       & {-$^b$}         & \qty{11966}{\mebi\byte}   \\
+        vmlinux      & 32100.566    & {-$^a$}    & {-$^a$}    & {-$^a$}         & {-$^a$}                 \\
+        vmlinux-tiny & 91.479       & 188.315    & 0.49       & 1410004.628     & \qty{2175}{\mebi\byte}    \\
+        zstd         & 11.063       & 13.172     & 0.84       & 7958.999        & \qty{454}{\mebi\byte}     \\
         \hline
     \end{tabular}
     \caption{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
