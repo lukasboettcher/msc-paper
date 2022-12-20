@@ -776,6 +776,7 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
     \label{tab:benchmarkresults}
 \end{table}
 The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticably slower than the wavediff analysis for these programs.
+Most of the programs with small speedups are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initializations. For example the PTAGPU analysis for the nano program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
 
 \begin{table}
     \centering
