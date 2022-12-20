@@ -724,7 +724,7 @@ Furthermore the results will showcase the differences between sequential CPU imp
         linux         & 4464 & 2206 & 72M     & 5.629e-04 & 0.494       \\
         \hline
     \end{tabular}
-    \caption{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode filesize in kilobytes, density and average out degree for each constraint graph.}
+    \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode filesize in kilobytes, density and average out degree for each constraint graph.}
     \label{tab:benchmarkprograms}
 \end{table}
 
@@ -772,7 +772,7 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
         zstd         & 11.063       & 13.172     & 0.84      & 7958.999        & \qty{454}{\mebi\byte}   \\
         \hline
     \end{tabular}
-    \caption{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine B.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
+    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine B]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine B.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
     \label{tab:benchmarkresults}
 \end{table}
 The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticably slower than the wavediff analysis for these programs.
