@@ -747,7 +747,7 @@ Because some of the larger programs in the benchmark suite exceeded the 32 GiB o
 To test how much the larger benchmark programs benefit from more graphics memory, those benchmarks that require more memory that available on the RTX 3080Ti and RTX 2080 were executed on machine C as well.
 
 \subsubsection{Results}
-
+Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff and naive-ander, were executed on machine B. The results of which can be found in \autoref{tab:benchmarkresults} where the runtimes of all three analyses are reported in elapsed seconds from beginning to end of each analysis.
 \begin{table}
     \centering
     \begin{tabular}{||c S[table-format = 5.3] S[table-format = 4.3] S S[table-format = 5.3] r||}
