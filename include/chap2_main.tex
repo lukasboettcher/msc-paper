@@ -828,11 +828,13 @@ The benchmarks on the A100 overall improved the performance of PTAGPU, increasin
 Specifically the "git", "php", "postgres" and "python" benchmarks improved the most, since the analysis was not limited by GPU memory.
 Depending on the benchmark program, PTAGPU was up to four times faster than the wavediff algorithm. Compared to the naive implementation of Andersen's algorithm in SVF PTAGPU was several orders of magnitude faster on every one of the benchmarks.
 At its slowest PTAGPU was about 50\% as fast as the wavediff algorithm.
+
+Looking at the distribution of time spent on the individual components of PTAGPU in \autoref{fig:stackedbar-a100}, it is evident that the bulk of the time is spent in the main kernel the asynchronous resolution of gep constraints and indirect callsites. With an increase in size of the constraint graph, the relative time spent in the asynchronous CPU portion increases, since the number of gep constraints tends to increase with the number of pointer variables.
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{img/stackedbar.png}
-    \caption{stacked bar graph}
-    \label{fig:stackedbar}
+    \includegraphics[width=.9\textwidth]{img/stackedbar-a100.png}
+    \caption{Stacked bar graph for PTAGPU runtime from machine C.}
+    \label{fig:stackedbar-a100}
 \end{figure}
 
 \begin{figure}
