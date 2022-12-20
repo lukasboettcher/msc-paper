@@ -784,6 +784,15 @@ Notably the results for the benchmarks "git" and "php" achieved an especially lo
     \caption[Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks.]{Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks in a memory constrained environment.}
     \label{fig:stackedbar-problem}
 \end{figure}
+Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B has a disproportionally negative effect on performance.
+This can be attributed to the fact that allocating more unified memory than available graphics memory leads to an excess of page faults, as soon as the grahpics memory is exhausted during migration from the CPU to the GPU. 
+While this could be mitigated by prefetching only the required memory regions into the GPU memory on-demand during analysis, this would require partitioning the sparse bitvectors into chunks that fit into graphics memory, which is not trivially done for larger analyses.
+\begin{figure}
+    \centering
+    \includegraphics[width=.9\textwidth]{img/correlations.png}
+    \caption{Detailed statistics from machine B.}
+    \label{fig:correlations}
+\end{figure}
 
 \begin{table}
     \centering
