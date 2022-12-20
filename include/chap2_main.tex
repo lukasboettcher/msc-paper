@@ -795,6 +795,7 @@ While this could be mitigated by prefetching only the required memory regions in
 \end{figure}
 To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space.
 
+To further evaluate the performance of the PTAGPU algorithm without being memory constrained, machine C was used to analyze the benchmark programs with PTAGPU again. Using the NVIDIA A100 GPU on machine C, all analyses except vmlinux fit into the 80 GiB of graphics memory. The results of the second benchmarks can be found in \autoref{tab:benchmarkresults-a100}.
 \begin{table}
     \centering
     \begin{tabular}{||c S[table-format = 5.3] S[table-format = 3.3] S r||}
@@ -814,7 +815,7 @@ To verify that the performance impact was caused by pagefaults in the CUDA drive
         python       & 536.515      & 172.701         & 3.10      & \qty{9016}{\mebi\byte}   \\
         redis-server & 8.679        & 8.830           & 0.98      & \qty{207}{\mebi\byte}    \\
         vim          & 1052.995     & 247.859         & 4.24      & \qty{11966}{\mebi\byte}  \\
-        vmlinux      & 32100.566    & {-$^c$}         & {-$^c$}   & {-$^a$}                  \\
+        vmlinux      & 32100.566    & {-$^c$}         & {-$^c$}   & {-$^c$}                  \\
         vmlinux-tiny & 91.479       & 136.164         & 0.67      & \qty{2175}{\mebi\byte}   \\
         zstd         & 11.063       & 9.795           & 1.12      & \qty{454}{\mebi\byte}    \\
         \hline
