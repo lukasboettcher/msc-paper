@@ -844,12 +844,14 @@ Looking at the distribution of time spent on the individual components of PTAGPU
     \label{fig:correlations-a100}
 \end{figure}
 
+Comparing the three different hardware configurations in \autoref{fig:comparehw}, the influence of CPU frequency can be seen on the wavediff pointer analysis.
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{img/correlations.png}
-    \caption{ignoring memory constrained benchmarks, correlations between runtime and memory usage}
-    \label{fig:correlations}
+    \includegraphics[width=.9\textwidth]{img/comparehw.png}
+    \caption[Comparison of the different hardware configurations.]{Comparison of the CPU and GPU runtime on the different hardware configurations.\\Here the benchmark program \texttt{python} was used to compare the different machines.}
+    \label{fig:comparehw}
 \end{figure}
+Similarly PTAGPU also seems to benefit from higher boost frequencies of the GPU, since Machine A with an RTX 3080 Ti clocked at 1665 MHz outperformed the A100 clocked at 1410 MHz.
 
 \begin{figure}
     \centering
