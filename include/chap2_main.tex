@@ -793,6 +793,7 @@ While this could be mitigated by prefetching only the required memory regions in
     \caption{Detailed statistics from machine B.}
     \label{fig:correlations}
 \end{figure}
+To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space.
 
 \begin{table}
     \centering
