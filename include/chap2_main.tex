@@ -790,7 +790,7 @@ While this could be mitigated by prefetching only the required memory regions in
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations.png}
-    \caption{Detailed statistics from machine B.}
+    \caption[Detailed statistics from machine B]{Detailed statistics from pointer analyses on machine B.}
     \label{fig:correlations}
 \end{figure}
 To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space.
@@ -815,12 +815,12 @@ To further evaluate the performance of the PTAGPU algorithm without being memory
         python       & 536.515      & 172.701         & 3.10      & \qty{9016}{\mebi\byte}   \\
         redis-server & 8.679        & 8.830           & 0.98      & \qty{207}{\mebi\byte}    \\
         vim          & 1052.995     & 247.859         & 4.24      & \qty{11966}{\mebi\byte}  \\
-        vmlinux      & 32100.566    & {-$^c$}         & {-$^c$}   & {-$^c$}                  \\
+        vmlinux      & 32100.566    & {-$^a$}         & {-$^a$}   & {-$^a$}                  \\
         vmlinux-tiny & 91.479       & 136.164         & 0.67      & \qty{2175}{\mebi\byte}   \\
         zstd         & 11.063       & 9.795           & 1.12      & \qty{454}{\mebi\byte}    \\
         \hline
     \end{tabular}
-    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine C]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine C.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.\\The $^c$ denotes that the analysis ran out of memory.}
+    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine C]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine C.\\The $^a$ denotes that the analysis ran out of memory.}
     \label{tab:benchmarkresults-a100}
 \end{table}
 
@@ -837,10 +837,18 @@ Looking at the distribution of time spent on the individual components of PTAGPU
     \label{fig:stackedbar-a100}
 \end{figure}
 
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=.9\textwidth]{img/stackedbar.png}
+%     \caption{stacked bar graph}
+%     \label{fig:stackedbar}
+% \end{figure}
+
+
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations-a100.png}
-    \caption[Detailed statistics from machine C.]{Detailed statistics from machine C.\\Memory constraints removed by using an A100.}
+    \caption[Detailed statistics from machine C.]{Detailed statistics from pointer analyses on machine C.\\Memory constraints removed by using an A100.}
     \label{fig:correlations-a100}
 \end{figure}
 
