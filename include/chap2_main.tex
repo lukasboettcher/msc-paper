@@ -837,20 +837,33 @@ Looking at the distribution of time spent on the individual components of PTAGPU
     \label{fig:stackedbar-a100}
 \end{figure}
 
-% \begin{figure}
-%     \centering
-%     \includegraphics[width=.9\textwidth]{img/stackedbar.png}
-%     \caption{stacked bar graph}
-%     \label{fig:stackedbar}
-% \end{figure}
-
-
+Looking at the statistics for the benchmarks on machine C in \autoref{fig:correlations-a100}, neither program size nor size of the constraint graph can be used to accurately estimate the performance of either pointer analysis.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations-a100.png}
     \caption[Detailed statistics from machine C.]{Detailed statistics from pointer analyses on machine C.\\Memory constraints removed by using an A100.}
     \label{fig:correlations-a100}
 \end{figure}
+For example the "postgres" benchmark program consists of both more nodes and more edges in the constraint graph, but performs considerably better during analysis than benchmarks with smaller constraint graphs, such as "git".
+For PTAGPU, unified memory usage during analysis is a good indicator for runtime performance.
+Interestingly the performance on the wavediff algorithm was worse in "postgres" than in "git" indicating that the CPU algorithms are more influenced by the overall size of the constraint graph.
+One hypothesis for these results is that the internal code structure of the benchmark programs greatly influences the parallel performance on the GPU.
+While relatively flat programs can benefit from parallel application of the Andersen constraints, programs that contain long nested chains of instructions do not benefit from concurrent rule application, since each instruction depends on the previous application of the constraint rules. See \autoref{lst:flatprogram} for an intuitive example for flat and nested program structures. Note that this example is not realistic and would likely be optimized by a compiler, in real programs nested structs or classes in C++ tend to result in a nested program structure.
+
+\begin{listing}
+    \begin{minted}{c}
+    // flat program structure
+    int value1 = 14;
+    int value2 = 24;
+    method(24);
+    // nested program structure
+    int vlaue1 = 14;
+    int value2 = value1 * 2;
+    method(value2);
+    \end{minted}
+    \caption{Intuitive illustration of a "flat" and a "nested" program structure.}
+    \label{lst:flatprogram}
+\end{listing}
 
 Comparing the three different hardware configurations in \autoref{fig:comparehw}, the influence of CPU frequency can be seen on the wavediff pointer analysis.
 \begin{figure}
