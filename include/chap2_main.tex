@@ -884,11 +884,7 @@ Improving the performance of PTAGPU with regards to the multi-GPU synchronizatio
 
 \section{Evaluation}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=.9\textwidth]{img/correlations-a100.png}
-    \caption{correlations between runtime and other stuff on a100}
-    \label{fig:correlations-a100}
-\end{figure}
+Although the results indicate that PTAGPU outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
+Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
 
-\section{Evaluation}
+
