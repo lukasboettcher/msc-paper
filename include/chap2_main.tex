@@ -776,7 +776,7 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
     \label{tab:benchmarkresults}
 \end{table}
 The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticably slower than the wavediff analysis for these programs.
-Most of the programs with small speedups are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initializations. For example the PTAGPU analysis for the nano program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
+Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initializations. For example the PTAGPU analysis for the nano program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
 Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively, although both programs are relatively large and the analysis was not dominated by CUDA memory management but the primary kernel instead, see \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
 \begin{figure}
     \centering
@@ -784,16 +784,16 @@ Notably the results for the benchmarks "git" and "php" achieved an especially lo
     \caption[Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks.]{Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks in a memory constrained environment.}
     \label{fig:stackedbar-problem}
 \end{figure}
-Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B has a disproportionally negative effect on performance.
+Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B had a disproportionally negative effect on performance.
 This can be attributed to the fact that allocating more unified memory than available graphics memory leads to an excess of page faults, as soon as the grahpics memory is exhausted during migration from the CPU to the GPU. 
-While this could be mitigated by prefetching only the required memory regions into the GPU memory on-demand during analysis, this would require partitioning the sparse bitvectors into chunks that fit into graphics memory, which is not trivially done for larger analyses.
+While this could be mitigated by prefetching only the required memory regions into the GPU memory on-demand during analysis, this would require partitioning the sparse bitvectors into chunks that entirely fit into graphics memory, which is not trivially done for larger analyses, especially not dynamically.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations.png}
     \caption[Detailed statistics from machine B]{Detailed statistics from pointer analyses on machine B.}
     \label{fig:correlations}
 \end{figure}
-To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space.
+To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space, verifying the suspected problem.
 
 To further evaluate the performance of the PTAGPU algorithm without being memory constrained, machine C was used to analyze the benchmark programs with PTAGPU again. Using the NVIDIA A100 GPU on machine C, all analyses except vmlinux fit into the 80 GiB of graphics memory. The results of the second benchmarks can be found in \autoref{tab:benchmarkresults-a100}.
 \begin{table}
@@ -825,11 +825,11 @@ To further evaluate the performance of the PTAGPU algorithm without being memory
 \end{table}
 
 The benchmarks on the A100 overall improved the performance of PTAGPU, increasing the speedup factor for all programs.
-Specifically the "git", "php", "postgres" and "python" benchmarks improved the most, since the analysis was not limited by GPU memory.
-Depending on the benchmark program, PTAGPU was up to four times faster than the wavediff algorithm. Compared to the naive implementation of Andersen's algorithm in SVF PTAGPU was several orders of magnitude faster on every one of the benchmarks.
-At its slowest PTAGPU was about 50\% as fast as the wavediff algorithm.
+Specifically the "git", "php", "postgres" and "python" benchmarks improved the most, since the analysis was no longer limited by GPU memory.
+Depending on the benchmark program, PTAGPU was up to four times faster than the wavediff algorithm. Compared to the naive implementation of Andersen's algorithm in SVF, PTAGPU was several orders of magnitude faster on every one of the benchmarks.
+At its slowest PTAGPU was about 50\% as fast as the wavediff algorithm, ignoring minimal analyses, such as "nano".
 
-Looking at the distribution of time spent on the individual components of PTAGPU in \autoref{fig:stackedbar-a100}, it is evident that the bulk of the time is spent in the main kernel the asynchronous resolution of gep constraints and indirect callsites. With an increase in size of the constraint graph, the relative time spent in the asynchronous CPU portion increases, since the number of gep constraints tends to increase with the number of pointer variables.
+Looking at the distribution of time spent on the individual components of PTAGPU in \autoref{fig:stackedbar-a100}, it is evident that the bulk of the time is spent in the main kernel and the asynchronous resolution of gep constraints and indirect callsites. With an increase in size of the constraint graph, the relative time spent in the asynchronous CPU portion increases, since the number of gep constraints tends to increase with the number of pointer variables in larger programs.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/stackedbar-a100.png}
