@@ -626,7 +626,7 @@ Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for g
 Lastly the asynchronous CPU code also resolves all indirect callsites and updates the callgraph. 
 Arguably this is one of the most important aspects of PTAGPU that differentiates it from other GPU implementations of Andersen's analysis.
 Indirect callsite resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
-Since an over-approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses inside SVF.
+Since an over-approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses inside SVF. Furthermore, connecting the arguments and parameters at indirect callsites is required to produce complete pointer information.
 \subsection{Feeding the Results back into SVF}\label{sec:feedingback}
 At some point PTAGPU concludes its calculation and has produced a constraint graph inside unified memory, which includes an over-approximation of the points-to set for each pointer variable.
 On its own the constraint graph in the form of sparse bitvectors is not digestible by SVF. For this reason an interface is created to enable SVF to use the points-to information produced by SVF.
