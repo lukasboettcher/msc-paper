@@ -635,10 +635,10 @@ To provide pointer information for SVF, PTAGPU overwrites the alias method with 
 One of the consumers of this information is the SVF test suite\footnote{\url{https://github.com/SVF-tools/Test-Suite}} which will be used in \autoref{sec:testsuite} for verifying the results PTAGPU produces against a know corpus of test programs that include various pointer relations.
 
 Beyond points-to information, the \verb|updateCallGraph| method in \autoref{alg:ptagpu-cpu}, which resolves indirect callsites, also requires access to the points-to information of PTAGPU. To facilitate this, some of the SVF implementations for callsite resolution are overwritten in PTAGPU to redirect the reading of points-to information into the unified memory.
-The benefit of using C++ polymorphism to overwrite these internal methods from SVF is that the points-to information can remain in unified memory and does not have to be explicitly written back into main memory.
+The benefit of using C++ polymorphism to overwrite these internal methods from SVF is that the points-to information can remain in unified memory and does not have to be explicitly written back into main memory to enable SVF to access it.
 This improves performance without impeding the functions of SVF.
 \section{Experimental Results}
-To validate PTAGPU in termns of correctness and performance various test cases and benchmark programs were used.
+To validate PTAGPU in termns of correctness and performance, various test cases and benchmark programs were used.
 Following, the experimental results are split into correctness testing and performance testing.
 While for correctness testing a pre defined test suite was used, a collection of current open source programs of varying complexity was compiled for real world performance testing.
 
