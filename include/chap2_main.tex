@@ -743,8 +743,8 @@ The individual time measurements were performed by using the C++ chrono\footnote
 \subsubsection{Hardware Setup}
 Three separate machines were used to evaluate the pointer analyses.
 Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors capable of simultaneous multithreading, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs and machine C was a cloud instance equipped with 256 vCPUs and an A100 GPU with 80GiB of HBM2 memory.
-Because some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis, the reported results were mostly gathered on machine B, except for TODO where the effect of the amount of available SMs on different GPUs was evaluated.
-To test how much the larger benchmark programs benefit from more graphics memory, those benchmarks that require more memory that available on the RTX 3080Ti and RTX 2080 were executed on machine C as well.
+Because some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis, the reported results were mostly gathered on machine B and C, except for \autoref{fig:comparehw} where the effects of the different hardware specifications were evaluated.
+To test how much the larger benchmark programs benefit from more graphics memory, the set of benchmarks were executed on the A100 GPU of machine C as well, which is equipped with more graphics memory than available on the RTX 3080Ti and RTX 2080.
 
 \subsubsection{Results}
 Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff and naive-ander, were executed on machine B. The results of which can be found in \autoref{tab:benchmarkresults} where the runtimes of all three analyses are reported in elapsed seconds from beginning to end of each analysis.
