@@ -874,12 +874,15 @@ Comparing the three different hardware configurations in \autoref{fig:comparehw}
 \end{figure}
 Similarly PTAGPU also seems to benefit from higher boost frequencies of the GPU, since Machine A with an RTX 3080 Ti clocked at 1665 MHz outperformed the A100 clocked at 1410 MHz.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=.9\textwidth]{img/stackedbar-a100.png}
-    \caption{stacked bar graph on a100}
-    \label{fig:stackedbar-a100}
-\end{figure}
+Lastly, an experimental multi-GPU implementation of PTAGPU was briefly tested against some of the benchmarks.
+Since PTAGPU synchronizes across each of the thread blocks via atomic incrementation of a worklist variable, the scope of the atomic incrementation can be extended from a single device to system wide atomic access as long as the devices support compute capability 6.0 or above.
+In theory this allows for simple multi-GPU execution of the PTAGPU analysis.
+In practice, when executing PTAGPU with multiple RTX 2080 GPUs on machine B, the performance decreased substantially.
+This can be explained by the fact that atomic access to a variable across multiple devices on a system requires more expensive synchronization than on a single device.
+Furthermore cross-device memory access is relatively slow. Here using faster GPU interconnects, like NVLink bridges between the GPUs could improve the performance.
+Improving the performance of PTAGPU with regards to the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually processed on each of the GPUs.
+
+\section{Evaluation}
 
 \begin{figure}
     \centering
