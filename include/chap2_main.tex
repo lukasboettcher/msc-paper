@@ -881,10 +881,3 @@ In practice, when executing PTAGPU with multiple RTX 2080 GPUs on machine B, the
 This can be explained by the fact that atomic access to a variable across multiple devices on a system requires more expensive synchronization than on a single device.
 Furthermore cross-device memory access is relatively slow. Here using faster GPU interconnects, like NVLink bridges between the GPUs could improve the performance.
 Improving the performance of PTAGPU with regards to the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually processed on each of the GPUs.
-
-\section{Evaluation}
-
-Although the results indicate that PTAGPU outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
-Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
-
-
