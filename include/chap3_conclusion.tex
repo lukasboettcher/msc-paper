@@ -14,6 +14,10 @@ Judging from the wavediff analysis of the linux kernel, roughly 300 GiB of memor
 
 One key insight from the experimental results was, that there are no trivial prior indicators for analysis runtime, since program structure are seemingly more influential on analysis runtime than lines of code, nodes in the constraint graph or size of the compiled program.
 This is supported by prior research from \cite{mendez2012gpu}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses. 
+
+Although the results indicate that PTAGPU generally outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
+Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
+
 \section{Future Work}
 \subsection{Partitioning Workloads}
 \subsection{Hybrid Cycle Detection}
