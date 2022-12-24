@@ -6,7 +6,7 @@ PTAGPU was both tested for correctness and performance in comparison to establis
 The primary research question was to what extent such an implementation presents advantages or disadvantages over other analyses that are not strictly parallel in nature.
 
 The experimental results presented in \autoref{sec:results} indicate that PTAGPU is a viable implementation to improve the performance of a whole program field-sensitive pointer analysis without sacrificing precision of the analysis.
-PTAGPU achieved an average speedup of 1.60 across 15 benchmarks over the SVF wavediff algorithm. Since the individual benchmarks with lower speedups are almost entirely smaller programs, the absolute time saved by using PTAGPU was 28 minutes and 59 seconds over the total 1 hour 07 minutes and 30 seconds required by wavediff to analyze all 16 programs. In terms of absolute time, the speedup factor was 1.75.
+PTAGPU achieved an average speedup of 1.60 across 15 benchmarks over the SVF wavediff algorithm. Since the individual benchmarks with lower speedups are almost entirely smaller programs, the absolute time saved by using PTAGPU was 28 minutes and 59 seconds over the total 1 hour 07 minutes and 30 seconds required by wavediff to analyze the 15 benchmark programs. In terms of absolute time, the speedup factor was 1.75.
 This represents a meaningful improvement over the CPU algorithm. 
 Unfortunately this does not include the linux benchmark, as the analysis did not fit into graphics memory and did not finish within a reasonable amount of time.
 Although enough unified memory was available, the analyis of the linux source code did become impeded by excessive page faults as illustrated in \autoref{sec:results}.
