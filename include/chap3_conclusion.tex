@@ -13,13 +13,14 @@ Although enough unified memory was available, the analyis of the linux source co
 Judging from the wavediff analysis of the linux kernel, roughly 300 GiB of memory are required for a successful whole program field-sensitive pointer analysis, which is currently impossible to compute on a single GPGPU.
 
 One key insight from the experimental results was, that there are no trivial prior indicators for analysis runtime, since program structure are seemingly more influential on analysis runtime than lines of code, nodes in the constraint graph or size of the compiled program.
-This is supported by prior research from \cite{mendez2012gpu}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses. 
+This is supported by prior research from \cite{mendez2012gpu}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses.
 
 Although the results indicate that PTAGPU generally outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
 Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
 
 Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis.
 The main advantages lie with relatively large programs that are built using a flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
+Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques.
 The disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
 This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
 For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU.
