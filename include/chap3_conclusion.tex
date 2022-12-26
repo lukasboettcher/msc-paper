@@ -41,6 +41,11 @@ The algorithm would then load each partition into device memory and resolve all 
 To solve constraints that require loading nodes outside of the current partition, two partitions are always loaded into memory in pairs. Constraints that involve nodes of both partitions are then solved. This is repeated until all constraints are resolved.
 This exact approach was used by Graspan in \cite{zuo2021systemizing} using the filesystem instead of unified memory. The idea remains the same.
 
+Developing a partitioning system instead of loading the entire constraint graph into graphics memory, would also enable the use of multiple GPUs without having to synchronize access to individual nodes across all devices. 
+The downside with partitioning the constraint graph lies in the fact that with an increasing number of partitions, the overhead associated with loading and unloading partitions increases.
+Splitting the constraint graph into 16 partitions would require loading and unloading all 15 adjacent partitions in order to resolve all constraints in a single partition.
+Part of this problem can be alleviated by performing an offline analysis and associating nodes with partitions such that a minimal number of edges overlap between partitions, leading to an optimal distribution of nodes for parallel graph rewriting.
+
 \section{Discussion}
 
 \appendix
