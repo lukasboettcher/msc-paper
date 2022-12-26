@@ -35,6 +35,12 @@ The hypothesized approach of using unified memory in a CUDA program to extend th
 It was still necessary that the GPU had enough graphics memory to hold the entire analysis, because the performance of the algorithm would drastically decrease if graphics memory were to be exhausted while the analysis was still running. The reason for this was that accessing sparse bitvector elements outside of graphics memory would result in page faults and require moving the requested memory region into graphics memory, replacing a previous section of memory and slowing down the analysis.
 The CUDA API does provide functions to prevent this behaviour. By using \verb|cudaMemAdvise| and \verb|cudaMemPrefetchAsync| the developer can give hints to the memory controller as to where specific memory regions are preferred to be stored and loaded into before the data is actually required by the algorithm.
 Fundamentally the problem with prefetching memory is the irregularity of a pointer analysis, making it very difficult to predict which memory regions are required in each iteration of the algorithm.
+
+One possible solution to this problem would be a partitioning strategy, where the entire constraint graph is divided into roughly equally sized partitions.
+The algorithm would then load each partition into device memory and resolve all constraints  $x \rightarrow y \rightarrow z \mathrel{\leadsto} x \rightarrow z$ where all nodes, x, y and z are included in the currently loaded partition.
+To solve constraints that require loading nodes outside of the current partition, two partitions are always loaded into memory in pairs. Constraints that involve nodes of both partitions are then solved. This is repeated until all constraints are resolved.
+This exact approach was used by Graspan in \cite{zuo2021systemizing} using the filesystem instead of unified memory. The idea remains the same.
+
 \section{Discussion}
 
 \appendix
