@@ -30,6 +30,11 @@ During the development of PTAGPU and evaluation of the results, multiple novel a
 Some of these approaches could be used to further improve the performance of PTAGPU and alleviate shortcomings and limitations discovered during development.
 Furthermore some ideas could lead to improvements in the SVF project upstream, and inspire new research directions.
 
+\subsubsection{Improvements for PTAGPU}
+The hypothesized approach of using unified memory in a CUDA program to extend the scalability of PTAGPU and get around the limitation of only using the device's graphics memory did not work during experimental testing.
+It was still necessary that the GPU had enough graphics memory to hold the entire analysis, because the performance of the algorithm would drastically decrease if graphics memory were to be exhausted while the analysis was still running. The reason for this was that accessing sparse bitvector elements outside of graphics memory would result in page faults and require moving the requested memory region into graphics memory, replacing a previous section of memory and slowing down the analysis.
+The CUDA API does provide functions to prevent this behaviour. By using \verb|cudaMemAdvise| and \verb|cudaMemPrefetchAsync| the developer can give hints to the memory controller as to where specific memory regions are preferred to be stored and loaded into before the data is actually required by the algorithm.
+Fundamentally the problem with prefetching memory is the irregularity of a pointer analysis, making it very difficult to predict which memory regions are required in each iteration of the algorithm.
 \section{Discussion}
 
 \appendix
