@@ -46,6 +46,11 @@ The downside with partitioning the constraint graph lies in the fact that with a
 Splitting the constraint graph into 16 partitions would require loading and unloading all 15 adjacent partitions in order to resolve all constraints in a single partition.
 Part of this problem can be alleviated by performing an offline analysis and associating nodes with partitions such that a minimal number of edges overlap between partitions, leading to an optimal distribution of nodes for parallel graph rewriting.
 
+Other than partitioning the constraint graph, there are various optimizations proposed in \cite{mendez2012gpu} that did not yield any immediate performance improvements during the development of PTAGPU but might bring improvements given more thorough testing.
+These optimizations include online cycle detection and pointer-equivalent variable detection on the GPU during analysis.
+Variables are pointer-equivalent if they posess the same outgoing points-to edges. These might be interesting to find, since applying a copy rewrite rule associated with any of the pointer-equivalent variables, results in the same operation on the GPU and would be redundant.
+Similarly a cycle of copy edges in the constraint graph would always hold the same points-to edges for each node ih the cycle and thus should be detected during analysis to prevent redundant work.
+
 \section{Discussion}
 
 \appendix
