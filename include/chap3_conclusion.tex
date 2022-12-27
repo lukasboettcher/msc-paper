@@ -51,6 +51,10 @@ These optimizations include online cycle detection and pointer-equivalent variab
 Variables are pointer-equivalent if they posess the same outgoing points-to edges. These might be interesting to find, since applying a copy rewrite rule associated with any of the pointer-equivalent variables, results in the same operation on the GPU and would be redundant.
 Similarly a cycle of copy edges in the constraint graph would always hold the same points-to edges for each node ih the cycle and thus should be detected during analysis to prevent redundant work.
 
+Another approach for improving the scalability of PTAGPU would be the use of peer-to-peer memory access.
+Peer-to-peer memory access is a capability of certan NVIDIA GPUs whereby multiple graphics cards can pool their memory though special NVLink interconnects on the GPUs, bypassing the bandwidth restrictions of the PCIe connections.
+This would allow one kernel on a single device to access the graphics memory of several graphics cards and increase the available amount of memory during analysis.
+
 \section{Discussion}
 
 \appendix
