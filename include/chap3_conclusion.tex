@@ -55,6 +55,10 @@ Another approach for improving the scalability of PTAGPU would be the use of pee
 Peer-to-peer memory access is a capability of certan NVIDIA GPUs whereby multiple graphics cards can pool their memory though special NVLink interconnects on the GPUs, bypassing the bandwidth restrictions of the PCIe connections.
 This would allow one kernel on a single device to access the graphics memory of several graphics cards and increase the available amount of memory during analysis.
 
+Finally, PTAGPU would greatly benefit from dynamic memory allocation. Currently the total amount of unified memory has to be set during compilation, which is then allocated during runtime.
+Since pointer analyses are very irregular calculations, it is very difficult to set the correct amount of memory before the analysis is run.
+For this reason a dynamic memory allocation algorithm could improve the usability of PTAGPU by predicting and reallocating the amount of memory needed for the analysis.
+
 \section{Discussion}
 
 \appendix
