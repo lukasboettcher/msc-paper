@@ -706,22 +706,22 @@ Furthermore the results will showcase the differences between sequential CPU imp
         \hline
         program       & \#V  & \#E  & bc size & {density} & avg. degree & version \\
         \hline\hline
-        nano          & 6    & 2    & 298K    & 5.887e-05 & 0.399       & 6.4     \\ 
-        diff          & 54   & 17   & 1.3M    & 5.794e-06 & 0.317       & 3.8     \\
-        httpd         & 169  & 95   & 1.4M    & 3.180e-05 & 0.561       & 2.4.54  \\
-        htop          & 48   & 20   & 1.6M    & 8.447e-06 & 0.413       & 3.2.1   \\
-        zstd          & 280  & 101  & 2.3M    & 6.260e-05 & 0.362       & 1.5.2   \\
-        bison         & 146  & 59   & 3.4M    & 1.417e-05 & 0.407       & 3.8     \\
-        redis         & 207  & 67   & 4.8M    & 6.507e-04 & 0.327       & 7.0.5   \\
-        perl          & 445  & 206  & 4.9M    & 1.617e-04 & 0.464       & 5.37.3  \\
-        linux-minimal & 393  & 157  & 5.4M    & 7.872e-03 & 0.401       & 5.14    \\
         bash          & 238  & 77   & 5.4M    & 7.514e-05 & 0.327       & 5.1.16  \\
-        vim           & 696  & 280  & 7.7M    & 7.676e-05 & 0.403       & 9.0     \\
+        bison         & 146  & 59   & 3.4M    & 1.417e-05 & 0.407       & 3.8     \\
+        diff          & 54   & 17   & 1.3M    & 5.794e-06 & 0.317       & 3.8     \\
+        git           & 869  & 379  & 25M     & 3.399e-03 & 0.437       & 2.37.4  \\
+        htop          & 48   & 20   & 1.6M    & 8.447e-06 & 0.413       & 3.2.1   \\
+        httpd         & 169  & 95   & 1.4M    & 3.180e-05 & 0.561       & 2.4.54  \\
+        nano          & 6    & 2    & 298K    & 5.887e-05 & 0.399       & 6.4     \\ 
+        perl          & 445  & 206  & 4.9M    & 1.617e-04 & 0.464       & 5.37.3  \\
+        php           & 1582 & 611  & 52M     & 1.689e-04 & 0.386       & 7.4.31  \\
         postgres      & 1432 & 721  & 18M     & 2.642e-04 & 0.504       & 14.4    \\
         python        & 742  & 313  & 21M     & 3.453e-04 & 0.422       & 3.10.6  \\
-        git           & 869  & 379  & 25M     & 3.399e-03 & 0.437       & 2.37.4  \\
-        php           & 1582 & 611  & 52M     & 1.689e-04 & 0.386       & 7.4.31  \\
+        redis         & 207  & 67   & 4.8M    & 6.507e-04 & 0.327       & 7.0.5   \\
+        vim           & 696  & 280  & 7.7M    & 7.676e-05 & 0.403       & 9.0     \\
         linux         & 4464 & 2206 & 72M     & 5.629e-04 & 0.494       & 5.14    \\
+        linux-minimal & 393  & 157  & 5.4M    & 7.872e-03 & 0.401       & 5.14    \\
+        zstd          & 280  & 101  & 2.3M    & 6.260e-05 & 0.362       & 1.5.2   \\
         \hline
     \end{tabular}
     \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode filesize in kilobytes, density and average out degree for each constraint graph.}
