@@ -71,6 +71,8 @@ Using the CPU implementation for smaller programs and the GPU implementation for
 Since pointer analyses do not remove any already computed point-to data, a given analysis could switch between CPU and GPU implementations relatively uninterupted, without having to repeat a large amount of work.
 Using diffpoints further improves this process.
 
+Finally, another avenue for future research is the reevaluation of context-free-grammars, possibly in a parallel execution environment, for the purpose of pointer analysis.
+Recent additions to the SVF framework include a solver component that explicitly utilizes context-free-grammars \cite{lei2022taming} and is allegedly more performant than Graspan at querying CFL-reachability in a graph, according to the cited paper.
 \appendix
 
 \chapter{Raw Data}
