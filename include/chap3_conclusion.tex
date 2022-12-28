@@ -1,4 +1,4 @@
-\chapter{Conclusion}\label{chap:conclusion}
+\chapter{Discussion}\label{chap:conclusion}
 
 \section{Evaluation of Results}
 To summarize the research conducted up to this point, a GPU-supported parallel Andersen based pointer analysis, PTAGPU, was implemented on top of LLVM and the SVF framework using the NVIDIA CUDA SDK.
@@ -17,13 +17,6 @@ This is supported by prior research from \cite{mendez2012gpu}, where the selecte
 
 Although the results indicate that PTAGPU generally outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
 Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
-
-Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis.
-The main advantages lie with relatively large programs that are built using a flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
-Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques.
-The disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
-This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
-For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU.
 
 \section{Future Work}
 During the development of PTAGPU and evaluation of the results, multiple novel approaches and ideas were discovered which will be summarized in the following section.
@@ -73,6 +66,13 @@ Using diffpoints further improves this process.
 
 Finally, another avenue for future research is the reevaluation of context-free-grammars, possibly in a parallel execution environment, for the purpose of pointer analysis.
 Recent additions to the SVF framework include a solver component that explicitly utilizes context-free-grammars \cite{lei2022taming} and is allegedly more performant than Graspan at querying CFL-reachability in a graph, according to the cited paper.
+\section{Conclusion}
+Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis.
+The main advantages lie with relatively large programs that are built using a flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
+Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques.
+The disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
+This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
+For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU.
 \appendix
 
 \chapter{Raw Data}
