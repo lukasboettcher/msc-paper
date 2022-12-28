@@ -66,6 +66,11 @@ Seeing how other papers, like \cite{mendez2012gpu}, compared GPU and CPU paralle
 Part of a parallel CPU implementation in SVF would be to create thread safe versions of the internal SVF datastructures.
 This would also indirectly improve the performance of PTAGPU, since the async CPU section of PTAGPU also utilizes parts of SVF that currently can not be parallelized.
 
+Ultimately it would also be a good idea to implement a hybrid pointer analysis in SVF that would be capable of utilizing both CPUs and GPUs for the analysis depending on the program to be analyzed.
+Using the CPU implementation for smaller programs and the GPU implementation for larger programs until graphics memory is exhausted, could maximize the performance for different kinds of input programs.
+Since pointer analyses do not remove any already computed point-to data, a given analysis could switch between CPU and GPU implementations relatively uninterupted, without having to repeat a large amount of work.
+Using diffpoints further improves this process.
+
 \appendix
 
 \chapter{Raw Data}
