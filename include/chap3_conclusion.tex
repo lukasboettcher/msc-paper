@@ -72,7 +72,8 @@ The main advantages lie with relatively large programs that are built using a fl
 Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques and optimizations. All while being able to use a reproducible and well defined input format in the form of LLVM bitcode.
 The main disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
 This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
-For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU.
+For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which currently prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU in an efficient manner.
+
 \appendix
 
 \chapter{Raw Data}
