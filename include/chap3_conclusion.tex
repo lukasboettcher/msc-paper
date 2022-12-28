@@ -69,8 +69,8 @@ Recent additions to the SVF framework include a solver component that explicitly
 \section{Conclusion}
 Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis on top of LLVM and the SVF framework.
 The main advantages lie with relatively large programs that are built using a flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
-Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques.
-The disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
+Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques and optimizations. All while being able to use a reproducible and well defined input format in the form of LLVM bitcode.
+The main disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
 This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
 For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU.
 \appendix
