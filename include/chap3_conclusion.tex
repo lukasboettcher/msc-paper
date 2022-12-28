@@ -59,7 +59,12 @@ Finally, PTAGPU would greatly benefit from dynamic memory allocation. Currently 
 Since pointer analyses are very irregular calculations, it is very difficult to set the correct amount of memory before the analysis is run.
 For this reason a dynamic memory allocation algorithm could improve the usability of PTAGPU by predicting and reallocating the amount of memory needed for the analysis.
 
-\section{Discussion}
+\subsubsection{Improvements for SVF}
+As PTAGPU has shown, there are lots of possibilities for parallelizing a pointer analysis.
+Since GPUs are not the only devices capable of parallel execution, it would be another interesting avenue of reasearch to apply some of the techniques discussed in this thesis on the CPU-based pointer analyses of SVF.
+Seeing how other papers, like \cite{mendez2012gpu}, compared GPU and CPU parallel pointer analysis implementations, it would be interesting to compare a parallelized SVF-based pointer analysis on the CPU to PTAGPU. Especially for smaller programs, this might bring performance improvements.
+Part of a parallel CPU implementation in SVF would be to create thread safe versions of the internal SVF datastructures.
+This would also indirectly improve the performance of PTAGPU, since the async CPU section of PTAGPU also utilizes parts of SVF that currently can not be parallelized.
 
 \appendix
 
