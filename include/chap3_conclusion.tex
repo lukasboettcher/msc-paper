@@ -9,7 +9,7 @@ The experimental results presented in \autoref{sec:results} indicate that PTAGPU
 PTAGPU achieved an average speedup of 1.60 across 15 benchmarks over the SVF wavediff algorithm. Since the individual benchmarks with lower speedups are almost entirely smaller programs, the absolute time saved by using PTAGPU was 28 minutes and 59 seconds over the total 1 hour 07 minutes and 30 seconds required by wavediff to analyze the 15 benchmark programs. In terms of absolute time, the speedup factor was 1.75.
 This represents a meaningful improvement over the CPU algorithm. 
 Unfortunately this does not include the linux benchmark, as the analysis did not fit into graphics memory and did not finish within a reasonable amount of time.
-Although enough unified memory was available, the analyis of the linux source code did become impeded by excessive page faults as illustrated in \autoref{sec:results}.
+Although enough total unified memory was available, the analyis of the linux source code did become impeded by excessive page faults as illustrated in \autoref{sec:results}.
 Judging from the wavediff analysis of the linux kernel, roughly 300 GiB of memory are required for a successful whole program field-sensitive pointer analysis, which is currently impossible to compute on a single GPGPU.
 
 One key insight from the experimental results was, that there are no trivial prior indicators for analysis runtime, since program structure are seemingly more influential on analysis runtime than lines of code, nodes in the constraint graph or size of the compiled program.
