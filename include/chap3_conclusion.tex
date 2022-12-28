@@ -82,7 +82,7 @@ For optimal performance PTAGPU also requires that the entire analysis fits into 
     \tiny
     \begin{tabular}{rrrrrrrrr}
         \toprule
-           & file         & GPU memory MiB & filesize MB & wavediff-t   & naiveander-t & \# nodes & \# edges & version \\
+        id & file         & GPU memory MiB & filesize MB & wavediff-t   & naiveander-t & \# nodes & \# edges & version \\
         \midrule
         1  & bash         & 1024           & 5.400       & 16222.113    & 102195.752   & 238      & 77       & 6.4     \\
         2  & bison        & 260            & 3.400       & 18977.376    & 119999.054   & 146      & 59       & 3.8     \\
@@ -110,7 +110,7 @@ For optimal performance PTAGPU also requires that the entire analysis fits into 
     \tiny
     \begin{tabular}{rrrrrrrrrr}
         \toprule
-           & ptagpu-t    & svf init & cuda init & update-k   & main-k       & thrust sort & store-k      & async CPU  & S    \\
+        id & ptagpu-t    & svf init & cuda init & update-k   & main-k       & thrust sort & store-k      & async CPU  & S    \\
         \midrule
         1  & 15489.00    & 366.515  & 2489.389  & 1129.063   & 1324.698     & 743.670     & 858.932      & 5190.693   & 1.05 \\
         2  & 9837.06     & 214.357  & 1650.840  & 830.177    & 234.046      & 675.748     & 54.633       & 4317.114   & 1.93 \\
@@ -137,7 +137,7 @@ For optimal performance PTAGPU also requires that the entire analysis fits into 
     \tiny
     \begin{tabular}{rrrrrrrrrr}
         \toprule
-           & ptagpu-t   & svf init & cuda init & update-k  & main-k     & thrust sort & store-k   & async CPU  & S    \\
+        id & ptagpu-t   & svf init & cuda init & update-k  & main-k     & thrust sort & store-k   & async CPU  & S    \\
         \midrule
         1  & 13126.316  & 316.589  & 3339.273  & 955.132   & 1258.228   & 103.923     & 824.671   & 3404.405   & 1.23 \\
         2  & 7599.453   & 181.425  & 3397.507  & 657.559   & 203.553    & 92.256      & 41.323    & 2941.927   & 2.49 \\
