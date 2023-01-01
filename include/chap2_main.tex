@@ -244,8 +244,8 @@ Each sparse bitvector element has the following layout.
     \end{bytefield}
 \end{center}
 \subsubsection{64-bit Addresses}
-This sparse bitvector layout is inspired by the layout put presented in \cite{mendez2012gpu}.
-The notable difference being a switch from 32-bit to 64-bit addresses.
+This sparse bitvector layout is inspired by the layout presented in \cite{mendez2012gpu}.
+The notable difference being a switch from 32-bit to 64-bit addresses and the use of unified memory instead of only device memory.
 This is a requirement for using an address space larger than 16GiB, since we are addressing 4-byte wide words.
 While this reduces the data density of each bitvector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^66$ bytes, is worth the tradeoff as it eliminates any practical upper limits on memory allocation.
 \subsubsection{Inserting new Bitvectors}
