@@ -13,7 +13,7 @@ Although enough total unified memory was available, the analyis of the linux sou
 Judging from the wavediff analysis of the linux kernel, roughly 300 GiB of memory are required for a successful whole program field-sensitive pointer analysis, which is currently impossible to compute entirely in the graphics memory of a single graphics card.
 
 One key insight from the experimental results was, that there are no precise trivial prior indicators for analysis runtime, since the program structure is seemingly more influential on analysis runtime than lines of code, nodes in the constraint graph or size of the compiled program.
-This is supported by prior research from \cite{mendez2012gpu}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses.
+This is supported by prior research from \cite{mendez2012gpu} or \cite{su2015efficient}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses.
 It was found that the use of nested programming techniques, such as structures in a C program, can lead to a lower speedup on parallel hardware.
 As a result, programs like git and the linux kernel, that make extensive use of C structs, are performing worse in PTAGPU compared to other benchmark programs.
 Because PTAGPU is field-sensitive, the effect of structures with fields in the source code disproportionally influences the runtime of the analysis compared to other instructions that can more easily be parallelized.
