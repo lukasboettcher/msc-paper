@@ -74,7 +74,7 @@ Finally, another avenue for future research is the reevaluation of context-free-
 Recent additions to the SVF framework include a solver component that explicitly utilizes context-free-grammars \cite{lei2022taming} and is allegedly more performant than Graspan at querying CFL-reachability in a graph, according to the cited paper.
 \section{Conclusion}
 Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis on top of LLVM and the SVF framework.
-The main advantages lie with relatively large programs that are built using a flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
+The main advantages lie with relatively large programs that are built using a relatively flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
 Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques and optimizations. All while being able to use a reproducible and well defined input format in the form of LLVM bitcode.
 The main disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
 This makes using GPUs for analyzing small programs (less than 1MB in size) inefficient.
