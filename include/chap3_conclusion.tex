@@ -16,7 +16,7 @@ One key insight from the experimental results was, that there are no precise tri
 This is supported by prior research from \cite{mendez2012gpu}, where the selected benchmark programs - some of which overlap with the selected benchmark programs of this thesis - also had vastly different speedups for the GPU-based analysis over the CPU-based analyses.
 It was found that the use of nested programming techniques, such as structures in a C program, can lead to a lower speedup on parallel hardware.
 As a result, programs like git and the linux kernel, that make extensive use of C structs, are performing worse in PTAGPU compared to other benchmark programs.
-Because PTAGPU is field-sensitive, the effect of structures with fields in the source code disproportionally influences the runtime of the analysis compared to other instructions.
+Because PTAGPU is field-sensitive, the effect of structures with fields in the source code disproportionally influences the runtime of the analysis compared to other instructions that can more easily be parallelized.
 Still, the majority of benchmark programs did profit from the parallel analysis in PTAGPU and performed better on the GPU than on the CPU.
 
 Although the results indicate that PTAGPU generally outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
