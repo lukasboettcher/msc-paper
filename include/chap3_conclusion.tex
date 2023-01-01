@@ -27,6 +27,8 @@ Some other GPU-based Andersen style pointer analyses are \cite{mendez2012gpu} an
 Unfortunately the results from both these GPU-based pointer analysis algorithms are not directly comparable with PTAGPU in terms of total runtime, since the reported constraint graph sizes are vastly smaller than those produced by SVF, indicating that they are incomplete in some way. Intuitively the reported result for performing a whole program field-sensitive inclusion-based pointer analysis on the linux kernel in under ten seconds \cite{su2015efficient} does seem too fast, given the results from SVF.
 Although the input data generation for these analyses was based on LLVM, according to a previous paper by Mendez et al. \cite{mendez2010parallel}, the source code for the data generation is not available.
 Forthermore indirect callsites were not resolved during either of these analyses making them fundamentally incompatible with the results of PTAGPU.
+Because the source code of neither of these implementations is available online and no other GPU-based implementations of Andersen style pointer analyses are known at this time, direct comparisons with other GPU implementations are omitted from the evaluation.
+
 \section{Future Work}
 During the development of PTAGPU and evaluation of the results, multiple novel approaches and ideas were discovered which will be summarized in the following section.
 Some of these approaches could be used to further improve the performance of PTAGPU and alleviate shortcomings and limitations discovered during development.
