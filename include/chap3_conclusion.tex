@@ -62,6 +62,8 @@ Since GPUs are not the only devices capable of parallel execution, it would be a
 Seeing how other papers, like \cite{mendez2012gpu}, compared GPU and CPU parallel pointer analysis implementations, it would be interesting to compare a parallelized SVF-based pointer analysis on the CPU to PTAGPU. Especially for smaller programs, this might bring performance improvements.
 Part of a parallel CPU implementation in SVF would be to create thread safe versions of the internal SVF datastructures.
 This would also indirectly improve the performance of PTAGPU, since the async CPU section of PTAGPU also utilizes parts of SVF that currently can not be parallelized.
+Especially improving the parallel resolution of \verb|getelementpointer| constraints could yield great improvements for PTAGPU, since dealing with nested code structures is currently one of its weaknesses.
+It would also be interesting to further analyze the effects of using specific language constructs on the runtime performance on parallel pointer analyses.
 
 Ultimately it would also be a good idea to implement a hybrid pointer analysis in SVF that would be capable of utilizing both CPUs and GPUs for the analysis depending on the program to be analyzed.
 Using the CPU implementation for smaller programs and the GPU implementation for larger programs until graphics memory is exhausted, could maximize the performance for different kinds of input programs.
