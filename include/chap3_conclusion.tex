@@ -22,6 +22,8 @@ Still, the majority of benchmark programs did profit from the parallel analysis 
 Although the results indicate that PTAGPU generally outperforms the CPU counterparts in larger benchmarks, it should be acknowledged that it is difficult to establish a fair comparison betwenn CPU and GPU pointer analysis implementations.
 Both in terms of upfront cost and power consumption both implementations are vastly different. While the SVF wavediff algorithm can be executed on almost any modern computer with sufficient main memory, PTAGPU requires specialized hardware. Especially for larger analyses, a GPU with enough graphics memory is required for an efficient analysis with PTAGPU.
 
+\subsubsection{Comparing PTAGPU Results to other GPU-based implementations.}
+Some other GPU-based Andersen style pointer analyses are \cite{mendez2012gpu} and \cite{su2015efficient}.
 \section{Future Work}
 During the development of PTAGPU and evaluation of the results, multiple novel approaches and ideas were discovered which will be summarized in the following section.
 Some of these approaches could be used to further improve the performance of PTAGPU and alleviate shortcomings and limitations discovered during development.
