@@ -81,7 +81,7 @@ This makes using GPUs for analyzing small programs (less than 1MB in size) ineff
 For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which currently prevents some of the largest software projects, such as the linux kernel, from being analyzed by PTAGPU in an efficient manner.
 
 Overall the parallel GPU-based pointer analysis PTAGPU has shown to be a promising approach for improving the efficiency of pointer analysis. By leveraging the parallel processing capabilities of GPUs, PTAGPU was able to achieve an average speedup of 1.60 over the state of the art wavediff pointer analysis in the SVF framework. This demonstrates the potential of PTAGPU to significantly reduce the time required for pointer analysis, making it a valuable tool for developers and researchers working in this field.
-This implementation should provide a good reference for future research into parallel pointer analyses.
+This implementation should provide a good reference for future research into parallel pointer analyses and can easily be expanded upon based on the modular design of the SVF framework.
 \appendix
 
 \chapter{Raw Data}
