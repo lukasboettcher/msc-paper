@@ -221,19 +221,19 @@ The algorithm was one of the first constraint based algorithms introduced for po
 The underlying idea is that the Algorithm operates on a given program by converting statements from the program into mathematical constraints contained in a constraint graph.
 These constraints can be classified into a few types which can be seen in \autoref{tab:ander}.
 It is worth noting that in literature the field-sensitivity aspect is often omitted from the definition of the Andersen analysis, although it was included in the original specification.
-As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows exponentially in regard to the number of pointer variables in a program. The reason for this exponential growth, among other aspects, is the field-sensitivity. Depending on the structure of the code under analysis, field-sensitivity might play the most influential part in the analysis' complexity. This will be further expanded upon in \autoref{chap:main}. Ultimately this is the reason for specifically including field-sensitivity when discussing Andersen's analysis in this thesis.
+As mentioned in \autoref{chap:intro} the complexity of Andersen's analysis grows exponentially with regard to the number of pointer variables in a program. The reason for this exponential growth, among other aspects, is the field-sensitivity. Depending on the structure of the code under analysis, field-sensitivity might play the most influential part in the analysis' complexity. This will be further expanded upon in \autoref{chap:main}. Ultimately this is the reason for specifically including field-sensitivity when discussing Andersen's analysis in this thesis.
 During execution an Andersen style pointer analysis repeatedly applies the constraints until a point is reached where no more changes are applied to the constraint graph at which point the execution concludes and the points-to sets for each variable are returned.
 \begin{table}
     \begin{center}
         \begin{tabular}{l|l|l|l}
-            \hline                                                                                                                          \\
-            \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                              \\
-            \hline                                                                                                                          \\
-            $x = \&a$          & alloca        & \makecell[cl]{The address of a is                                                          \\assigned to x.}  & $\{a\} \subseteq pts(x)$                    \\
-            $x = y$            & copy          & \makecell[cl]{Variable y is assigned                                                       \\to x.}            & $pts(y) \subseteq pts(x)$                        \\
-            $x = *y$           & load          & \makecell[cl]{Load value of y and                                                          \\assign to x.}       & $\forall p \in pts(y) \colon pts(p) \subseteq pts(x)$ \\
+            \hline                                                                                                                               \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                                   \\
+            \hline                                                                                                                               \\
+            $x = \&a$          & alloca        & \makecell[cl]{The address of a is                                                               \\assigned to x.}  & $\{a\} \subseteq pts(x)$                    \\
+            $x = y$            & copy          & \makecell[cl]{Variable y is assigned                                                            \\to x.}            & $pts(y) \subseteq pts(x)$                        \\
+            $x = *y$           & load          & \makecell[cl]{Load value of y and                                                               \\assign to x.}       & $\forall p \in pts(y) \colon pts(p) \subseteq pts(x)$ \\
             $*x = y$           & store         & \makecell[cl]{Store y into value of x.} & $\forall p \in pts(x) \colon pts(y) \subseteq pts(p)$ \\
-            $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                                     \\assigned to x.} & $pts(y.f) \subseteq pts(x)$                      \\
+            $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                                          \\assigned to x.} & $pts(y.f) \subseteq pts(x)$                      \\
         \end{tabular}
     \end{center}
     \caption{Constraints of an inclusion-based pointer analysis.}
