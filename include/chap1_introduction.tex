@@ -265,14 +265,14 @@ The trade-off for this faster algorithm is precision, since Steensgard's algorit
 \begin{table}
     \begin{center}
         \begin{tabular}{l|l|l|l}
-            \hline                                                                                                                  \\
-            \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                      \\
-            \hline                                                                                                                  \\
-            $x = \&a$          & alloca        & \makecell[cl]{The address of a is                                                  \\assigned to x.}  & $pts(x) = \{a\} \cup pts(x)$                    \\
-            $x = y$            & copy          & \makecell[cl]{Variable y is assigned                                               \\to x.}            & $pts(y) = pts(x)$                        \\
-            $x = *y$           & load          & \makecell[cl]{Load value of y and                                                  \\assign to x.}       & $\forall p \in pts(y) \colon pts(p) = pts(x)$ \\
+            \hline                                                                                                                       \\
+            \textbf{Statement} & \textbf{Name} & \textbf{Description}                    & \textbf{Constraint}                           \\
+            \hline                                                                                                                       \\
+            $x = \&a$          & alloca        & \makecell[cl]{The address of a is                                                       \\assigned to x.}  & $pts(x) = \{a\} \cup pts(x)$                    \\
+            $x = y$            & copy          & \makecell[cl]{Variable y is assigned                                                    \\to x.}            & $pts(y) = pts(x)$                        \\
+            $x = *y$           & load          & \makecell[cl]{Load value of y and                                                       \\assign to x.}       & $\forall p \in pts(y) \colon pts(p) = pts(x)$ \\
             $*x = y$           & store         & \makecell[cl]{Store y into value of x.} & $\forall p \in pts(x) \colon pts(y) = pts(p)$ \\
-            $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                             \\assigned to x.} & $pts(y.f) = pts(x)$                      \\
+            $x = y.f$          & field         & \makecell[cl]{Field f of variable y is                                                  \\assigned to x.} & $pts(y.f) = pts(x)$                      \\
         \end{tabular}
     \end{center}
     \caption{Constraints of an equality-based pointer analysis.}
