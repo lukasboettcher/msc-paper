@@ -872,7 +872,7 @@ Unfortunately the current state of the spbla project's\footnote{\url{https://git
 During the writing of this thesis another library with a focus on static analysis, SVF\footnote{\url{https://github.com/SVF-tools/SVF}}, introduced support for context-free path queries \cite{lei2022taming}. Although the software developed as part of this thesis makes heavy use of the SVF library in \autoref{chap:main}, standalone context-free path querying approaches for solving pointer analyses were not used during development as the support was introduced in SVF during the late development of PTAGPU.
 \section{Related Work}
 \subsection{SVF}\label{sec:svf}
-As mentioned in \autoref{sec:pta} a pointer analysis is the basis for many types of static analyses.
+As mentioned in \autoref{sec:pta}, a pointer analysis is the basis for many types of static analyses.
 One such analysis framework is SVF\footnote{\url{http://svf-tools.github.io/SVF}}, a project that aims to enable scalable and precise interprocedural static value-flow analysis \cite{sui2016svf}. The SVF tool consists of a number of subcomponents that represent individual analysis use cases, such as use-after-free and source-sink error detection \cite{sui2014detecting}, whole program pointer analysis and on-demand value flow analysis \cite{sui2018value} to name a few.
 SVF as a framework also allows users to extend and implement custom analysis solutions that build on top of the subcomponents that make up SVF and LLVM, which serves as a base and data source for SVF, see \autoref{fig:svf}.
 This gives SVF a degree of modularity that other current static analysis frameworks, such as \cite{shi2018pinpoint}, often lack.
@@ -898,8 +898,8 @@ See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{t
 
 The typical analysis run with SVF starts off with a pointer analysis that first derives a constraint graph from the PAG, similar to the procedure described in \autoref{sec:ander}.
 The constraint graph is then fed into a pointer analysis algorithm such as the state-of-the-art interprocedural Andersen style Wave Propagation algorithm.
-The result is a points-to set for each top-level variable and address-taken variable, as well as a call-graph, that represents an over-approximation for each direct and indirect function call.
-Given the points-to information SVF performs an initial mod-ref analysis run to find interprocedural side effects of variables. Given mod-ref and pointer information, defs and uses are then annotated in each procedure with alias sets of abstract memory objects that might be accessed indirectly by loads and stores.
+The result is an over-approximated points-to set for each top-level variable and address-taken variable, as well as a call-graph, that represents an over-approximation for each direct and indirect function call.
+Given the points-to information, SVF performs an initial mod-ref analysis run to find interprocedural side effects of variables. Given mod-ref and pointer information, defs and uses are then annotated in each procedure with alias sets of abstract memory objects that might be accessed indirectly by loads and stores.
 SVF also allows users to specify a memory partitioning strategy whereby the heap can be partitioned with varying granularity to allow for precision and scalability trade-offs.
 The properties that are of interest here are specifically the def-use chains of address-taken variables of pointers, which are difficult to compute compared to the def-use chains of top-level variables which are already available if the program in SSA form \cite{sui2016svf}.
 The difficulty arises from the seeming ambiguity of indirect accesses to address-taken variables through loads and stores in the program.
@@ -916,6 +916,7 @@ The components of each implementation can be split into three groups, the Graph,
 A set of Rules, which dictate how points-to information should be derived from each statement in the Graph. And a Solver which dictates the order in which the Rules are to be applied on the Graph, according to \cite{sui2016svf}.
 A user can then choose which components to reuse and which to replace or augment with custom algorithms or data structures.
 This modular approach makes it convenient to experiment with different in-memory representations of points-to data, as well as testing different methods for solving the constraint graph.
+The software developed in \autoref{chap:main} will use SVF as a basis for the pointer analysis.
 \subsection{Graspan}\label{sec:graspan}
 Graspan is a disk-based parallel graph system designed for computing transitive closures on very large graphs defined by context-free grammars. It was first introduced by \cite{wang2017graspan} with a CPU backend and later in \cite{zuo2021systemizing} with a GPU based backend.
 Disk-based means, that a given constraint-graph is divided into smaller subgraphs, called partitions, that are stored on non-volatile memory and loaded into memory in pairs to calculate the transitive closures in steps that lead to the desired pointer information - or any other static analysis solution that can be defined by a context-free grammar, see \autoref{sec:ander-cfl}.
