@@ -4,12 +4,12 @@ As the name suggests the core idea is to use GPUs for the purpose of performing 
 The library PTAGPU was developed as a whole program analysis module inside the SVF framework which is in turn built on top of the LLVM compiler system.
 \section{Integrating PTAGPU into SVF}\label{sec:integsvf}
 As described in \autoref{sec:svf} the SVF framework is capable of processing the LLVM-IR of a compiled program and capture the individual LLVM-IR instructions in a program assignment graph.
-When SVF is launched for a whole program analysis, the program assignment graph is further processed into a constraint graph that holds holds all relevant constraints for an initial pointer analysis, see \autoref{tab:ander}.
-At this point the constraint graph is passed into a class that inherits from the PointerAnalysis class, see \autoref{fig:pta-svf} for an overview of the pointer analysis class hierarchy in SVF.
-Since our goal is to implement a custom pointer analysis, we can inject out own implementation at this stage as a PointerAnalysis subclass.
-Specifically we inherit from the Andersen class which is itself a subclass of the PointerAnalysis class that implements the Andersen inclusion-based pointer analysis algorithm in SVF.
+When SVF is launched for a whole program analysis, the program assignment graph is further processed into a constraint graph that holds all relevant constraints for an initial pointer analysis, see \autoref{tab:ander}.
+At this point the constraint graph is passed into a class that inherits from the \verb|PointerAnalysis| class, see \autoref{fig:pta-svf} for an overview of the pointer analysis class hierarchy in SVF.
+Since our goal is to implement a custom pointer analysis, we can inject out own implementation at this stage as a \verb|PointerAnalysis| subclass.
+Specifically we inherit from the \verb|Andersen| class which is itself a subclass of the \verb|PointerAnalysis| class that implements the Andersen inclusion-based pointer analysis algorithm in SVF.
 By extensive use of runtime polymorphism most of SVF is implemented via virtual member functions - a construct specific to c++ - allowing for function overriding in subclasses. This makes implementing a custom pointer analysis easy as we can reuse most of the initialization steps and program assignment graph processing from the superclasses. Part of the processing is an initial topological sorting and the previously mentioned interpretation into a constraint graph.
-As a result we end up with a constraint graph and all strongly connected components of said graph when we initialize our PTAGPU class that inherits from the Andersen class.
+As a result we end up with a constraint graph and all strongly connected components of said graph when we initialize our PTAGPU class that inherits from the \verb|Andersen| class.
 The in-memory representation of constraint graphs or generic graphs in SVF is more akin to a linked list data structure where each node carries references to all outgoing and incoming edges and those edges carry references to source and destination nodes as well as auxiliary information, which is an ideal memory model for iterative algorithms such as the default Andersen algorithm where the algorithm works from one node to the next.
 Unfortunately this memory model is not ideal for parallel processing.
 For this reason we initially reinterpret the constraint graph into a more fitting data structure.
@@ -20,17 +20,17 @@ Similarly to the Graph component we also modify the Solver and Rule components i
 The details of the implementation will be described in detail in \autoref{sec:design}.
 
 \section{Goal of the Algorithm}
-Our goal is to use the provided program assigment graph from SVF and the derived constraint graph to compute a points-to set for each pointer variable in the program.
+Our goal is to use the provided program assignment graph from SVF and the derived constraint graph to compute a points-to set for each pointer variable in the program.
 Overall our algorithm is supposed to serve as an initial pointer analysis pass in the SVF framework. Together with the pointer information we can then proceed to build an over-approximated call graph.
 One might assume that no pointer information is needed for SVF to build a call graph for the program. Unfortunately indirect function invocations, where function are accessed by pointer dereferencing itself, requires us to build pointer information in order to create an over-approximated sound call graph. The over-approximate nature stems from the imprecision of Andersen's analysis. This limitation always remains, no matter the algorithm, since pointer analyses are fundamentally undecidable as was mentioned in \autoref{sec:pta}.
-It is important to consider that the initial pointer analysis does not directly produce any valuable information in terms of static analysis purposes. Instead we use the pointer information produced by the initial analysis for the call graph which is then used to refine the analysis result by applying a more precise flow- and/or context-sensitive analysis that produces the relevant results, which can then be used to derive value flow information that can directly be used for actual analysis purposes.
-Since we are applying a more precise pointer analysis at a later stage anyways one might argue that it would be wise to start off with such an analysis. For small programs this is a viable strategy, unfortunately these more precise analyses are currently not scalable for a whole program analysis and are only applied on-demand \cite{sui2016svf}. This is also one of the motivations for trying to accelerate the initial Anderen analysis specifically since it is performed on the entire program and thus can in theory profit from the paralellism of GPUs.
+It is important to consider that the initial pointer analysis does not directly produce any valuable information in terms of static analysis purposes. Instead, we use the pointer information produced by the initial analysis for the call graph which is then used to refine the analysis result by applying a more precise flow- and/or context-sensitive analysis that produces the relevant results, which can then be used to derive value flow information that can directly be used for actual analysis purposes.
+Since we are applying a more precise pointer analysis at a later stage anyway, one might argue that it would be wise to start off with such an analysis. For small programs this is a viable strategy, unfortunately these more precise analyses are currently not scalable for a whole program analysis and are only applied on-demand \cite{sui2016svf}. This is also one of the motivations for trying to accelerate the initial Andersen analysis specifically since it is performed on the entire program and thus can in theory profit from the parallelism of GPUs.
 
 \section{Design of the Algorithm}\label{sec:design}
 The PTAGPU library uses CUDA\footnote{\url{https://developer.nvidia.com/cuda-toolkit}}, an application programming interface language from NVIDIA, to program GPUs in C++.
-CUDA accomodates developers with a collection of abstractions that simplify operations with GPU compute and memory. NVIDIA also provides a standalone library for common parallel oeprations such as sorting and transformations named Thrust\footnote{\url{https://docs.nvidia.com/cuda/thrust/index.html}} which is also employed by PTAGPU for common sorting and deduplication operations.
+CUDA accommodates developers with a collection of abstractions that simplify operations with GPU compute and memory. NVIDIA also provides a standalone library for common parallel operations such as sorting and transformations named Thrust\footnote{\url{https://docs.nvidia.com/cuda/thrust/index.html}} which is also employed by PTAGPU for common sorting and deduplication operations.
 In principle all calculations that are executed with a GPU are denoted as kernels in CUDA. While GPU kernels and CPU code can be shared, CUDA provides some intrinsic operations that can only function when executed on a GPU.
-Likewise all CPU operations that rely on external libraries or non standard-library code are not supported in GPU kernels.
+Likewise, all CPU operations that rely on external libraries or non standard-library code are not supported in GPU kernels.
 
 \subsection{CUDA Architecture}
 The CUDA programming model revolves around blocks of threads. Each block of a kernel executes the same code with the same number of threads.
@@ -51,10 +51,10 @@ To start a computation, a collection of thread blocks are assigned to the availa
 \end{figure}
 \footnotetext{\url{https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/}}
 The execution order of individual Warps is handled by a Warp scheduler, that decides what Warps get executed at what time.
-The purpose of overprovisioning SMs with more blocks/Warps than they can concurrently execute is that when a single Warp executes a memory read/write operation other Warps can execute while the device is busy fetching the data.
+The purpose of over-provisioning SMs with more blocks/Warps than they can concurrently execute is that when a single Warp executes a memory read/write operation other Warps can execute while the device is busy fetching the data.
 Key specification for each SM of a certain compute capability are the following:
 \begin{itemize}
-    \item Memory Bandwith per SM
+    \item Memory Bandwidth per SM
     \item Total shared memory per SM
     \item Max number of threads per SM
     \item Max number of blocks per SM
@@ -66,11 +66,11 @@ Since each SM has multiple limited resources that can be controlled by the devel
 Given a device with compute capability 8.0 and a kernel that requires 256 registers per thread while also running 256 threads per block, we would essentially limit our execution to a single block per SM, since a device with compute capability 8.0 has 64K registers per SM.
 This might be disadvantageous, since the SM is in theory capable of working on up to 1024 threads.
 We might profit from reducing the amount of registers used per thread and thus increasing the occupancy on our GPU.
-Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionally profit from the use of a single resource.
+Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionately profit from the use of a single resource.
 For example compute intensive kernels require more registers per thread than kernels that are heavily reliant on memory operations. Increasing the use of shared memory does not always lead to a performance improvement and decreasing the number of required registers is not always possible.
 \subsubsection{Memory Accesses in CUDA}
 While modern GPUs can in theory perform multiple TFLOPS of calculations per second, effectively all calculations are limited by memory bandwidth.
-Consequently, how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps where consecutive threads access consecutive memory addresses are important so the memory read operation can be performed within a single transaction and not multiple strided reads.
+Consequently, how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps where consecutive threads access consecutive memory addresses are important, so the memory read operation can be performed within a single transaction and not multiple strided reads.
 \begin{figure}
     \centering
     \includegraphics[width=.7\textwidth]{img/cuda.png}
@@ -88,22 +88,22 @@ The memory in question is moved implicitly to the device that performs the read 
 The major advantage of unified memory is the fact that the memory allocation size is only limited by system memory, not device memory.
 This allows a CUDA program to potentially hold vastly more data in memory than would be possible with only GPU memory, while also moving the needed memory regions without much involvement of the developer.
 Crucially this keeps large data structures intact without splitting and partitioning them for incremental loading into GPU memory.
-This mirrors some of the core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
+This mirrors some core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
 Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this enables us to expand the scope of our analysis without requiring specialized GPU hardware.
 
 \subsubsection{CUDA Streams}
 GPUs are massively parallel. Oftentimes developers do want to perform multiple computations encapsulated in kernels in parallel.
 These computations require memory operations before and after to load and store the data to operate on.
 Since most GPUs allow for concurrent memory and compute operations it is desirable to be able to efficiently schedule concurrent operations such that while one kernel executes, another performs memory operations.
-Because kernels are launched asynchronously, we can utilize CUDA streams to string together multiple compute and memory operations so they are executed in order without interfering with other streams.
+Because kernels are launched asynchronously, we can utilize CUDA streams to string together multiple compute and memory operations, so they are executed in order without interfering with other streams.
 The GPU is then able to efficiently schedule multiple streams in order to maximize GPU utilization, see  \autoref{fig:cuda-stream} for an illustration.
-By default all cuda operations are executed on the default stream and thus memory operations block each other.
-Streams have to be created by the developer and are represented by structs in the program. These elements are then passed as arguments to the CUDA api function calls.
+By default, all CUDA operations are executed on the default stream and thus memory operations block each other.
+Streams have to be created by the developer and are represented by structs in the program. These elements are then passed as arguments to the CUDA API function calls.
 
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/cuda-stream.png}
-    \caption[CUDA strean illustration]{CUDA Stream: Serial Model vs Concurrent Model by Lei Mao łicensed under \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}; an illustration for the advantages of the CUDA stream api.}
+    \caption[CUDA stream illustration]{CUDA Stream: Serial Model vs Concurrent Model by Lei Mao licensed under \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}; an illustration for the advantages of the CUDA stream API.}
     \label{fig:cuda-stream}
 \end{figure}
 
@@ -111,9 +111,9 @@ Streams have to be created by the developer and are represented by structs in th
 As soon as the constraint graph is handed over to the CUDA section of the code some global state is initialized with the information from the constraint graph.
 This includes various counter variables for the number of nodes in the graph, as well as the initial unified memory allocations.
 When the counter for the number of nodes is first initialized the node count is read from the constraint graph and increased by 20 percent to reserve headroom for new nodes that might be added to the constraint graph during the execution of the algorithm.
-This ensures that each node has a well defined place in memory that can not be overwritten by subsequent nodes.
-In the current implementation, the algorithm allocates a fixed amount of unified memory accessible from the CPU and GPU. While this requires overprovisioning of memory for a given analysis without knowing the exact amount needed for the pointer analysis, dynamic allocation proves to be very challenging as it is difficult to deduce the exact required amount of GPU memory from a given constraint graph for a pointer analysis.
-Furthermore the allocated unified memory is further split into partitions of fixed size for the individual relations of the Andersen analysis.
+This ensures that each node has a well-defined place in memory that can not be overwritten by subsequent nodes.
+In the current implementation, the algorithm allocates a fixed amount of unified memory accessible from the CPU and GPU. While this requires over-provisioning of memory for a given analysis without knowing the exact amount needed for the pointer analysis, dynamic allocation proves to be very challenging as it is difficult to deduce the exact required amount of GPU memory from a given constraint graph for a pointer analysis.
+Furthermore, the allocated unified memory is further split into partitions of fixed size for the individual relations of the Andersen analysis.
 This includes three memory regions for pointer relations, one for copy relations and two regions for load and store relations between nodes.
 See the following diagram for the memory layout of an example allocation of 32 GiB of unified memory.
 \begin{center}
@@ -134,7 +134,7 @@ See the following diagram for the memory layout of an example allocation of 32 G
 Since a pointer analysis in general does not create new load or store relations in the constraint graph, these memory regions do not increase in size after initialization.
 Notably the pointer relations are split into three separate memory regions. This is needed for diffpoints calculations. This specific optimization was inspired by \cite{mendez2010parallel} among other works and will be explained in detail in \autoref{sec:diffpts}.
 After memory allocation is completed, CUDA streams are initialized for concurrent write operations into each memory region, as well as one stream for each of the available devices to enable computation on multiple GPUs in parallel.
-Finally the entire allocation of unified memory is set to ones by \verb|cudaMemset|. This ensures that the memory is not in an undefined state. Furthermore we can utilize this when reading from memory, since a memory region with all bits set to one represents unused space.
+Finally, the entire allocation of unified memory is set to ones by \verb|cudaMemset|. This ensures that the memory is not in an undefined state. Furthermore, we can utilize this when reading from memory, since a memory region with all bits set to one represents unused space.
 
 % This state is needed for the 
 
@@ -182,19 +182,19 @@ Finally the entire allocation of unified memory is set to ones by \verb|cudaMems
 %     \end{bytefield}
 % \end{center}
 
-\subsection{Sparse Bitvectors}
-At the core of PTAGPU all edges of the constraint graph are stored in sparse bitvectors.
-Sparse bitvectors are a data structure that can be used for storing binary values, such as adjacency information of a graph. Sparse bitvectors are especially suited to represent edges of very sparse graphs and allow for dynamic addition of new edges and nodes, something other sparse graph representation such as the compressed sparse row format do not facilitate. Since the constraint graph of pointer analysis problems is typically very sparse \cite{mendez2012gpu}, sparse bitvectors are an ideal data structure for pointer analysis on the GPU. Find the adjacency plot for the constraint graph of the linux kernel in \autoref{fig:linux-consg} as well as on overview for select open source programs and their constraint graph densities in \autoref{tab:benchmarkprograms}.
-Individual bitvectors contain three separate component, a base value, a set of bits and a next pointer.
-For the bitvectors to efficiently work, the entire codomain of the directed edge relation of a graph is split into evenly sized partitions.
-The edges of each partition, if it contains edges, are then stored in the bits of a bitvector. If we omit empty partitions of the edge codomain, we create a set of sparse bitvectors.
-The base value of each sparse bitvector represent the current offset for all bits in the bitvector.
-Similar to linked lists, sparse bitvectors reference the next sparse bitvector in a field. This allows iteration through adjacent outgoing edges of a specific type for a given node by working through the next bitvectors until there is no next bitvector defined.
-The head bitvector for each node is stored in a pre defined memory location, which is directly derivable from the node index.
-The exact position for each node in each memory partition can be calculated by multiplying the node index with the width of a single element in a sparse bitvector. This offset is then added to the overall offset of the memory partition to find the head bitvector for a specific edge type of a node, see \autoref{lst:getindex} for the implementation in PTAGPU.
+\subsection{Sparse bit vectors}
+At the core of PTAGPU all edges of the constraint graph are stored in sparse bit vectors.
+Sparse bit vectors are a data structure that can be used for storing binary values, such as adjacency information of a graph. Sparse bit vectors are especially suited to represent edges of very sparse graphs and allow for dynamic addition of new edges and nodes, something other sparse graph representation such as the compressed sparse row format do not facilitate. Since the constraint graph of pointer analysis problems is typically very sparse \cite{mendez2012gpu}, sparse bit vectors are an ideal data structure for pointer analysis on the GPU. Find the adjacency plot for the constraint graph of the Linux kernel in \autoref{fig:linux-consg} as well as on overview for select open source programs and their constraint graph densities in \autoref{tab:benchmarkprograms}.
+Individual bit vectors contain three separate component, a base value, a set of bits and a next pointer.
+For the bit vectors to efficiently work, the entire codomain of the directed edge relation of a graph is split into evenly sized partitions.
+The edges of each partition, if it contains edges, are then stored in the bits of a bit vector. If we omit empty partitions of the edge codomain, we create a set of sparse bit vectors.
+The base value of each sparse bit vector represent the current offset for all bits in the bit vector.
+Similar to linked lists, sparse bit vectors reference the next sparse bit vector in a field. This allows iteration through adjacent outgoing edges of a specific type for a given node by working through the next bit vectors until there is no next bit vector defined.
+The head bit vector for each node is stored in a pre-defined memory location, which is directly derivable from the node index.
+The exact position for each node in each memory partition can be calculated by multiplying the node index with the width of a single element in a sparse bit vector. This offset is then added to the overall offset of the memory partition to find the head bit vector for a specific edge type of a node, see \autoref{lst:getindex} for the implementation in PTAGPU.
 \begin{listing}
     \begin{minted}{c++}
-// src it the node for which we want to find the head bitvector
+// src it the node for which we want to find the head bit vector
 // rel is the andersen relation for which we want to find the outgoing edges
 __host__ __device__ index_t getIndex(uint src, uint rel)
 {
@@ -216,19 +216,19 @@ __host__ __device__ index_t getIndex(uint src, uint rel)
     return src * ELEMENT_WIDTH;
 }
     \end{minted}
-    \caption{Calculating the correct index of a node's head bitvector in unified memory.}
+    \caption{Calculating the correct index of a node's head bit vector in unified memory.}
     \label{lst:getindex}
 \end{listing}
-Following, each unit in the sparse bitvector linked list will be called an element as is conventional for linked lists.
-When deciding on the memory characteristics of the individual elements, the traits of the CUDA api need to be taken into consideration.
+Following, each unit in the sparse bit vector linked list will be called an element, as is conventional for linked lists.
+When deciding on the memory characteristics of the individual elements, the traits of the CUDA API need to be taken into consideration.
 One possible optimization are coalesced memory accesses, where consecutive threads in a Warp access consecutive memory locations.
-Furthermore we can optimize the memory operations of a Warp such that we access 128 bytes in total per Warp, since this allows us to fully saturates the memory controller while only requiring a single coalesced memory transaction \cite{mendez2012gpu}.
+Furthermore, we can optimize the memory operations of a Warp such that we access 128 bytes in total per Warp, since this allows us to fully saturates the memory controller while only requiring a single coalesced memory transaction \cite{mendez2012gpu}.
 If we take the optimal memory transaction of 128 bytes and split it evenly across all 32 threads of a Warp, we get 4 bytes of memory associated with each thread.
 As a result we set the size of each element to 128 bytes and each thread in a Warp manages a single word or 4 bytes of the element.
-Coincidentally an unsigned integer is 4 bytes wide on 64-bit systems, thus each thread accesses its memory in the form of an unsinged integer.
+Coincidentally an unsigned integer is 4 bytes wide on 64-bit systems, thus each thread accesses its memory in the form of an unsigned integer.
 Using unsigned integers also has the advantage of allowing for simple bitwise operations, which are required since we store individual bits in the 4 bytes of memory instead of numerical values for most of the words in each element.
 Numerical values are only stored in the base and next words of the element.
-Each sparse bitvector element has the following layout.
+Each sparse bit vector element has the following layout.
 \begin{center}
     \definecolor{lightcyan}{rgb}{0.84,1,1}
     \definecolor{lightgreen}{rgb}{0.64,1,0.71}
@@ -244,20 +244,20 @@ Each sparse bitvector element has the following layout.
     \end{bytefield}
 \end{center}
 \subsubsection{64-bit Addresses}
-This sparse bitvector layout is inspired by the layout presented in \cite{mendez2012gpu}.
+This sparse bit vector layout is inspired by the layout presented in \cite{mendez2012gpu}.
 The notable difference being a switch from 32-bit to 64-bit addresses and the use of unified memory instead of only device memory.
-This is a requirement for using an address space larger than 16GiB, since we are addressing 4-byte wide words.
-While this reduces the data density of each bitvector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^66$ bytes, is worth the tradeoff as it eliminates any practical upper limits on memory allocation.
-\subsubsection{Inserting new Bitvectors}
-If our algorithm ever reaches a point where we need to add a new edge into an element with a mismatched base, we are required to create a new element with the correct base and append it to the likned list of bitvectors by referencing the correct memory address in the next field.
+This is a requirement for using an address space larger than 16 GiB, since we are addressing 4-byte wide words.
+While this reduces the data density of each bit vector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^66$ bytes, is worth the trade-off as it eliminates any practical upper limits on memory allocation.
+\subsubsection{Inserting new bit vectors}
+If our algorithm ever reaches a point where we need to add a new edge into an element with a mismatched base, we are required to create a new element with the correct base and append it to the linked list of bit vectors by referencing the correct memory address in the next field.
 Since we are operating on multiple nodes concurrently, we need to keep track of the already occupied memory for each of the memory partitions. This is achieved by utilizing some of the counters from the CUDA initialization.
 These are incremented via atomic CUDA instructions each time a new element is created.
 Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
 \subsection{Edge Insertion}
-With the concept of sparse bitvectors established and required variables initialized, the PTAGPU algorithm can begin inserting the linear in-memory representation of the constraint graph derived from SVF, see \autoref{sec:integsvf}, into sparse bitvectors residing on unified memory.
+With the concept of sparse bit vectors established and required variables initialized, the PTAGPU algorithm can begin inserting the linear in-memory representation of the constraint graph derived from SVF, see \autoref{sec:integsvf}, into sparse bit vectors residing on unified memory.
 The core idea is to handle all edge labels concurrently in individual streams by invoking an edge insertion kernel for each type of edge.
-Inside each kernel each source node is processed by a single Warp which inserts the outgoing edges into the correct memory location of the correct element inside the sparse bitvector for the given source node.
+Inside each kernel each source node is processed by a single Warp which inserts the outgoing edges into the correct memory location of the correct element inside the sparse bit vector for the given source node.
 In order to efficiently distribute the work across all available Warps in all kernels, some pre-processing is needed before each kernel is launched.
 Given a set of edges of the same type to be processed by a single kernel, for example all store edges in the constraint graph, the pre-processing steps are illustrated in \autoref{fig:edge-insert}.
 \begin{figure}
@@ -272,19 +272,19 @@ Step 2 can be performed by the \verb|thrust::sort| algorithm and step 3 and 4 ca
 One small but important detail is that before we start the pre-processing we insert a pair of \verb|UINT_MAX| values into the array for the source indices and into the array for the destination indices.
 Having one additional pair assures that step 3 writes the end index for the last actual $(src,dst)$ pair into the offset array.
 
-After the pre-processing is done, all three arrays are fed into an insertion kernel that distributes all source nodes among the available Warps, which then insert the destinations indices into the elements of the sparse bitvector.
+After the pre-processing is done, all three arrays are fed into an insertion kernel that distributes all source nodes among the available Warps, which then insert the destinations indices into the elements of the sparse bit vector.
 Insertion into the element first calculates the correct base and then sets the correct bit to one if an element already exists, else a new element is first created.
 
 \begin{figure}
     \begin{center}
         \begin{tikzpicture}[squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}]
             \def\step{0.3}
-            \node[align=left,font = {\scriptsize}] at (20*\step,9*\step) {Example insertion of an edge pair $(3,66)$.\\This is achieved by finding the correct element in the sparse\\bitvector for node index 3 and setting the correct bit to 1 for node 66.\\\\1) Calculate $base = 66/(29*32) = 0$; $word = (66\%(29*32))/32 = 2$; $bit = 66\%32 = 2$\\2) Find the \verb|head element| for node 3 by using the getIndex function from \autoref{lst:getindex}.};
+            \node[align=left,font = {\scriptsize}] at (20*\step,9*\step) {Example insertion of an edge pair $(3,66)$.\\This is achieved by finding the correct element in the sparse\\bit vector for node index 3 and setting the correct bit to 1 for node 66.\\\\1) Calculate $base = 66/(29*32) = 0$; $word = (66\%(29*32))/32 = 2$; $bit = 66\%32 = 2$\\2) Find the \verb|head element| for node 3 by using the getIndex function from \autoref{lst:getindex}.};
             \draw [decorate,decoration = {calligraphic brace,aspect=0.28,amplitude=10pt},line width=0.5mm] (0*\step,3*\step) --  (32*\step,3*\step);
             \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,1.5*\step) {\tiny\r};
             \draw[step=\step] (0,0) grid (32*\step,1*\step);
             \node at (29*\step+0.5*\step,0.5*\step) {\small U};\node at (30*\step+0.5*\step,0.5*\step) {\small U};\node at (31*\step+0.5*\step,0.5*\step) {\small U};
-            \node[draw,align=left,font = {\tiny}] at (40*\step,0.5*\step) {Head element in the sparse\\bitvector for node 3.};
+            \node[draw,align=left,font = {\tiny}] at (40*\step,0.5*\step) {Head element in the sparse\\bit vector for node 3.};
             
             \draw (2*\step,0) -- (0,-3*\step);\draw (3*\step,0) -- (32*\step,-3*\step);
             
@@ -301,25 +301,25 @@ Insertion into the element first calculates the correct base and then sets the c
             \draw[step=\step] (0,-17*\step) grid (32*\step,-18*\step);
             \foreach \r in {0,...,1} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};\node at (2*\step+0.5*\step,-17.5*\step) {\small1};\foreach \r in {3,...,31} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};
             \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-18.5*\step) {\tiny\r};
-            \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bitvector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|\\marked by a U.};
+            \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bit vector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|\\marked by a U.};
             \draw[-{Stealth[red]}] (2.5*\step,-15*\step) -- (2.5*\step,-16.5*\step);
         \end{tikzpicture}
     \end{center}
-    \caption{An example procedure for inserting a single edge into a sparse bitvector.}
+    \caption{An example procedure for inserting a single edge into a sparse bit vector.}
     \label{fig:edgeinsert}
 \end{figure}
-The previous example in \autoref{fig:edgeinsert} showcases the process for inserting a single edge into an empty sparse bitvector.
-Later insertions always check whether a base is already defined in each element of the sparse bitvector and insert the edges accordingly.
-The base of subsequent elements in the sparse bitvectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bitvector, elements might have to be shifted around.
+The previous example in \autoref{fig:edgeinsert} showcases the process for inserting a single edge into an empty sparse bit vector.
+Later insertions always check whether a base is already defined in each element of the sparse bit vector and insert the edges accordingly.
+The base of subsequent elements in the sparse bit vectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bit vector, elements might have to be shifted around.
 In practice these insertions are executed for each source node in parallel by multiple Warps on the GPU.
 
 \subsection{Concurrent Graph Rewriting}\label{sec:concurrgraph}
-As soon as all required edges from the constraint graph have been inserted into the correct sparse bitvectors, the Solver part of PTAGPU needs to apply the Andersen constraints from \autoref{tab:cfl-ander2} on the graph in order to calculate the correct points-to sets.
+As soon as all required edges from the constraint graph have been inserted into the correct sparse bit vectors, the Solver part of PTAGPU needs to apply the Andersen constraints from \autoref{tab:cfl-ander2} on the graph in order to calculate the correct points-to sets.
 As with all calculations on the GPU we need to explicitly take care of concurrency.
 Similar to edge insertion the ideal method of distributing work on the GPU is to assign units of work to individual Warps with minimal thread divergence.
 When applying the production rules introduced in \autoref{tab:cfl-ander2} we can achieve this by simply using a worklist to spread out all node indices from the constraint graph across all available Warps.
 This way each Warp handles the outgoing rewrite rules for a single node.
-Furthermore this removes any need for specialized scheduling, because in the case that one Warp takes comparatively more time than others, the other Warps simply request new node indeces to work on.
+Furthermore, this removes any need for specialized scheduling, because in the case that one Warp takes comparatively more time than others, the other Warps simply request new node indices to work on.
 The inherent synchronization of the worklist already takes care of optimally distributing the work.
 
 Unfortunately we cannot simply use the production rules from the context free grammar approach in \autoref{tab:cfl-ander2}. The reason being that these rules can not be mapped onto strictly unidirectional rewrite paths in the graph.
@@ -333,7 +333,7 @@ See \autoref{fig:problem-rewrite} a) for an illustration of this problem from \c
     \label{fig:problem-rewrite}
 \end{figure}
 A key insight from \cite{mendez2012gpu} was that, "Parallel execution of the rewrite rules \dots requires synchronization in the graph data structure.".
-The intuitive solution to this problem is shown in \autoref{fig:problem-rewrite} b). For most constraints, simply inverting the edges is enough to allow for concurrent addition of new edges into the sparse bitvectors without mutatung other node's outgoing edges.
+The intuitive solution to this problem is shown in \autoref{fig:problem-rewrite} b). For most constraints, simply inverting the edges is enough to allow for concurrent addition of new edges into the sparse bit vectors without mutatung other node's outgoing edges.
 The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \autoref{tab:rewrite-rules}. These new rewrite rules can be interpreted as strictly unidirectional paths in the constraint graph.
 \begin{table}
     \begin{center}
@@ -350,9 +350,9 @@ The resulting graph rewriting rules from \cite{mendez2012gpu} are listed in \aut
     \label{tab:rewrite-rules}
 \end{table}
 One remaining problem is, that the store rewrite rule currently require inverse point-to edge information which, if additionally stored, would greatly increase the required memory by keeping track of outgoing and incoming points-to edges at the same time for each node to allow efficient access.
-The proposed solution to this problem from \cite{mendez2012gpu} is to apply the store rewrite rules in two steps. First all node pairs $(x,y)$ are collected such that y has outgoing store edges and points to x. Second all pairs with matching x are assigned to the same Warp and the resulting inverse copy edges are added to the sparse bitvectors of x, denoting the destinations of the outgoing inverse store edges from node y.
-Using this method requires one additional step compared to the copy and load rules but this step can be processed very efficiently with thrust library calls, similar to the edge insertion routine.
-With this two step procedure in place, we can preserve the property that each Warp only appends outgoing edges to the sparse bitvector of it's currently assigned node and refrain from explicit synchronization.
+The proposed solution to this problem from \cite{mendez2012gpu} is to apply the store rewrite rules in two steps. First all node pairs $(x,y)$ are collected such that y has outgoing store edges and points to x. Second all pairs with matching x are assigned to the same Warp and the resulting inverse copy edges are added to the sparse bit vectors of x, denoting the destinations of the outgoing inverse store edges from node y.
+Using this method requires one additional step compared to the copy and load rules, but this step can be processed very efficiently with thrust library calls, similar to the edge insertion routine.
+With this two-step procedure in place, we can preserve the property that each Warp only appends outgoing edges to the sparse bit vector of it's currently assigned node and refrain from explicit synchronization.
 \subsubsection{Rule Application Algorithm}\label{sec:main-algo}
 With both data structures and graph rewrite rules in place and optimized for operation on the GPU, the main algorithm of PTAGPU can be launched.
 The pseudocode for the most important procedures of PTAGPU is available, the main loop can be found in \autoref{alg:ptagpu-main}.
@@ -376,16 +376,16 @@ The pseudocode for the most important procedures of PTAGPU is available, the mai
 \end{algorithm}
 The first step is to execute the initialization steps from \autoref{sec:init}.
 Since we want to apply all rewrite rules of the Andersen style analysis until no further changes are applied, we perform the application of the rules in a while loop that breaks if no changes are detected after one iteration finishes.
-We can observe the changes by counting the number of recently added points-to edges present in the newPts sparse bitvectors.
+We can observe the changes by counting the number of recently added points-to edges present in the \verb|newPts| sparse bit vectors.
 While it might seem inefficient to count through all elements in each iteration of the loop, this can be done very efficiently, since we employ massively parallel GPU kernels.
-If changes to the points-to memory region have been detected, the algorithm continues with updating the newPts, currentPts and oldPts memory.
+If changes to the points-to memory region have been detected, the algorithm continues with updating the \verb|newPts|, \verb|currentPts| and \verb|oldPts| memory.
 This serves the purpose of preventing redundant work, by only applying rewrite rules on the points-to edges that have been added since the last iteration.
 This process is called a delta-update or diffpoints-update, the specifics of this optimization are presented in \autoref{sec:diffpts} and the pseudocode is available in \autoref{alg:ptagpu-updatepts}.
 \begin{algorithm}
     \caption{Update Points Kernel}\label{alg:ptagpu-updatepts}
     \begin{algorithmic}
         \For{\texttt{each node i in constraint graph}}
-        \State \texttt{traverse nextPoints sparse bitvector for node i}
+        \State \texttt{traverse nextPoints sparse bit vector for node i}
         \State \texttt{collect all set bits}
         \State \texttt{compute $\Delta \mathcal{P} = nextPoints\oplus oldPoints$} \algorithmiccomment{find all new bits via xor}
         \State \texttt{update $currentPoints = \Delta \mathcal{P}$; $oldPoints = \Delta \mathcal{P} \cup oldPoints$; $newPoints = \emptyset$}
@@ -395,7 +395,7 @@ This process is called a delta-update or diffpoints-update, the specifics of thi
         \EndFor
     \end{algorithmic}
 \end{algorithm}
-After delta-updates are done, all points-to edges that are new since the last iteration are present in the currentPts memory region.
+After delta-updates are done, all points-to edges that are new since the last iteration are present in the \verb|currentPts| memory region.
 Before launching the first kernel for the rewrite rules, we can launch the CPU portion of our analysis asynchronously.
 In practice this is realized by using C++ asynchronous futures.
 See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main loop.
@@ -403,13 +403,13 @@ See \autoref{sec:cpugpu} for the details of this forked CPU portion of the main 
 While the asynchronous CPU code executes on a different set of CPU threads, the first GPU kernel can be launched.
 The parameters for CUDA kernel launches include the block- and gridsize, as well as amount of shared memory and stream assignments.
 % As PTAGPU was developed with current NVIDIA graphics cards in mind, compute capabilities 7.5 and 8.6 were targeted during compilation.
-Since GPUs have a set amount of SMs that can process thread blocks in parallel, it is a good idea to split the entire body of work into at least as many thread blocks as SMs are availavble.
+Since GPUs have a set amount of SMs that can process thread blocks in parallel, it is a good idea to split the entire body of work into at least as many thread blocks as SMs are available.
 During development both an RTX 2080 and a RTX 3080 Ti with 48 and 82 SMs respectively were used. The PTAGPU algorithm queries the available GPUs' SM count and uses it as the gridsize.
 Because the first GPU kernel processes the bulk of all rewrite rules, it heavily uses registers in each thread during execution. An individual thread requires over 128 active registers to apply the rewrite rules. As such we are limited to 64K registers per thread block per the specifications of the CUDA compute capabilities 7.0 and up. Following this hardware limitation is the fact that we can at most create 256 threads per thread block in order to not overflow the available registers per SM.
-The result is a blocksize of 256, which is split into eight addressable Waps of size 32 each.
+The result is a blocksize of 256, which is split into eight addressable Warps of size 32 each.
 
 PTAGPU also includes experimental support for multi-GPU CUDA execution. This requires a unique stream per device which are initialized in the initialization steps, see \autoref{sec:init}.
-This stream, together with 256 bytes of shared memory and the grid-/ blocksize specifications, make up the arguments for the first kernel launch. Later kernel launches, including the edge insertion kernel, follow the same process for finding optimal launch parameters. Furthermore CUDA provides helper functions such as \verb|cudaOccupancyMaxPotentialBlockSize| for finding the optimal grid- and blocksizes of a specific kernel.
+This stream, together with 256 bytes of shared memory and the grid-/ blocksize specifications, make up the arguments for the first kernel launch. Later kernel launches, including the edge insertion kernel, follow the same process for finding optimal launch parameters. Furthermore, CUDA provides helper functions such as \verb|cudaOccupancyMaxPotentialBlockSize| for finding the optimal grid- and blocksizes of a specific kernel.
 
 The pseudocode for the first GPU kernel is available in \autoref{alg:ptagpu-copyload} as well as subsequent device function invocations.
 \begin{algorithm}
@@ -470,7 +470,7 @@ Inside the \verb|applyRewriteRule| function, depending on the current rewrite ru
         \end{minipage}
         \begin{minipage}[t]{0.8\textwidth}
             to: currently processing node\\
-            bits: of the head element in to's sparse bitvector\\
+            bits: of the head element in to's sparse bit vector\\
             smem: shared memory
         \end{minipage}
     }\label{alg:ptagpu-collectbv}
@@ -485,7 +485,7 @@ Inside the \verb|applyRewriteRule| function, depending on the current rewrite ru
         \EndIf
     \end{algorithmic}
 \end{algorithm}
-The destinations of the outgoing edges are collected by traversing the correct sparse bitvector of the origin node, element by element.
+The destinations of the outgoing edges are collected by traversing the correct sparse bit vector of the origin node, element by element.
 Following this, all outgoing edges of the collected destination nodes are merged with the outgoing edges of the current origin node of the Warp.
 For example, applying the copy rewrite rule $origin \xrightarrow{c^{-1}} y \xrightarrow{p} z \mathrel{\leadsto} origin \xrightarrow{p} z$ PTAGPU first collects all targets of the outgoing inverse copy edges, then merges all the outgoing points-to edges from the collected nodes with the outgoing points-to edges of the origin node.
 This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu-mergebv}, at the end of the \verb|applyRewriteRule| function.
@@ -517,14 +517,14 @@ This is realized by the \verb|mergeBitvectors| function, see \autoref{alg:ptagpu
         \EndIf
         \EndIf
         
-        \State \texttt{toIndex $\leftarrow$ toNext} \algorithmiccomment{read next elements in sparse bitvectors}
+        \State \texttt{toIndex $\leftarrow$ toNext} \algorithmiccomment{read next elements in sparse bit vectors}
         \State \texttt{fromIndex $\leftarrow$ fromNext}
         \EndWhile
         \EndFor
     \end{algorithmic}
 \end{algorithm}
-In principle the bitwise merging of two sparse bitvectors works exactly the same as during edge insertion, shown in \autoref{fig:edgeinsert}, during initialization.
-Notably, applying the storeCollect rewrite rule, does not merge any sparse bitvectors, but instead collects store and points-to pairs which are later processed in another kernel for the reasons outlined in the beginning of \autoref{sec:concurrgraph}.
+In principle the bitwise merging of two sparse bit vectors works exactly the same as during edge insertion, shown in \autoref{fig:edgeinsert}, during initialization.
+Notably, applying the \verb|storeCollect| rewrite rule, does not merge any sparse bit vectors, but instead collects store and points-to pairs which are later processed in another kernel for the reasons outlined in the beginning of \autoref{sec:concurrgraph}.
 After all rewrite rules are applied and worklists are reset, the first kernel execution concludes.
 
 Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store and points-to pairs previously collected are preprocessed by the thrust library, see \autoref{fig:edge-insert} for an overview of the preprocessing steps, and then fed into the second GPU kernel \autoref{alg:ptagpu-store} where the last rewrite rule is finally applied.
@@ -542,17 +542,17 @@ Following the first kernel execution in \autoref{alg:ptagpu-copyload}, the store
 \end{algorithm}
 
 After the second and final kernel execution, we await the conclusion of the asynchronous CPU procedure.
-Since the CPU procedure stores all new edges it finds in pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bitvectors by reusing the edge insertion code during initialization.
+Since the CPU procedure stores all new edges it finds in a pair of vectors, representing the adjacency information of all new edges, we can insert all new edges into the sparse bit vectors by reusing the edge insertion code during initialization.
 
 At the end of each iteration of the main loop PTAGPU optionally presents the current memory usage and distribution among the memory regions for debugging end evaluation purposes. This includes statistics for the elapsed time of each component in PTAGPU - as measured by the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
 
 \subsubsection{Diffpoints Updates}\label{sec:diffpts}
 If the main loop of PTAGPU were to repeatedly iterate and apply the same rewrite rules on every node, every iteration would repeat the work of the previous operation, making the algorithm very inefficient.
 This problem does not only apply to PTAGPU, all pointer analyses need to prevent excessive repeating of already finished work.
-As such many implementations use a concept called diffpoints or delta-updates that is meant to prevents redundant work. Also pointer analyses inside SVF make use of diffpoints in order to speed up the calculations.
+As such many implementations use a concept called diffpoints or delta-updates that is meant to prevent redundant work. Also, pointer analyses inside SVF make use of diffpoints in order to speed up the calculations.
 Diffpoints work by dividing the points-to relations calculated during application of the constraints into separate sets.
 One set describing all new edges that are calculated in the current iteration, one set for all points-to edges calculated in the previous iteration and one set for the bulk of all prior points-to edges.
-As can be seen in \autoref{alg:ptagpu-updatepts}, the update process between iterations be be realized by simple set operations or more optimized bitwise operations.
+As can be seen in \autoref{alg:ptagpu-updatepts}, the update process between iterations be realized by simple set operations or more optimized bitwise operations.
 $$\Delta \mathcal{P} = nextPoints\oplus oldPoints$$
 $$currentPoints = \Delta \mathcal{P}\wedge oldPoints = \Delta \mathcal{P} \cup oldPoints\wedge newPoints = \emptyset$$
 After the update at the beginning of each iteration, all procedures apply the rewrite rules on the $\mathtt{currentPoints}$ set.
@@ -560,12 +560,12 @@ With diffpoints in place we can ensure that each rewrite rule is only processed 
 
 One problem that arises from using diffpoints, is the fact that whenever a new copy edge is added into the constraint graph - which can happen dynamically by applying rewrite rules - the next iteration does not process all points-to edges that need to be considered because of the addition of the copy edge. Instead, only those points-to edges are processed, which are in $\mathtt{currentPoints}$. The straightforward solution to this problem is to always explicitly work through all points-to edges in $\mathtt{coldPoints}$ whenever a new copy edge is added.
 This ensures that no points-to edges are skipped during processing.
-\subsection{Combining CPU and GPU}\label{sec:cpugpu}
+\subsection{Combining CPU and GPU execution}\label{sec:cpugpu}
 PTAGPU strives to achieve optimal concurrent execution.
 This includes not only all GPU cores, but also all CPU cores.
 To achieve this, parts of the main loop, see \autoref{alg:ptagpu-main}, are split into an asynchronous CPU execution.
-This asynchronous CPU part is implemented with async futures.
-Async futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using async futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogenous compute capabilities. See the following basic example in \autoref{lst:asynccpu}.
+This asynchronous CPU part is implemented with asynchronous futures.
+Asynchronous futures are a feature of the C++ programming language that allows for the implementation of asynchronous programming. Asynchronous programming allows for the concurrent execution of multiple tasks within a single program, enabling improved efficiency and scalability. By using asynchronous futures, developers can write code that can take advantage of multiple cores or perform time-consuming tasks without blocking the main thread of the program. This can greatly improve the performance of C++ programs, especially on systems with multiple CPU cores or heterogeneous compute capabilities. See the following basic example in \autoref{lst:asynccpu}.
 
 \begin{listing}
     \begin{minted}{c++}
@@ -587,7 +587,7 @@ Async futures are a feature of the C++ programming language that allows for the 
     int final_result = result.get();
     std::cout << "The final result is: " << final_result << std::endl;
     \end{minted}
-    \caption{C++ Sample illustrating Async Futures}
+    \caption{C++ Sample illustrating Asynchronous Futures}
     \label{lst:asynccpu}
 \end{listing}
 
@@ -618,33 +618,33 @@ The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
         \EndProcedure
     \end{algorithmic}
 \end{algorithm}
-As we do not make use of multiple CPU cores in any other part of the program, we can utilize a majority of the available CPU cores for the async execution.
-The calculation that is performed on the CPU reads the available points-to information to resolve all getelementpointer edges in the constraint graph.
-While other GPU implementations of Andersen's analysis, such as \cite{mendez2012gpu}, also perform the gep calculations on the GPU, this leaves the CPU mostly idle during the execution.
-Furthermore paralellizing the application of gep constraints is not as easily done as for the copy, load and store constraints, since each gep instruction carries an offset value. Given the offset value and the points-to target of a node we need to calculate the correct abstract memory object that the offset references. This can be done on the GPU as demonstrated by \cite{mendez2012gpu}, but is more efficient to implement on a CPU, since gep instructions can reference random regions in memory, which would require explicit synchronization on the GPU.
-Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for gep constraint resolution, since PTAGPU is directly integrated into SVF, which already offers a variety of optimized methods for gep constraint resolution.
-Lastly the asynchronous CPU code also resolves all indirect callsites and updates the callgraph. 
+As we do not make use of multiple CPU cores in any other part of the program, we can utilize a majority of the available CPU cores for the asynchronous execution.
+The calculation that is performed on the CPU reads the available points-to information to resolve all \verb|getelementpointer| edges in the constraint graph.
+While other GPU implementations of Andersen's analysis, such as \cite{mendez2012gpu}, also perform the \verb|gep| calculations on the GPU, this leaves the CPU mostly idle during the execution.
+Furthermore, parallelizing the application of \verb|gep| constraints is not as easily done as for the copy, load and store constraints, since each \verb|gep| instruction carries an offset value. Given the offset value and the points-to target of a node we need to calculate the correct abstract memory object that the offset references. This can be done on the GPU as demonstrated by \cite{mendez2012gpu}, but is more efficient to implement on a CPU, since \verb|gep| instructions can reference random regions in memory, which would require explicit synchronization on the GPU.
+Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for \verb|gep| constraint resolution, since PTAGPU is directly integrated into SVF, which already offers a variety of optimized methods for \verb|gep| constraint resolution.
+Lastly the asynchronous CPU code also resolves all indirect call-sites and updates the call-graph. 
 Arguably this is one of the most important aspects of PTAGPU that differentiates it from other GPU implementations of Andersen's analysis.
-Indirect callsite resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
-Since an over-approximated callgraph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect callsites is an important step for the analyis to be usable by further analyses inside SVF. Furthermore, connecting the arguments and parameters at indirect callsites is required to produce complete pointer information.
+Indirect call-site resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
+Since an over-approximated call-graph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect call-sites is an important step for the analysis to be usable by further analyses inside SVF. Furthermore, connecting the arguments and parameters at indirect call-sites is required to produce complete pointer information.
 \subsection{Feeding the Results back into SVF}\label{sec:feedingback}
 At some point PTAGPU concludes its calculation and has produced a constraint graph inside unified memory, which includes an over-approximation of the points-to set for each pointer variable.
-On its own the constraint graph in the form of sparse bitvectors is not digestible by SVF. For this reason an interface is created to enable SVF to use the points-to information produced by SVF.
+On its own the constraint graph in the form of sparse bit vectors is not digestible by SVF. For this reason an interface is created to enable SVF to use the points-to information produced by SVF.
 Internally the \verb|PointerAnalysis| superclass inside SVF provides an \verb|alias| method that takes two node indices and outputs the alias relation of both nodes.
-To provide pointer information for SVF, PTAGPU overwrites the alias method with its own implementation that reads points-to edges from the sparse bitvectors inside unified memory and outputs one of the possible alias relations from \autoref{eq:alias1} and \autoref{eq:alias2}.
+To provide pointer information for SVF, PTAGPU overwrites the alias method with its own implementation that reads points-to edges from the sparse bit vectors inside unified memory and outputs one of the possible alias relations from \autoref{eq:alias1} and \autoref{eq:alias2}.
 One of the consumers of this information is the SVF test suite\footnote{\url{https://github.com/SVF-tools/Test-Suite}} which will be used in \autoref{sec:testsuite} for verifying the results PTAGPU produces against a know corpus of test programs that include various pointer relations.
 
-Beyond points-to information, the \verb|updateCallGraph| method in \autoref{alg:ptagpu-cpu}, which resolves indirect callsites, also requires access to the points-to information of PTAGPU. To facilitate this, some of the SVF implementations for callsite resolution are overwritten in PTAGPU to redirect the reading of points-to information into the unified memory.
+Beyond points-to information, the \verb|updateCallGraph| method in \autoref{alg:ptagpu-cpu}, which resolves indirect call-sites, also requires access to the points-to information of PTAGPU. To facilitate this, some SVF implementations for call-site resolution are overwritten in PTAGPU to redirect the reading of points-to information into the unified memory.
 The benefit of using C++ polymorphism to overwrite these internal methods from SVF is that the points-to information can remain in unified memory and does not have to be explicitly written back into main memory to enable SVF to access it.
 This improves performance without impeding the functions of SVF.
 \section{Experimental Results}
-To validate PTAGPU in termns of correctness and performance, various test cases and benchmark programs were used.
+To validate PTAGPU in terms of correctness and performance, various test cases and benchmark programs were used.
 Following, the experimental results are split into correctness testing and performance testing.
-While for correctness testing a pre defined test suite was used, a collection of current open source programs of varying complexity was compiled for real world performance testing.
+While for correctness testing a pre-defined test suite was used, a collection of current open source programs of varying complexity was compiled for real world performance testing.
 
 \subsection{Test Suite}\label{sec:testsuite}
-For correctness testing the PTABENCH\footnote{\url{https://github.com/SVF-tools/Test-Suite}}, a sub project of the SVF framework, was used.
-The PTABENCH repository includes a set of small test programs that are compiled into LLVM bitcode. These test programs contain a set of constraints that represent a state that should be reached by the repsective analyses.
+For correctness testing the PTABENCH\footnote{\url{https://github.com/SVF-tools/Test-Suite}}, a subproject of the SVF framework, was used.
+The PTABENCH repository includes a set of small test programs that are compiled into LLVM bitcode. These test programs contain a set of constraints that represent a state that should be reached by the respective analyses.
 The test suite implements unit tests for all variants of pointer analysis included in SVF as well as more complex analyses, such as memory leak detection and multithreaded flow analyses. 
 Part of the test corpus are specific edge cases that test against quirks of real programs, such as SPEC CPU2000, in order to ensure all analyses produce sound results given complex input programs.
 As part of PTAGPU, testing with PTABENCH was enabled, to apply the unit tests and ensure that the results produced are sound and complete.
@@ -684,21 +684,21 @@ As an example, see the following test program in \autoref{lst:testcase} that che
     \label{lst:testbash}
 \end{listing}
 
-When executing the PTABENCH test suite while using PTAGPU as the pointer analysis backend, all 107 unit tests applicable to pointer analyses successfully produce the expected results with regards to pointer and indirect callsite information.
-The results can be replicated within the source code either by applying the test suite manually with a simple bash script like the one in \autoref{lst:testbash} or by using the CTest library of CMAKE and building the \verb|test| target.
+When executing the PTABENCH test suite while using PTAGPU as the pointer analysis backend, all 107 unit tests applicable to pointer analyses successfully produce the expected results regarding pointer and indirect call-site information.
+The results can be replicated within the source code either by applying the test suite manually with a simple bash script like the one in \autoref{lst:testbash} or by using the CTest library of CMake and building the \verb|test| target.
 From this it follows that PTAGPU produces sound, field-sensitive pointer analysis results and does not reduce the accuracy of other pointer analyses in SVF in any way.
-Interestingly, the current state of the art pointer analysis implementation of SVF, the Andersen based wave propagation algorithm with diffpoints, \texttt{wavediff} in short, successfully analyzes only 106 of the 107 unit tests.
+Interestingly, the current state-of-the-art pointer analysis implementation of SVF, the Andersen based wave propagation algorithm with diffpoints, \texttt{wavediff} in short, successfully analyzes only 106 of the 107 unit tests.
 One test case concerning nested structs failed during testing of the wavediff algorithm. This discrepancy was not further investigated.
 
 \subsection{Benchmark Suite}
 To assess the performance of PTAGPU and establish a set of metrics that can be compared to other pointer analysis implementations, a suite of open source projects was compiled and used as input for pointer analyses.
 The collection of open source projects was selected to present a diverse set of code bases in terms of code style and size of the programs.
 The collection consists of 16 programs, each varying in complexity. See \autoref{tab:benchmarkprograms} for an overview of all the selected benchmark programs.
-As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, Fortran, and many other systems programming languages.
+As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, FORTRAN, and many other systems programming languages.
 
 The evaluation was performed on PTAGPU, the proposed algorithm of this thesis, and both the Andersen based wave propagation algorithm, wavediff, and the naive implementation of the Andersen analysis in SVF.
-The Andersen wave propagation algorithm represents a highly optimized current state of the art inclusion-based, field-sensitive, context- and flow-insensitive pointer analysis.
-Furthermore the results will showcase the differences between sequential CPU implemantations and parallel GPU implementations.
+The Andersen wave propagation algorithm represents a highly optimized current state-of-the-art inclusion-based, field-sensitive, context- and flow-insensitive pointer analysis.
+Furthermore, the results will showcase the differences between sequential CPU implementations and parallel GPU implementations.
 
 \begin{table}
     \centering
@@ -724,25 +724,25 @@ Furthermore the results will showcase the differences between sequential CPU imp
         zstd          & 280  & 101  & 2.3M    & 6.260e-05 & 0.362       & 1.5.2   \\
         \hline
     \end{tabular}
-    \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode filesize in kilobytes, density and average out degree for each constraint graph.}
+    \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode file size in kilobytes, density and average out degree for each constraint graph.}
     \label{tab:benchmarkprograms}
 \end{table}
 
 \subsubsection{Methodology}
-To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalant bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
-Instead of manually intercepting each compile operation for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bticode generating compiler flags during the build process.
-Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure scripts.
+To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalent bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
+Instead of manually intercepting each compile operation for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bitcode generating compiler flags during the build process.
+Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure-scripts.
 Each of the resulting bitcode files are provided together with the source code of PTAGPU.
-Furthermore, if a given project provided a test suite, that test suite was used to verify the functions of the compiled program to ensure that the compilation successfully produced a working binary-bitcode pair. 
+Furthermore, if a given project provided a test suite, that test suite was used to verify the functions of the compiled program to ensure that the compilation successfully produced a working binary-bitcode-pair. 
 
 After the bitcode was generated, it was used as input for all three pointer analysis algorithms via a driver program that loads the bitcode into memory, initializes SVF and executes the correct pointer analysis.
-All analyses that were evaluated were compiled with gcc and the optimization flag \verb|-O2|.
+All analyses that were evaluated were compiled with GCC and the optimization flag \verb|-O2|.
 Each analysis was performed 5 times to ensure the results are consistent and reliable and not falsified by external factors. This was necessary, since two of the hardware setups were part of a shared server.
 The individual time measurements were performed by using the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
 
 \subsubsection{Hardware Setup}
 Three separate machines were used to evaluate the pointer analyses.
-Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors capable of simultaneous multithreading, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs and machine C was a cloud instance equipped with 256 vCPUs and an A100 GPU with 80GiB of HBM2 memory.
+Machine A was equipped with a 12 core AMD Ryzen 5900x CPU, 32 GiB of memory and an NVIDIA RTX 3080Ti, machine B was equipped with two sockets of 16 core Intel Xeon Gold 6242 processors capable of simultaneous multithreading, 1.5 TiB of memory and 8 NVIDIA RTX 2080 GPUs and machine C was a cloud instance equipped with 256 vCPUs and an A100 GPU with 80 GiB of HBM2 memory.
 Because some of the larger programs in the benchmark suite exceeded the 32 GiB of system memory on machine A during analysis, the reported results were mostly gathered on machine B and C, except for \autoref{fig:comparehw} where the effects of the different hardware specifications were evaluated.
 To test how much the larger benchmark programs benefit from more graphics memory, the set of benchmarks were executed on the A100 GPU of machine C as well, which is equipped with more graphics memory than available on the RTX 3080Ti and RTX 2080.
 
@@ -775,8 +775,8 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
     \caption[Benchmark results comparing PTAGPU with CPU analyses on machine B]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine B.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
     \label{tab:benchmarkresults}
 \end{table}
-The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticably slower than the wavediff analysis for these programs.
-Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initializations. For example the PTAGPU analysis for the nano program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
+The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticeably slower than the wavediff analysis for these programs.
+Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initialization. For example the PTAGPU analysis for the "nano" program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
 Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively, although both programs are relatively large and the analysis was not dominated by CUDA memory management but the primary kernel instead, see \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
 \begin{figure}
     \centering
@@ -784,18 +784,18 @@ Notably the results for the benchmarks "git" and "php" achieved an especially lo
     \caption[Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks.]{Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks in a memory constrained environment on machine B.}
     \label{fig:stackedbar-problem}
 \end{figure}
-Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B had a disproportionally negative effect on performance.
-This can be attributed to the fact that allocating more unified memory than available graphics memory leads to an excess of page faults, as soon as the grahpics memory is exhausted during migration from the CPU to the GPU. 
-While this could be mitigated by prefetching only the required memory regions into the GPU memory on-demand during analysis, this would require partitioning the sparse bitvectors into chunks that entirely fit into graphics memory, which is not trivially done for larger analyses, especially not dynamically.
+Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B had a disproportionately negative effect on performance.
+This can be attributed to the fact that allocating more unified memory than available graphics memory leads to an excess of page faults, as soon as the graphics memory is exhausted during migration from the CPU to the GPU. 
+While this could be mitigated by prefetching only the required memory regions into the GPU memory on-demand during analysis, this would require partitioning the sparse bit vectors into chunks that entirely fit into graphics memory, which is not trivially done for larger analyses, especially not dynamically.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations.png}
     \caption[Detailed statistics from machine B]{Detailed statistics from pointer analyses on machine B.}
     \label{fig:correlations}
 \end{figure}
-To verify that the performance impact was caused by pagefaults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space, verifying the suspected problem.
+To verify that the performance impact was caused by page faults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space, verifying the suspected problem.
 
-To further evaluate the performance of the PTAGPU algorithm without being memory constrained, machine C was used to analyze the benchmark programs with PTAGPU again. Using the NVIDIA A100 GPU on machine C, all analyses except vmlinux fit into the 80 GiB of graphics memory. The results of the second benchmarks can be found in \autoref{tab:benchmarkresults-a100}.
+To further evaluate the performance of the PTAGPU algorithm without being memory constrained, machine C was used to analyze the benchmark programs with PTAGPU again. Using the NVIDIA A100 GPU on machine C, all analyses except "vmlinux" fit into the 80 GiB of graphics memory. The results of the second benchmarks can be found in \autoref{tab:benchmarkresults-a100}.
 \begin{table}
     \centering
     \begin{tabular}{||c S[table-format = 5.3] S[table-format = 3.3] S r||}
@@ -829,7 +829,7 @@ Specifically the "git", "php", "postgres" and "python" benchmarks improved the m
 Depending on the benchmark program, PTAGPU was up to four times faster than the wavediff algorithm. Compared to the naive implementation of Andersen's algorithm in SVF, PTAGPU was several orders of magnitude faster on every one of the benchmarks.
 At its slowest PTAGPU was about 50\% as fast as the wavediff algorithm, ignoring minimal analyses, such as "nano".
 
-Looking at the distribution of time spent on the individual components of PTAGPU in \autoref{fig:stackedbar-a100}, it is evident that the bulk of the time is spent in the main kernel and the asynchronous resolution of gep constraints and indirect callsites. With an increase in size of the constraint graph, the relative time spent in the asynchronous CPU portion increases, since the number of gep constraints tends to increase with the number of pointer variables in larger programs.
+Looking at the distribution of time spent on the individual components of PTAGPU in \autoref{fig:stackedbar-a100}, it is evident that the bulk of the time is spent in the main kernel and the asynchronous resolution of \verb|gep| constraints and indirect call-sites. With an increase in size of the constraint graph, the relative time spent in the asynchronous CPU portion increases, since the number of \verb|gep| constraints tends to increase with the number of pointer variables in larger programs.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/stackedbar-a100.png}
@@ -849,7 +849,7 @@ For PTAGPU, unified memory usage during analysis is a good indicator for runtime
 Interestingly the performance on the wavediff algorithm was worse in "postgres" than in "git" indicating that the CPU algorithms are more influenced by the overall size of the constraint graph.
 One hypothesis for these results is that the internal code structure of the benchmark programs greatly influences the parallel performance on the GPU.
 While relatively flat programs can benefit from parallel application of the Andersen constraints, programs that contain long nested chains of instructions do not benefit from concurrent rule application, since each instruction depends on the previous application of the constraint rules. See \autoref{lst:flatprogram} for an intuitive example for flat and nested program structures. Note that this example is not realistic and would likely be optimized by a compiler. In real programs, nested structs or classes in C++ tend to result in a nested program structure.
-This theory can explain the discrepancy between the benchmark results of "postgres" and "git". The C-specific \texttt{struct} keyword was used 13124 times in the source code of the postgres program, while being used 27459 times in the git source code. Hence, the apparent nested structure in the git source code could lead to a decreased speedup compared to the much larger but flatter code structure in the postgres source code.
+This theory can explain the discrepancy between the benchmark results of "postgres" and "git". The C-specific \texttt{struct} keyword was used 13124 times in the source code of the "postgres" program, while being used 27459 times in the git source code. Hence, the apparent nested structure in the git source code could lead to a decreased speedup compared to the much larger but flatter code structure in the "postgres" source code.
 
 \begin{listing}
     \begin{minted}{c}
@@ -873,12 +873,12 @@ Comparing the three different hardware configurations in \autoref{fig:comparehw}
     \caption[Comparison of the different hardware configurations.]{Comparison of the CPU and GPU runtime on the different hardware configurations.\\Here the benchmark program \texttt{python} was used to compare the different machines.}
     \label{fig:comparehw}
 \end{figure}
-Similarly PTAGPU also seems to benefit from higher boost frequencies of the GPU, since Machine A with an RTX 3080 Ti clocked at 1665 MHz outperformed the A100 clocked at 1410 MHz.
+Similarly, PTAGPU also seems to benefit from higher boost frequencies of the GPU, since Machine A with an RTX 3080 Ti clocked at 1665 MHz outperformed the A100 clocked at 1410 MHz.
 
 Lastly, an experimental multi-GPU implementation of PTAGPU was briefly tested against some of the benchmarks.
-Since PTAGPU synchronizes across each of the thread blocks via atomic incrementation of a worklist variable, the scope of the atomic incrementation can be extended from a single device to system wide atomic access as long as the devices support compute capability 6.0 or above.
+Since PTAGPU synchronizes across each of the thread blocks via atomic incrementation of a worklist variable, the scope of the atomic incrementation can be extended from a single device to system-wide atomic access as long as the devices support compute capability 6.0 or above.
 In theory this allows for simple multi-GPU execution of the PTAGPU analysis.
 In practice, when executing PTAGPU with multiple RTX 2080 GPUs on machine B, the performance decreased substantially.
 This can be explained by the fact that atomic access to a variable across multiple devices on a system requires more expensive synchronization than on a single device.
-Furthermore cross-device memory access is relatively slow. Here using faster GPU interconnects, like NVLink bridges between the GPUs could improve the performance.
-Improving the performance of PTAGPU with regards to the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually processed on each of the GPUs.
+Furthermore, cross-device memory access is relatively slow. Here using faster GPU interconnects, like NVLink bridges between the GPUs could improve the performance.
+Improving the performance of PTAGPU regarding the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually be processed on each of the GPUs.
