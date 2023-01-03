@@ -93,7 +93,7 @@ More often than not the pointer information alone does not provide an immediate 
 \end{listing}
 
 \subsection{Notions of Sensitivity in Pointer Analysis}
-As previously established, a complete pointer analysis is undecidable.
+As previously established, a complete general pointer analysis is undecidable.
 For this reason there are various notions of sensitivity when talking about pointer analysis.
 These notions represent a compromise between precision, scalability and complexity of the analysis.
 Following, some of the more common sensitivity notions will be illustrated to differentiate the more complex analyses from the less complex analyses and explain the impact of these sensitivities on actual performance when analyzing a program.
@@ -108,7 +108,7 @@ Following, some of the more common sensitivity notions will be illustrated to di
         char *name;
         int *age;
     } p1, p2;
-    p1.age = &a;
+    p1.age = &a; // the analysis can differentiate between p1.age and p1.name
     p1.name = &b;
         \end{minted}
     \caption{Field-sensitivity by example}
@@ -116,7 +116,7 @@ Following, some of the more common sensitivity notions will be illustrated to di
 \end{listing}
 
 Field-sensitivity describes how the pointer analysis algorithm handles structures in the program.
-Most programming languages that expose memory management to a developer, such as c, c++ and Rust, offer some form of structures to represent an object that internally holds multiple values where these values might be pointers, that reference memory locations.
+Most programming languages that expose memory management to a developer, such as C, C++ or Rust, offer some form of structures to represent an object that internally holds multiple values where these values might be pointers, that reference memory locations.
 If an analysis is field-sensitive, each field of each struct is represented in the analysis as an independent node that can point to unique memory locations, as long as the field can be statically determined during the analysis, see \autoref{lst:field}.
 If the field of a struct can not be statically determined, for example because of an arithmetic operation that produces multiple possible results for the offset during runtime, it is common for field-sensitive pointer analyses to fall back to a field-insensitive mode for the specific struct, wherein all fields of the struct are merged into a single abstract object.
 For the given example, \verb|p1.age| and \verb|p1.name| can point to different memory locations.
@@ -127,7 +127,7 @@ As a result the Person structs, p1 and p2, would be represented as a single obje
 
 \subsubsection{Array-sensitivity}
 Array-sensitivity is conceptually similar to field-sensitivity but often has different effects on the runtime of the analysis.
-For a given array $int arr[100]$ an array-sensitivie analysis would model each entry of the array, \newline e.g. arr[0], arr[1], \dots, with a unique node, whereas an insensitive analysis would model the array as a single node.
+For a given array $int arr[100]$ an array-sensitivie analysis would model each entry of the array, e.g. arr[0], arr[1], \dots, with a unique node, whereas an insensitive analysis would model the array as a single node.
 Generally speaking arrays are often homogeneous data structures that can hold a vast amount of data, compared to structs which are often more compact as they model attributes instead of raw data.
 Therefore, array-sensitivity if often omitted from whole program analyses, while field-sensitivity is common among pointer analyses.
 
@@ -144,7 +144,7 @@ For this reason, a lot of research is being done to develop methods that allevia
 Another aspect that greatly influences the precision of analyses is whether they are interprocedural or intraprocedural.
 An intraprocedural analysis only analyzes each function in an isolated context and disregards any influences on other functions or global state.
 Interestingly most compilers rely mostly on intraprocedural analysis for bug detection as it can be performed in parallel for each function independently and is in general much faster than interprocedural analysis.
-The following example \autoref{lst:intraprocedural} illustrates the shortcomings of only performing intraprocedural analysis. Essentially parameter passing especially of pointers is not taken into account properly for the calculation of points-to sets.
+The following example \autoref{lst:intraprocedural} illustrates the shortcomings of only performing intraprocedural analysis. Essentially parameter passing, especially of pointers, is not taken into account properly for the calculation of points-to sets.
 An interprocedural analysis overcomes these limitations by connecting parameters of functions and the arguments at the respective call-sites as well as the resulting return values in the graph structure that is used to solve the pointer analysis.
 Fundamentally an interprocedural analysis is related to another notion of sensitivity, context sensitivity, since every context-sensitive analysis has to be interprocedural in order to capture the context of each function call \cite{lin2015alias}.
 
@@ -163,8 +163,8 @@ Fundamentally an interprocedural analysis is related to another notion of sensit
 \end{listing}
 
 \subsubsection{Flow-sensitivity}
-When one performs a flow-sensitive pointer analysis, this means that the analysis takes into account the control flow of the program when calculating point-to information.
-As can be seen in \autoref{lst:flowsens}, a flow-sensitive analysis is in general more precise than a flow-insensitive analysis. Meanwhile, running a flow-sensitive analysis is also exponentially more expensive to compute as every step in a programs control flow carries its own state concerning points-to relations - especially when the control flow is complicated by complex conditional statements or recursive execution.
+When one performs a flow-sensitive pointer analysis, this means that the analysis takes into account the control flow of the program when calculating points-to information.
+As can be seen in \autoref{lst:flowsens}, a flow-sensitive analysis is in general more precise than a flow-insensitive analysis. Meanwhile, running a flow-sensitive analysis can also be exponentially more expensive to compute as every step in a programs control flow carries its own state concerning points-to relations - especially when the control flow is complicated by complex conditional statements or recursive execution.
 Although this problem can be slightly alleviated, by only considering program statements that manipulate pointers.
 Empirical studies have shown that for context-insensitive analyses, adding flow-sensitivity to the points-to calculation does not offer a significant precision improvement over flow-insensitive analyses \cite{hind2001pointer}. This makes using a flow-sensitive analysis without context-sensitivity unattractive as an initial analysis run. One should rather combine context- and flow-sensitivity in subsequent analysis runs to refine the initial points-to results in certain regions of code that profit from a further refinement.
 Using a flow-sensitive pointer analysis also generates must-alias relations, compared to the comparatively imprecise may-alias relations from a flow-insensitive pointer analysis.
@@ -194,7 +194,7 @@ While a sound may-alias analysis requires that no possible alias relations are m
 \subsubsection{Context-sensitivity}
 As previously alluded to, context-sensitivity is directly related to interprocedural analyses, since it governs how call sites and called functions are interpreted during the analysis.
 More specifically a context-sensitive analysis tries to qualify variables both on the heap and stack with contextual information such that different contexts can be established, where for example points-to information for a variable differs, thus improving the precision of the analysis.
-To achieve this context-sensitivity can be modeled by using call-sites and objects to differentiate qualify the context for variables \cite{smaragdakis2015pointer}. Depending on the programming language at hand, these methods can yield different precision. It has been established that object-oriented languages like Java greatly benefit from object-sensitivity over call-site-sensitivity, while more procedural languages like C benefit from call-site-sensitivity.
+To achieve this, context-sensitivity can be modeled by using call-sites and objects to differentiate and qualify the context for variables \cite{smaragdakis2015pointer}. Depending on the programming language at hand, these methods can yield different precision. It has been established that object-oriented languages like Java greatly benefit from object-sensitivity over call-site-sensitivity, while more procedural languages like C benefit from call-site-sensitivity.
 While a context-sensitive analysis would in theory provide more precision and therefore decrease the average size of points-to sets, in practice most context-sensitive pointer analyses, when applied to sizeable codebases, quickly grow out of control as the analysis explodes in terms of running time and space requirements \cite{smaragdakis2014introspective}. In contrast, context-insensitive analyses anecdotally scale better than context-sensitive analyses.
 
 \begin{listing}
