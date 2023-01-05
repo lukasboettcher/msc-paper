@@ -780,16 +780,17 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
         zstd         & 11.063       & 13.172     & 0.84      & 7958.999        & \qty{454}{\mebi\byte}   \\
         \hline
     \end{tabular}
-    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine B]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine B.\\The $^a$ denotes that the analysis did not finish in under 10 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
+    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine B]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine B using an RTX 2080 GPU.\\The $^a$ denotes that the analysis did not finish in under 24 hours.\\The $^b$ denotes that the analysis failed to compute a solution.}
     \label{tab:benchmarkresults}
 \end{table}
 The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticeably slower than the wavediff analysis for these programs.
-Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initialization. For example the PTAGPU analysis for the "nano" program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
-Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively, although both programs are relatively large and the analysis was not dominated by CUDA memory management but the primary kernel instead, see \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
+Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initialization. For example the PTAGPU analysis for the "nano" program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual compute kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
+
+Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively on machine B, although both programs are relatively large and the analysis was not dominated by CUDA memory management but the primary kernel instead as can be seen in \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{img/stackedbar-problems.png}
-    \caption[Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks.]{Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks in a memory constrained environment on machine B.}
+    \caption[Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks.]{Stacked bar graph for PTAGPU runtime on git, postgres and php benchmarks in a memory constrained environment on machine B using an RTX 2080 GPU.}
     \label{fig:stackedbar-problem}
 \end{figure}
 Looking at the third graph in \autoref{fig:correlations}, it is clear that exceeding the 12 GiB of graphics memory available per GPU on machine B had a disproportionately negative effect on performance.
@@ -798,7 +799,7 @@ While this could be mitigated by prefetching only the required memory regions in
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations.png}
-    \caption[Detailed statistics from machine B]{Detailed statistics from pointer analyses on machine B.}
+    \caption[Detailed statistics from machine B]{Detailed statistics from pointer analyses on machine B using an RTX 2080 GPU.}
     \label{fig:correlations}
 \end{figure}
 To verify that the performance impact was caused by page faults in the CUDA driver, the \verb|strace| tool was used to inspect the system calls during the PTAGPU analysis of the php program, which showed \verb|ioctl| system calls to and from the CUDA unified memory address space, verifying the suspected problem.
@@ -828,7 +829,7 @@ To further evaluate the performance of the PTAGPU algorithm without being memory
         zstd         & 11.063       & 9.795           & 1.12      & \qty{454}{\mebi\byte}    \\
         \hline
     \end{tabular}
-    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine C]{Benchmark results comparing PTAGPU, Andersen wavediff and naive Andersen analysis measured in seconds. Executed on machine C.\\The $^a$ denotes that the analysis ran out of memory.}
+    \caption[Benchmark results comparing PTAGPU with CPU analyses on machine C]{Benchmark results comparing PTAGPU and Andersen wavediff measured in seconds. Executed on machine C using an A100 GPU.\\The $^a$ denotes that the analysis ran out of memory.}
     \label{tab:benchmarkresults-a100}
 \end{table}
 
@@ -849,14 +850,14 @@ Looking at the statistics for the benchmarks on machine C in \autoref{fig:correl
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/correlations-a100.png}
-    \caption[Detailed statistics from machine C.]{Detailed statistics from pointer analyses on machine C.\\Memory constraints removed by using an A100.}
+    \caption[Detailed statistics from machine C.]{Detailed statistics from pointer analyses on machine C.\\Memory constraints removed by using an A100 GPU.}
     \label{fig:correlations-a100}
 \end{figure}
 For example the "postgres" benchmark program consists of both more nodes and more edges in the constraint graph, but performs considerably better during analysis than benchmarks with smaller constraint graphs, such as "git".
 For PTAGPU, unified memory usage during analysis is a good indicator for runtime performance.
 Interestingly the performance on the wavediff algorithm was worse in "postgres" than in "git" indicating that the CPU algorithms are more influenced by the overall size of the constraint graph.
 One hypothesis for these results is that the internal code structure of the benchmark programs greatly influences the parallel performance on the GPU.
-While relatively flat programs can benefit from parallel application of the Andersen constraints, programs that contain long nested chains of instructions do not benefit from concurrent rule application, since each instruction depends on the previous application of the constraint rules. See \autoref{lst:flatprogram} for an intuitive example for flat and nested program structures. Note that this example is not realistic and would likely be optimized by a compiler. In real programs, nested structs or classes in C++ tend to result in a nested program structure.
+While relatively flat programs can benefit from parallel application of the Andersen constraints, programs that contain long nested chains of instructions do not benefit from concurrent rule application as much, since each instruction depends on the previous application of the constraint rules. See \autoref{lst:flatprogram} for an intuitive example for flat and nested program structures. Note that this example is not realistic and would likely be optimized by a compiler. In real programs, nested structs or classes in C++ tend to result in a nested program structure.
 This theory can explain the discrepancy between the benchmark results of "postgres" and "git". The C-specific \texttt{struct} keyword was used 13124 times in the source code of the "postgres" program, while being used 27459 times in the git source code. Hence, the apparent nested structure in the git source code could lead to a decreased speedup compared to the much larger but flatter code structure in the "postgres" source code.
 
 \begin{listing}
@@ -882,11 +883,12 @@ Comparing the three different hardware configurations in \autoref{fig:comparehw}
     \label{fig:comparehw}
 \end{figure}
 Similarly, PTAGPU also seems to benefit from higher boost frequencies of the GPU, since Machine A with an RTX 3080 Ti clocked at 1665 MHz outperformed the A100 clocked at 1410 MHz.
+Total graphics memory does not affect the analysis performance of PTAGPU, as long as enough memory is available.
 
 Lastly, an experimental multi-GPU implementation of PTAGPU was briefly tested against some of the benchmarks.
-Since PTAGPU synchronizes across each of the thread blocks via atomic incrementation of a worklist variable, the scope of the atomic incrementation can be extended from a single device to system-wide atomic access as long as the devices support compute capability 6.0 or above.
+Since PTAGPU synchronizes across each of the thread blocks via atomic incrementation of a worklist variable, the scope of the atomic incrementation can be extended from a single device to system-wide atomic access as long as the devices support the CUDA compute capability 6.0 or above.
 In theory this allows for simple multi-GPU execution of the PTAGPU analysis.
 In practice, when executing PTAGPU with multiple RTX 2080 GPUs on machine B, the performance decreased substantially.
 This can be explained by the fact that atomic access to a variable across multiple devices on a system requires more expensive synchronization than on a single device.
 Furthermore, cross-device memory access is relatively slow. Here using faster GPU interconnects, like NVLink bridges between the GPUs could improve the performance.
-Improving the performance of PTAGPU regarding the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually be processed on each of the GPUs.
+Improving the performance of PTAGPU regarding the multi-GPU synchronization overhead would require partitioning the constraint graph into partitions that could individually be processed on each of the GPUs, which is beyond the scope of the current PTAGPU implementation.
