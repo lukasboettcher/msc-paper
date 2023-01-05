@@ -33,7 +33,7 @@ In principle all calculations that are executed with a GPU are denoted as kernel
 Likewise, all CPU operations that rely on external libraries or non standard-library code are not supported in GPU kernels.
 
 \subsection{CUDA Architecture}
-The CUDA programming model revolves around blocks of threads. Each block of a kernel executes the same code with the same number of threads.
+The CUDA programming model revolves around blocks of threads. Whenever a kernel is launched on the GPU, a set number of blocks is specified to work on the kernel. Each block of a kernel executes the same code with the same number of threads.
 Thread blocks are further divided into Warps, which are a collection of 32 threads each. This type of parallel processing is called SIMT, for single instruction, multiple threads.
 In reality a Warp is more analogous to a single vectorized operation that executes 32 units of work or lanes at once than a collection of individual threads, although each thread in a Warp has its own instruction address counter. Having instruction address counters per thread allows independent branching, resulting in thread divergence. The divergence is implemented by executing each conditional branch sequentially for all threads in a Warp and disabling the threads that do not execute the specific branch.
 This way each thread in a Warp always executes the same instruction if active. Since branches are not executed in parallel, thread divergence is discouraged if possible for performance reasons.
@@ -41,7 +41,7 @@ These specifications of Warps are uniform in all CUDA hardware and resemble a si
 To more easily differentiate between different generations of hardware, the CUDA programming model is segmented into tiers of compute capabilities, where newer hardware with newer capabilities receives a higher compute capability.
 Each CUDA capable device has a number of streaming multiprocessors, in short SMs, which themselves have a certain amount of L1 shared memory and number of registers per core among other resources. 
 While this is similar to how CPU cores operate, GPU programming uses a flat memory hierarchy with less reliance on caching and more on raw memory bandwidth. For this reason each core in an SM has a relatively large register file so that a single CUDA thread commonly uses hundreds of registers.
-The entire work that is to be performed by a single kernel is called a grid, which is divided evenly into blocks, which are divided into Warps. Both the grid and each block can be indexed in up to three dimensions, which is useful for working with shader, global illumination rendering and less useful for static analyses.
+The entire work that is to be performed by a single kernel is called a grid, which is divided evenly into blocks, which are divided into Warps. Both the grid and each block can be indexed in up to three dimensions, which is useful for working with shaders, global illumination rendering and less useful for static analyses.
 To start a computation, a collection of thread blocks are assigned to the available SMs of a GPU. Depending on the hardware and compute capability, a single SM can execute multiple Warps from the assigned thread blocks in parallel as long as enough resources are available in the SM.
 \begin{figure}
     \centering
@@ -50,7 +50,7 @@ To start a computation, a collection of thread blocks are assigned to the availa
     \label{fig:cuda-sm}
 \end{figure}
 \footnotetext{\url{https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/}}
-The execution order of individual Warps is handled by a Warp scheduler, that decides what Warps get executed at what time.
+The execution order of individual Warps is handled by a Warp scheduler on each of the SMs, that decides what Warps get executed at what time.
 The purpose of over-provisioning SMs with more blocks/Warps than they can concurrently execute is that when a single Warp executes a memory read/write operation other Warps can execute while the device is busy fetching the data.
 Key specification for each SM of a certain compute capability are the following:
 \begin{itemize}
@@ -63,14 +63,16 @@ Key specification for each SM of a certain compute capability are the following:
 
 \subsubsection{Occupancy}
 Since each SM has multiple limited resources that can be controlled by the developer, namely register count, shared memory and thread count, a kernel has to be designed with these limitations in mind such that a maximally concurrent execution is possible.
-Given a device with compute capability 8.0 and a kernel that requires 256 registers per thread while also running 256 threads per block, we would essentially limit our execution to a single block per SM, since a device with compute capability 8.0 has 64K registers per SM.
+Given a device with compute capability 8.0 and a kernel that requires 256 registers per thread while also running 256 threads per block, we would essentially limit our execution to a single block per SM, since a device with compute capability 8.0 has 64K available registers per SM.
 This might be disadvantageous, since the SM is in theory capable of working on up to 1024 threads.
 We might profit from reducing the amount of registers used per thread and thus increasing the occupancy on our GPU.
 Counterintuitively high occupancy does not always lead to better performance. Some programs disproportionately profit from the use of a single resource.
 For example compute intensive kernels require more registers per thread than kernels that are heavily reliant on memory operations. Increasing the use of shared memory does not always lead to a performance improvement and decreasing the number of required registers is not always possible.
+PTAGPU is very compute intensive, compared to typical GPU algorithms.
+As a result, a large number of registers are required during computation, which limits the maximal occupancy on the GPU.
 \subsubsection{Memory Accesses in CUDA}
 While modern GPUs can in theory perform multiple TFLOPS of calculations per second, effectively all calculations are limited by memory bandwidth.
-Consequently, how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps where consecutive threads access consecutive memory addresses are important, so the memory read operation can be performed within a single transaction and not multiple strided reads.
+Consequently, how we access the GPU memory is very important for the overall performance of our analysis. Specifically coalesced memory accesses of individual Warps, where consecutive threads access consecutive memory addresses, are important, so the memory read operation can be performed within a single transaction and not multiple strided reads.
 \begin{figure}
     \centering
     \includegraphics[width=.7\textwidth]{img/cuda.png}
@@ -80,25 +82,26 @@ Consequently, how we access the GPU memory is very important for the overall per
 The GPU memory controller on modern graphics cards can typically execute memory read or write operations in granularities of 32 bytes up to 128 bytes in total.
 As a result it is for example more efficient to load a single byte of memory per thread in a Warp, compared to loading 8 bytes per thread, since we would exceed the maximum of 128 bytes per memory transaction and require multiple memory accesses.
 In terms of time needed per instruction, global memory operations are typically two orders of magnitude slower compared to operations on SM registers or shared memory in L1 cache. For this reason CUDA programs can perform exponentially worse if memory accesses are random or strided inefficiently instead of coalesced.
+PTAGPU uses coalesced memory accesses per Warp to minimize the overhead associated with reading and writing GPU memory.
 
 \subsubsection{Unified Memory}
 When CUDA code is executed on a 64-bit host system, the developer can use a single memory address space for host and device memory.
 Using this unified memory address space allows memory access from both CPU and GPU in the same address space without explicit memory copy operations.
-The memory in question is moved implicitly to the device that performs the read operation. The CUDA API also allows the developer to assign preferred residency for specific memory regions, as well as prefetching memory asynchronously for a device. When prefetching is properly employed, unified memory achieves the same performance as dedicated device memory \cite{cudaunifiedmem}.
+The memory in question is moved implicitly to the device that performs the read operation. The CUDA API also allows the developer to assign preferred residency for specific memory regions, as well as prefetching memory asynchronously for a device. When prefetching is properly employed, unified memory can achieve the same performance as dedicated device memory \cite{cudaunifiedmem}.
 The major advantage of unified memory is the fact that the memory allocation size is only limited by system memory, not device memory.
-This allows a CUDA program to potentially hold vastly more data in memory than would be possible with only GPU memory, while also moving the needed memory regions without much involvement of the developer.
+This allows a CUDA program to potentially hold vastly more data in memory than would be possible within only GPU memory, while also moving the needed memory regions without much involvement of the developer.
 Crucially this keeps large data structures intact without splitting and partitioning them for incremental loading into GPU memory.
 This mirrors some core ideas of Graspan \autoref{sec:graspan} where parts of the graph are written to disk to conserve memory usage.
-Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this enables us to expand the scope of our analysis without requiring specialized GPU hardware.
+Since many high performance computing environments have vastly more main memory available than individual GPUs have device memory, this theoretically enables us to expand the scope of our analysis without requiring specialized GPU hardware with more device memory.
 
 \subsubsection{CUDA Streams}
 GPUs are massively parallel. Oftentimes developers do want to perform multiple computations encapsulated in kernels in parallel.
-These computations require memory operations before and after to load and store the data to operate on.
+These computations require memory operations before and after to load and store the data they operate on.
 Since most GPUs allow for concurrent memory and compute operations it is desirable to be able to efficiently schedule concurrent operations such that while one kernel executes, another performs memory operations.
-Because kernels are launched asynchronously, we can utilize CUDA streams to string together multiple compute and memory operations, so they are executed in order without interfering with other streams.
+Because kernels are launched asynchronously, we can utilize CUDA streams to string together multiple compute and memory operations, so that they are executed in order without interfering with other streams.
 The GPU is then able to efficiently schedule multiple streams in order to maximize GPU utilization, see  \autoref{fig:cuda-stream} for an illustration.
 By default, all CUDA operations are executed on the default stream and thus memory operations block each other.
-Streams have to be created by the developer and are represented by structs in the program. These elements are then passed as arguments to the CUDA API function calls.
+Streams have to be created by the developer and are represented by structs in the program. These elements are then passed as arguments to the CUDA API function calls to specify what operation use which stream.
 
 \begin{figure}
     \centering
@@ -108,33 +111,36 @@ Streams have to be created by the developer and are represented by structs in th
 \end{figure}
 
 \subsection{Initialization of CUDA code}\label{sec:init}
-As soon as the constraint graph is handed over to the CUDA section of the code some global state is initialized with the information from the constraint graph.
+As soon as the constraint graph is handed over to the CUDA section of PTAGPU some global state is initialized with the information from the constraint graph.
 This includes various counter variables for the number of nodes in the graph, as well as the initial unified memory allocations.
 When the counter for the number of nodes is first initialized the node count is read from the constraint graph and increased by 20 percent to reserve headroom for new nodes that might be added to the constraint graph during the execution of the algorithm.
 This ensures that each node has a well-defined place in memory that can not be overwritten by subsequent nodes.
 In the current implementation, the algorithm allocates a fixed amount of unified memory accessible from the CPU and GPU. While this requires over-provisioning of memory for a given analysis without knowing the exact amount needed for the pointer analysis, dynamic allocation proves to be very challenging as it is difficult to deduce the exact required amount of GPU memory from a given constraint graph for a pointer analysis.
 Furthermore, the allocated unified memory is further split into partitions of fixed size for the individual relations of the Andersen analysis.
 This includes three memory regions for pointer relations, one for copy relations and two regions for load and store relations between nodes.
-See the following diagram for the memory layout of an example allocation of 32 GiB of unified memory.
+See the following diagram for the memory layout of an example allocation of 32 GiB of unified memory and the resulting memory regions.
 \begin{center}
     \begin{bytefield}{32}
         \begin{rightwordgroup}{includes all pointer relations\\that have been computed\\at any stage}
-            \memsection{ffff ffff}{a000 0000}{12}{pointer constraints}
+            \memsection{ffff ffff}{b000 0000}{10}{pointer constraints}
         \end{rightwordgroup}\\
         \begin{rightwordgroup}{these memory regions are used\\to compute the delta updates\\for the pointer relations}
-            \memsection{9fff ffff}{6000 0000}{8}{current pointer constraints}\\
-            \memsection{5fff ffff}{2000 0000}{8}{next pointer constraints}
+            \memsection{afff ffff}{8000 0000}{6}{current pointer constraints}\\
+            \memsection{7fff ffff}{4000 0000}{7}{next pointer constraints}
+        \end{rightwordgroup}\\
+        \begin{rightwordgroup}{these are the simple\\copy constraints}
+            \memsection{3fff ffff}{1000 0000}{5}{copy constraints}
         \end{rightwordgroup}\\
         \begin{rightwordgroup}{static memory\\does not change once written}
-            \memsection{1fff ffff}{1000 0000}{2}{load constraints}\\
-            \memsection{0fff ffff}{0000 0000}{2}{store constraints}
+            \memsection{0fff ffff}{0800 0000}{2}{load constraints}\\
+            \memsection{07ff ffff}{0000 0000}{2}{store constraints}
         \end{rightwordgroup}\\
     \end{bytefield}
 \end{center}
 Since a pointer analysis in general does not create new load or store relations in the constraint graph, these memory regions do not increase in size after initialization.
-Notably the pointer relations are split into three separate memory regions. This is needed for diffpoints calculations. This specific optimization was inspired by \cite{mendez2010parallel} among other works and will be explained in detail in \autoref{sec:diffpts}.
+Notably the pointer relations are split into three separate memory regions. This is needed for diffpoints calculations. This specific optimization was inspired by \cite{sui2016svf} and \cite{mendez2010parallel} among other works and will be explained in detail in \autoref{sec:diffpts}.
 After memory allocation is completed, CUDA streams are initialized for concurrent write operations into each memory region, as well as one stream for each of the available devices to enable computation on multiple GPUs in parallel.
-Finally, the entire allocation of unified memory is set to ones by \verb|cudaMemset|. This ensures that the memory is not in an undefined state. Furthermore, we can utilize this when reading from memory, since a memory region with all bits set to one represents unused space.
+Finally, every bit in the entire allocation of unified memory is set to one by \verb|cudaMemset|. This ensures that the memory is not in an undefined state. Furthermore, we can utilize this when reading from memory, since a memory region with all bits set to one represents unused space.
 
 % This state is needed for the 
 
