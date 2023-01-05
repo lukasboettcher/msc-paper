@@ -652,7 +652,7 @@ While for correctness testing a pre-defined test suite was used, a collection of
 
 \subsection{Test Suite}\label{sec:testsuite}
 For correctness testing the PTABENCH\footnote{\url{https://github.com/SVF-tools/Test-Suite}}, a subproject of the SVF framework, was used.
-The PTABENCH repository includes a set of small test programs that are compiled into LLVM bitcode. These test programs contain a set of constraints that represent a state that should be reached by the respective analyses.
+The PTABENCH repository includes a set of small test programs that are compiled into LLVM bitcode. These test programs contain a set of constraints that represent a state that should be reached by the respective analyses during testing.
 The test suite implements unit tests for all variants of pointer analysis included in SVF as well as more complex analyses, such as memory leak detection and multithreaded flow analyses. 
 Part of the test corpus are specific edge cases that test against quirks of real programs, such as SPEC CPU2000, in order to ensure all analyses produce sound results given complex input programs.
 As part of PTAGPU, testing with PTABENCH was enabled, to apply the unit tests and ensure that the results produced are sound and complete.
@@ -661,7 +661,7 @@ This was achieved by overwriting parts of the test invocation implementation ins
 The constraints in the test programs are implemented as function calls that relay the meaning of each property that is to be checked by the test case. The functions do not have to be defined for the constraint to be checked.
 When one of these special function calls is encountered at the end of the analysis, an alias check is performed for both function parameters.
 This check directly reads the points-to relations from unified memory and reports whether both variables may alias or are in fact not aliased.
-Note that the lack of precision of our whole program context-insensitive analysis prevents us from making any definitive statements about whether or not two variables have to alias, only that they may alias. For this reason any must alias constraints are interpreted as may alias constraints in our pointer analysis, similar to other pointer analyses in SVF.
+Note that the lack of precision of our whole program context- and flow-insensitive analysis prevents us from making any definitive statements about whether or not two variables have to alias, only that they may alias. For this reason any must alias constraints are interpreted as may alias constraints in our pointer analysis, similar to other pointer analyses in SVF.
 As an example, see the following test program in \autoref{lst:testcase} that checks whether a pointer analysis in SVF correctly resolves load and store constraints.
 
 \begin{listing}
@@ -705,7 +705,7 @@ The collection consists of 16 programs, each varying in complexity. See \autoref
 As PTAGPU and SVF rely on the LLVM project for data generation and input in the form of compiled bitcode, the selection of benchmark programs is somewhat limited to those written in languages for which LLVM compiler frontends exist. This includes programming languages such as C, C++, Rust, FORTRAN, and many other systems programming languages.
 
 The evaluation was performed on PTAGPU, the proposed algorithm of this thesis, and both the Andersen based wave propagation algorithm, wavediff, and the naive implementation of the Andersen analysis in SVF.
-The Andersen wave propagation algorithm represents a highly optimized current state-of-the-art inclusion-based, field-sensitive, context- and flow-insensitive pointer analysis.
+The Andersen wave propagation algorithm represents a highly optimized current state-of-the-art inclusion-based, field-sensitive, context- and flow-insensitive whole program pointer analysis.
 Furthermore, the results will showcase the differences between sequential CPU implementations and parallel GPU implementations.
 
 \begin{table}
@@ -732,12 +732,12 @@ Furthermore, the results will showcase the differences between sequential CPU im
         zstd          & 280  & 101  & 2.3M    & 6.260e-05 & 0.362       & 1.5.2   \\
         \hline
     \end{tabular}
-    \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes in thousands, number of edges in thousands, bitcode file size in kilobytes, density and average out degree for each constraint graph.}
+    \caption[List of benchmark programs used to evaluate PTAGPU]{List of benchmark programs used to evaluate PTAGPU.\\Number of nodes and edges in thousands, bitcode file size in kilobytes, density and average out degree for each constraint graph.}
     \label{tab:benchmarkprograms}
 \end{table}
 
 \subsubsection{Methodology}
-To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation for each object that was compiled and assembled, equivalent bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
+To generate the bitcode for the pointer analyses, each of the 16 benchmark projects was compiled with the clang\footnote{\url{https://clang.llvm.org}} compiler. During compilation of each object file that was compiled and assembled, equivalent bitcode was generated which was then linked along with the object code to produce both a binary - or a set of binaries, depending on the project - and a bitcode file for the entire program.
 Instead of manually intercepting each compile operation for each source file, the wllvm\footnote{\url{https://github.com/travitch/whole-program-llvm}} utility was used which is specifically designed to extract whole program bitcode from source packages by injecting bitcode generating compiler flags during the build process.
 Since most of the selected benchmark programs use common open source toolchains, such as Makefiles and bootstrapping scripts, the custom wllvm compiler interface was specified through either standard environment variables  \verb|CC| and  \verb|CXX| or arguments to the configure-scripts.
 Each of the resulting bitcode files are provided together with the source code of PTAGPU.
