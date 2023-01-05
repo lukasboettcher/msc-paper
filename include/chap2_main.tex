@@ -192,13 +192,13 @@ Finally, every bit in the entire allocation of unified memory is set to one by \
 \subsection{Sparse bit vectors}
 At the core of PTAGPU all edges of the constraint graph are stored in sparse bit vectors.
 Sparse bit vectors are a data structure that can be used for storing binary values, such as adjacency information of a graph. Sparse bit vectors are especially suited to represent edges of very sparse graphs and allow for dynamic addition of new edges and nodes, something other sparse graph representation such as the compressed sparse row format do not facilitate. Since the constraint graph of pointer analysis problems is typically very sparse \cite{mendez2012gpu}, sparse bit vectors are an ideal data structure for pointer analysis on the GPU. Find the adjacency plot for the constraint graph of the Linux kernel in \autoref{fig:linux-consg} as well as on overview for select open source programs and their constraint graph densities in \autoref{tab:benchmarkprograms}.
-Individual bit vectors contain three separate component, a base value, a set of bits and a next pointer.
+Individual bit vectors contain three separate components, a base value, a set of bits and a next pointer.
 For the bit vectors to efficiently work, the entire codomain of the directed edge relation of a graph is split into evenly sized partitions.
 The edges of each partition, if it contains edges, are then stored in the bits of a bit vector. If we omit empty partitions of the edge codomain, we create a set of sparse bit vectors.
 The base value of each sparse bit vector represent the current offset for all bits in the bit vector.
 Similar to linked lists, sparse bit vectors reference the next sparse bit vector in a field. This allows iteration through adjacent outgoing edges of a specific type for a given node by working through the next bit vectors until there is no next bit vector defined.
 The head bit vector for each node is stored in a pre-defined memory location, which is directly derivable from the node index.
-The exact position for each node in each memory partition can be calculated by multiplying the node index with the width of a single element in a sparse bit vector. This offset is then added to the overall offset of the memory partition to find the head bit vector for a specific edge type of a node, see \autoref{lst:getindex} for the implementation in PTAGPU.
+The exact position for each node in each memory region can be calculated by multiplying the node index with the width of a single element in a sparse bit vector. This offset is then added to the overall offset of the memory region to find the head bit vector for a specific edge type of a node, see \autoref{lst:getindex} for the implementation in PTAGPU.
 \begin{listing}
     \begin{minted}{c++}
 // src it the node for which we want to find the head bit vector
@@ -227,9 +227,9 @@ __host__ __device__ index_t getIndex(uint src, uint rel)
     \label{lst:getindex}
 \end{listing}
 Following, each unit in the sparse bit vector linked list will be called an element, as is conventional for linked lists.
-When deciding on the memory characteristics of the individual elements, the traits of the CUDA API need to be taken into consideration.
+When deciding on the memory characteristics of the individual elements, the traits of the CUDA API and hardware need to be taken into consideration.
 One possible optimization are coalesced memory accesses, where consecutive threads in a Warp access consecutive memory locations.
-Furthermore, we can optimize the memory operations of a Warp such that we access 128 bytes in total per Warp, since this allows us to fully saturates the memory controller while only requiring a single coalesced memory transaction \cite{mendez2012gpu}.
+Furthermore, we can optimize the memory operations of a Warp such that we access 128 bytes in total per Warp, since this allows us to fully saturate the memory controller while only requiring a single coalesced memory transaction \cite{mendez2012gpu}.
 If we take the optimal memory transaction of 128 bytes and split it evenly across all 32 threads of a Warp, we get 4 bytes of memory associated with each thread.
 As a result we set the size of each element to 128 bytes and each thread in a Warp manages a single word or 4 bytes of the element.
 Coincidentally an unsigned integer is 4 bytes wide on 64-bit systems, thus each thread accesses its memory in the form of an unsigned integer.
@@ -252,12 +252,12 @@ Each sparse bit vector element has the following layout.
 \end{center}
 \subsubsection{64-bit Addresses}
 This sparse bit vector layout is inspired by the layout presented in \cite{mendez2012gpu}.
-The notable difference being a switch from 32-bit to 64-bit addresses and the use of unified memory instead of only device memory.
+The notable difference being a switch from 32-bit to 64-bit addresses to reference the next element in a sparse bitvector.
 This is a requirement for using an address space larger than 16 GiB, since we are addressing 4-byte wide words.
-While this reduces the data density of each bit vector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^66$ bytes, is worth the trade-off as it eliminates any practical upper limits on memory allocation.
+While this reduces the data density of each bit vector by 4 bytes, the theoretical address space of 64 exbibytes, or $2^{66}$ bytes, is worth the trade-off as it eliminates any upper limits on memory allocation in the software.
 \subsubsection{Inserting new bit vectors}
 If our algorithm ever reaches a point where we need to add a new edge into an element with a mismatched base, we are required to create a new element with the correct base and append it to the linked list of bit vectors by referencing the correct memory address in the next field.
-Since we are operating on multiple nodes concurrently, we need to keep track of the already occupied memory for each of the memory partitions. This is achieved by utilizing some of the counters from the CUDA initialization.
+Since we are operating on multiple nodes concurrently, we need to keep track of the already occupied memory for each of the memory regions representing the different edge types. This is achieved by utilizing some of the counters from the CUDA initialization.
 These are incremented via atomic CUDA instructions each time a new element is created.
 Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
