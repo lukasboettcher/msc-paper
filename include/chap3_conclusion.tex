@@ -30,7 +30,7 @@ Furthermore, indirect call-sites were not resolved during either of these analys
 Because the source code of neither of these implementations is available online and no other GPU-based implementations of Andersen style pointer analyses are known at this time, direct comparisons with other GPU implementations are omitted from the evaluation.
 
 \section{Future Work}
-During the development of PTAGPU and evaluation of the results, multiple novel approaches and ideas were discovered which will be summarized in the following section.
+During the development of PTAGPU and evaluation of the results, multiple novel approaches and ideas were discovered but not implemented, which will be summarized in the following section.
 Some of these approaches could be used to further improve the performance of PTAGPU and alleviate shortcomings and limitations discovered during development.
 Furthermore, some ideas could lead to improvements in the SVF project upstream, and inspire new research directions.
 
@@ -47,8 +47,8 @@ This exact approach was used by Graspan in \cite{zuo2021systemizing} using the f
 
 Developing a partitioning system instead of loading the entire constraint graph into graphics memory, would also enable the use of multiple GPUs without having to synchronize access to individual nodes across all devices.
 The downside with partitioning the constraint graph lies in the fact that with an increasing number of partitions, the overhead associated with loading and unloading partitions increases.
-Splitting the constraint graph into 16 partitions would require loading and unloading all 15 adjacent partitions in order to resolve all constraints in a single partition.
-Part of this problem can be alleviated by performing an offline analysis and associating nodes with partitions such that a minimal number of edges overlap between partitions, leading to an optimal distribution of nodes for parallel graph rewriting.
+Splitting the constraint graph into 16 partitions would require loading and unloading all 15 adjacent partitions in order to resolve all constraints of a single partition in the worst case.
+Part of this problem can be reduced by performing an offline analysis and associating nodes with partitions such that a minimal number of edges overlap between partitions, leading to an optimal distribution of nodes for parallel graph rewriting.
 
 Other than partitioning the constraint graph, there are various optimizations proposed in \cite{mendez2012gpu} that did not yield any immediate performance improvements during the development of PTAGPU but might bring improvements given more thorough testing.
 These optimizations include online cycle detection and pointer-equivalent variable detection on the GPU during analysis.
@@ -57,7 +57,7 @@ Similarly, a cycle of copy edges in the constraint graph would always hold the s
 
 Another approach for improving the scalability of PTAGPU would be the use of peer-to-peer memory access.
 Peer-to-peer memory access is a capability of certain NVIDIA GPUs whereby multiple graphics cards can pool their memory though special NVLink interconnects on the GPUs, bypassing the bandwidth restrictions of the PCIe connections.
-This would allow one kernel on a single device to access the graphics memory of several graphics cards and increase the available amount of memory during analysis.
+This would allow one kernel on a single device to access the graphics memory of several graphics cards and increase the available amount of memory during analysis and improving the scalability.
 
 Finally, PTAGPU would greatly benefit from dynamic memory allocation. Currently, the total amount of unified memory has to be set during compilation, which is then allocated during runtime.
 Since pointer analyses are very irregular calculations, it is very difficult to set the correct amount of memory before the analysis is run.
