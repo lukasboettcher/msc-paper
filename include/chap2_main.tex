@@ -262,24 +262,24 @@ These are incremented via atomic CUDA instructions each time a new element is cr
 Using atomic operations allows for a synchronized state of used memory across the entire grid and prevents Warps from overwriting already used memory.
 
 \subsection{Edge Insertion}
-With the concept of sparse bit vectors established and required variables initialized, the PTAGPU algorithm can begin inserting the linear in-memory representation of the constraint graph derived from SVF, see \autoref{sec:integsvf}, into sparse bit vectors residing on unified memory.
+With the concept of sparse bit vectors established and required variables initialized, the PTAGPU algorithm can begin inserting the linear in-memory representation of the constraint graph derived from SVF, see \autoref{sec:integsvf}, into sparse bit vectors residing in unified memory.
 The core idea is to handle all edge labels concurrently in individual streams by invoking an edge insertion kernel for each type of edge.
-Inside each kernel each source node is processed by a single Warp which inserts the outgoing edges into the correct memory location of the correct element inside the sparse bit vector for the given source node.
-In order to efficiently distribute the work across all available Warps in all kernels, some pre-processing is needed before each kernel is launched.
-Given a set of edges of the same type to be processed by a single kernel, for example all store edges in the constraint graph, the pre-processing steps are illustrated in \autoref{fig:edge-insert}.
+Inside each kernel every source node is processed by a single Warp which inserts the outgoing edges into the correct memory location of the correct element inside the sparse bit vector for the given source node.
+In order to efficiently distribute the work across all available SMs, some preprocessing is needed before each insertion kernel is launched.
+Given a set of edges of the same type to be preprocessed for insertion, for example all store edges in the constraint graph, the preprocessing steps are illustrated in \autoref{fig:edge-insert}.
 \begin{figure}
     \centering
     \includegraphics[width=1.\textwidth]{img/edge-insertion.png}
     \caption[Diagram for Edge Insertion]{Preprocessing of edges during edge insertion.}
     \label{fig:edge-insert}
 \end{figure}
-The pre-processing steps are made up of four steps, 1) the linear in-memory representation of the constraint graph is copied into device memory via \verb|cuda::memcpy| 2) all edge tuples $(src,dst)$ are sorted with $src$ as the key, 3) the algorithm iterates through all $(src,dst)$ pairs and eliminates all duplicates, 4) the algorithm iterates through all $(src,dst)$ pairs and saves the index each time src changes in a third offset array.
+The preprocessing steps are made up of four steps, 1) the linear in-memory representation of the constraint graph is copied into device memory via \verb|cuda::memcpy| 2) all edge tuples $(src,dst)$ are sorted with $src$ as the key, 3) the algorithm iterates through all $(src,dst)$ pairs and eliminates all duplicates, 4) the algorithm iterates through all $(src,dst)$ pairs and saves the index each time src changes in a third offset array.
 Since we are operating on linear memory, we can utilize the CUDA thrust library to accelerate these operations on the GPU.
 Step 2 can be performed by the \verb|thrust::sort| algorithm and step 3 and 4 can be performed at the same time by \verb|thrust::unique_by_key_copy|.
-One small but important detail is that before we start the pre-processing we insert a pair of \verb|UINT_MAX| values into the array for the source indices and into the array for the destination indices.
+One small but important detail is that before we start the preprocessing we insert a pair of \verb|UINT_MAX| values into the array for the source indices and into the array for the destination indices.
 Having one additional pair assures that step 3 writes the end index for the last actual $(src,dst)$ pair into the offset array.
 
-After the pre-processing is done, all three arrays are fed into an insertion kernel that distributes all source nodes among the available Warps, which then insert the destinations indices into the elements of the sparse bit vector.
+After the preprocessing is done, all three arrays are fed into an insertion kernel that distributes all source nodes among the available Warps, which then insert the destinations indices into the elements of the sparse bit vector.
 Insertion into the element first calculates the correct base and then sets the correct bit to one if an element already exists, else a new element is first created.
 
 \begin{figure}
@@ -308,16 +308,16 @@ Insertion into the element first calculates the correct base and then sets the c
             \draw[step=\step] (0,-17*\step) grid (32*\step,-18*\step);
             \foreach \r in {0,...,1} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};\node at (2*\step+0.5*\step,-17.5*\step) {\small1};\foreach \r in {3,...,31} \node at (\r*\step+0.5*\step,-17.5*\step) {\small0};
             \foreach \r in {0,2,...,31} \node at (\r*\step+0.5*\step,-18.5*\step) {\tiny\r};
-            \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bit vector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|\\marked by a U.};
+            \node[draw,align=left,font = {\tiny}] at (40*\step,-15.5*\step) {After inserting the edge $(3,66)$\\into the sparse bit vector.\\Notice that the base is set\\ to 0 and both words for the next\\ index are still set to \verb|UINT_MAX|\\marked by a U, since no next\\element currently exists.};
             \draw[-{Stealth[red]}] (2.5*\step,-15*\step) -- (2.5*\step,-16.5*\step);
         \end{tikzpicture}
     \end{center}
     \caption{An example procedure for inserting a single edge into a sparse bit vector.}
     \label{fig:edgeinsert}
 \end{figure}
-The previous example in \autoref{fig:edgeinsert} showcases the process for inserting a single edge into an empty sparse bit vector.
+The example in \autoref{fig:edgeinsert} showcases the process for inserting a single edge into an empty sparse bit vector in the insertion kernel.
 Later insertions always check whether a base is already defined in each element of the sparse bit vector and insert the edges accordingly.
-The base of subsequent elements in the sparse bit vectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bit vector, elements might have to be shifted around.
+The base of subsequent elements in the sparse bit vectors is always sorted in ascending order for efficient random access. To maintain the order, whenever new elements are created, for example if a given base is not yet present in a sparse bit vector, elements might have to be shifted around to maintain the order.
 In practice these insertions are executed for each source node in parallel by multiple Warps on the GPU.
 
 \subsection{Concurrent Graph Rewriting}\label{sec:concurrgraph}
