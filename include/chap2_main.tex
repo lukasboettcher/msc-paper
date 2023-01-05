@@ -554,18 +554,19 @@ Since the CPU procedure stores all new edges it finds in a pair of vectors, repr
 At the end of each iteration of the main loop PTAGPU optionally presents the current memory usage and distribution among the memory regions for debugging end evaluation purposes. This includes statistics for the elapsed time of each component in PTAGPU - as measured by the C++ chrono\footnote{\url{https://en.cppreference.com/w/cpp/chrono}} library.
 
 \subsubsection{Diffpoints Updates}\label{sec:diffpts}
-If the main loop of PTAGPU were to repeatedly iterate and apply the same rewrite rules on every node, every iteration would repeat the work of the previous operation, making the algorithm very inefficient.
+If the main loop of PTAGPU were to repeatedly iterate and apply the same rewrite rules on every node, every iteration would repeat the work of the previous iteration, making the algorithm very inefficient.
 This problem does not only apply to PTAGPU, all pointer analyses need to prevent excessive repeating of already finished work.
 As such many implementations use a concept called diffpoints or delta-updates that is meant to prevent redundant work. Also, pointer analyses inside SVF make use of diffpoints in order to speed up the calculations.
+
 Diffpoints work by dividing the points-to relations calculated during application of the constraints into separate sets.
 One set describing all new edges that are calculated in the current iteration, one set for all points-to edges calculated in the previous iteration and one set for the bulk of all prior points-to edges.
-As can be seen in \autoref{alg:ptagpu-updatepts}, the update process between iterations be realized by simple set operations or more optimized bitwise operations.
-$$\Delta \mathcal{P} = nextPoints\oplus oldPoints$$
+As can be seen in \autoref{alg:ptagpu-updatepts}, the update process between iterations can be realized by simple set operations or more optimized bitwise operations.
+$$\Delta \mathcal{P} = nextPoints\setminus oldPoints$$
 $$currentPoints = \Delta \mathcal{P}\wedge oldPoints = \Delta \mathcal{P} \cup oldPoints\wedge newPoints = \emptyset$$
-After the update at the beginning of each iteration, all procedures apply the rewrite rules on the $\mathtt{currentPoints}$ set.
+After the update at the beginning of each iteration, all procedures apply the rewrite rules on the $\mathtt{currentPoints}$ set and write new points-to edges into $\mathtt{newPoints}$.
 With diffpoints in place we can ensure that each rewrite rule is only processed once, since any points-to edges are only in the set $\mathtt{currentPoints}$ exactly once.
 
-One problem that arises from using diffpoints, is the fact that whenever a new copy edge is added into the constraint graph - which can happen dynamically by applying rewrite rules - the next iteration does not process all points-to edges that need to be considered because of the addition of the copy edge. Instead, only those points-to edges are processed, which are in $\mathtt{currentPoints}$. The straightforward solution to this problem is to always explicitly work through all points-to edges in $\mathtt{coldPoints}$ whenever a new copy edge is added.
+One problem that arises from using diffpoints, is the fact that whenever a new copy edge is added into the constraint graph - which can happen dynamically by applying rewrite rules - the next iteration does not process all points-to edges that need to be considered because of the addition of the copy edge. Instead, only those points-to edges are processed, which are in $\mathtt{currentPoints}$. The straightforward solution to this problem is to always explicitly work through all relevant points-to edges in $\mathtt{oldPoints}$ whenever a new copy edge is added.
 This ensures that no points-to edges are skipped during processing.
 \subsection{Combining CPU and GPU execution}\label{sec:cpugpu}
 PTAGPU strives to achieve optimal concurrent execution.
@@ -628,12 +629,12 @@ The pseudocode for the CPU code is available in \autoref{alg:ptagpu-cpu}.
 As we do not make use of multiple CPU cores in any other part of the program, we can utilize a majority of the available CPU cores for the asynchronous execution.
 The calculation that is performed on the CPU reads the available points-to information to resolve all \verb|getelementpointer| edges in the constraint graph.
 While other GPU implementations of Andersen's analysis, such as \cite{mendez2012gpu}, also perform the \verb|gep| calculations on the GPU, this leaves the CPU mostly idle during the execution.
-Furthermore, parallelizing the application of \verb|gep| constraints is not as easily done as for the copy, load and store constraints, since each \verb|gep| instruction carries an offset value. Given the offset value and the points-to target of a node we need to calculate the correct abstract memory object that the offset references. This can be done on the GPU as demonstrated by \cite{mendez2012gpu}, but is more efficient to implement on a CPU, since \verb|gep| instructions can reference random regions in memory, which would require explicit synchronization on the GPU.
+Furthermore, parallelizing the application of \verb|gep| constraints is not as easily done as for the copy, load and store constraints, since each \verb|gep| instruction carries an offset value. Given the offset value and the points-to target of a node we need to calculate the correct abstract memory object that the offset references. This can be done on the GPU as demonstrated by \cite{mendez2012gpu}, but is more efficient to implement on a CPU, since \verb|gep| instructions can reference random regions in memory, which would require explicit synchronization on the GPU and slow down the application of the other rewrite rules.
 Beyond difficult synchronization on a GPU, it is also ideal to use the CPU for \verb|gep| constraint resolution, since PTAGPU is directly integrated into SVF, which already offers a variety of optimized methods for \verb|gep| constraint resolution.
 Lastly the asynchronous CPU code also resolves all indirect call-sites and updates the call-graph. 
 Arguably this is one of the most important aspects of PTAGPU that differentiates it from other GPU implementations of Andersen's analysis.
 Indirect call-site resolution is often omitted from academic implementations like \cite{mendez2012gpu}, \cite{zuo2021systemizing} or \cite{su2014parallel}.
-Since an over-approximated call-graph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect call-sites is an important step for the analysis to be usable by further analyses inside SVF. Furthermore, connecting the arguments and parameters at indirect call-sites is required to produce complete pointer information.
+Because an over-approximated call-graph is one of the fundamental results of a pointer analysis next to points-to information as described in \autoref{sec:svf}, resolving indirect call-sites is an important step for the analysis to be usable by further analyses inside SVF. Furthermore, connecting the arguments and parameters at indirect call-sites is required to produce complete pointer information.
 \subsection{Feeding the Results back into SVF}\label{sec:feedingback}
 At some point PTAGPU concludes its calculation and has produced a constraint graph inside unified memory, which includes an over-approximation of the points-to set for each pointer variable.
 On its own the constraint graph in the form of sparse bit vectors is not digestible by SVF. For this reason an interface is created to enable SVF to use the points-to information produced by SVF.
