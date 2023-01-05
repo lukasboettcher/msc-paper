@@ -64,7 +64,7 @@ Since pointer analyses are very irregular calculations, it is very difficult to 
 For this reason a dynamic memory allocation algorithm could improve the usability of PTAGPU by predicting and reallocating the amount of memory needed for the analysis.
 
 \subsubsection{Improvements for SVF}
-As PTAGPU has shown, there are lots of possibilities for parallelizing a pointer analysis.
+As PTAGPU and prior work has shown, there are lots of possibilities for parallelizing a pointer analysis.
 Since GPUs are not the only devices capable of parallel execution, it would be another interesting avenue of research to apply some of the techniques discussed in this thesis on the CPU-based pointer analyses of SVF.
 Seeing how other papers, like \cite{mendez2012gpu}, compared GPU and CPU parallel pointer analysis implementations, it would be interesting to compare a parallelized SVF-based pointer analysis on the CPU to PTAGPU. Especially for smaller programs, this might bring performance improvements.
 Part of a parallel CPU implementation in SVF would be to create thread safe versions of the internal SVF data structures.
@@ -72,9 +72,9 @@ This would also indirectly improve the performance of PTAGPU, since the asynchro
 Especially improving the parallel resolution of \verb|getelementpointer| constraints could yield great improvements for PTAGPU, since dealing with nested code structures is currently one of its weaknesses.
 It would also be interesting to further analyze the effects of using specific language constructs on the runtime performance on parallel pointer analyses.
 
-Ultimately it would also be a good idea to implement a hybrid pointer analysis in SVF that would be capable of utilizing both CPUs and GPUs for the analysis depending on the program to be analyzed.
+Ultimately it would be a good idea to implement a hybrid pointer analysis in SVF that would be capable of utilizing both CPUs and GPUs for the analysis depending on the program to be analyzed.
 Using the CPU implementation for smaller programs and the GPU implementation for larger programs until graphics memory is exhausted, could maximize the performance for different kinds of input programs.
-Since pointer analyses do not remove any already computed point-to data, a given analysis could switch between CPU and GPU implementations relatively uninterruptedly, without having to repeat a large amount of work.
+Since pointer analyses do not remove any already computed points-to data, a given analysis could switch between CPU and GPU implementations relatively uninterruptedly, without having to repeat a large amount of work.
 Using diffpoints further improves this process.
 
 Finally, another avenue for future research is the reevaluation of context-free-grammars, possibly in a parallel execution environment, for the purpose of pointer analysis.
@@ -83,6 +83,7 @@ Recent additions to the SVF framework include a solver component that explicitly
 Concluding, PTAGPU was capable of meaningfully improving the performance of a whole program field-sensitive pointer analysis on top of LLVM and the SVF framework.
 The main advantages lie with relatively large programs that are built using a relatively flat code structure, where PTAGPU achieves a respectable speedup over CPU-based pointer analyses.
 Given how general Andersen style pointer analyses are a P-complete computational problem \cite{mathiasen2021fine}, this result is not achieved by trivial methods, but requires a wide set of complex analysis techniques and optimizations. All while being able to use a reproducible and well-defined input format in the form of LLVM bitcode.
+
 The main disadvantages are that using GPUs for a pointer analysis always introduces an overhead for graphics memory management and conversion of input data into a format suitable for the GPU.
 This makes using GPUs for analyzing small programs (less than 1 MB in size) inefficient.
 For optimal performance PTAGPU also requires that the entire analysis fits into graphics memory, which currently prevents some of the largest software projects, such as the Linux kernel, from being analyzed by PTAGPU efficiently.
