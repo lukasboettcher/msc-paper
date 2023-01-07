@@ -864,12 +864,12 @@ This theory can explain the discrepancy between the benchmark results of "postgr
     \begin{minted}{c}
     // flat program structure
     int value1 = 14;
-    int value2 = 24;
-    method(24);
-    // nested program structure
-    int vlaue1 = 14;
     int value2 = value1 * 2;
-    method(value2);
+    method(value1, value2);
+    // nested program structure
+    struct param { int f1; int f2;} p;
+    p.f1 = 14; p.f2 =  p.f1 * 2;
+    method(p);
     \end{minted}
     \caption{Intuitive illustration of a "flat" and a "nested" program structure.}
     \label{lst:flatprogram}
