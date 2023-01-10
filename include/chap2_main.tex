@@ -833,7 +833,14 @@ To further evaluate the performance of the PTAGPU algorithm without being memory
     \label{tab:benchmarkresults-a100}
 \end{table}
 
-The benchmarks on the A100 overall improved the performance of PTAGPU, increasing the speedup factor for all programs.
+The benchmarks on the A100 GPU overall improved the performance of PTAGPU compared to machine B, increasing the speedup factor for all programs.
+See \autoref{fig:speedup} for an overview of the speedup factors PTAGPU achieved over the wavediff algorithm.
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{img/speedup.png}
+    \caption[Bar plot for speedup on machine C.]{PTAGPU speedup for each benchmark program over wavediff algorithm on machine C with an A100 GPU.}
+    \label{fig:speedup}
+\end{figure}
 Specifically the "git", "php", "postgres" and "python" benchmarks improved the most, since the analysis was no longer limited by GPU memory.
 Depending on the benchmark program, PTAGPU was up to four times faster than the wavediff algorithm. Compared to the naive implementation of Andersen's algorithm in SVF, PTAGPU was several orders of magnitude faster on every one of the benchmarks.
 At its slowest PTAGPU was about 50\% as fast as the wavediff algorithm, ignoring minimal analyses, such as "nano".
