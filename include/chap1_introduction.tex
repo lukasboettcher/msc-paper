@@ -1,17 +1,17 @@
 \chapter{Introduction} \label{chap:intro}
-The goal of this thesis is the implementation of a parallel implementation of a pointer analysis. As well as researching to what extent such an implementation presents advantages or disadvantages over other analyses that are not strictly parallel in nature.
+The goal of this thesis is the implementation of a parallel pointer analysis. As well as researching to what extent such an implementation presents advantages or disadvantages over other pointer analyses that are not strictly parallel in nature.
 \begin{center}
     \textbf{A digital version of this thesis together with the full source code of the developed software is available online at\\
         \href{https://git.informatik.uni-kiel.de/stu210239/masterarbeit}{https://git.informatik.uni-kiel.de/stu210239/masterarbeit}.}
 \end{center}
 \section{Structure of this Thesis}
 This thesis is divided into three chapters.
-The first chapter \autoref{chap:intro} lays the groundwork for the implementation and goes into detail what ideas were pursued in order to develop the implementation. All related current work and its influences on this thesis are discussed here, as well as the motivation for the implementation itself. Furthermore, the fundamentals of pointer analysis are explained here with code samples and an end to end analysis workflow that aims to illustrate the connection between actual code and its representation in a pointer analysis.
+The first chapter, \autoref{chap:intro}, lays the groundwork for the implementation and goes into detail what ideas were pursued in order to develop the implementation. All related current work and its influences on this thesis are discussed here, as well as the motivation for the implementation itself. Furthermore, the fundamentals of pointer analysis are explained here with code samples and an end to end analysis workflow that aims to illustrate the connection between actual code and its representation in a pointer analysis.
 
-In the second chapter \autoref{chap:main} the software, namely PTAGPU, that was developed as part of this thesis, is described in detail. Design decisions, integrations with other software libraries and correctness are elaborated here.
+In the second chapter, \autoref{chap:main}, the software, namely PTAGPU, that was developed as part of this thesis, is described in detail. Design decisions, integrations with other software libraries and correctness are elaborated here.
 The experimental benchmark results and how they were generated are also presented here.
 
-The last chapter \autoref{chap:conclusion} covers possible future work that could further improve the implementation and explore more ideas concerning parallel pointer analyses.
+The last chapter, \autoref{chap:conclusion}, covers possible future work that could further improve the implementation and explore more ideas concerning parallel pointer analyses.
 This chapter also discusses the experimental results from \autoref{chap:main}.
 
 \section{Motivation}
@@ -19,7 +19,7 @@ This thesis aims to explore the possibilities of parallelizing the Andersen styl
 With the general trend of more complex software systems in software development, developers also require static analysis tools that are able to perform scalable analyses on entire codebases.
 Unfortunately general pointer analysis is an undecidable computational problem \cite{landi1992undecidability}, which prevents fully precise pointer analyses from being a possibility.
 For this reason all pointer analyses are approximate, and a balance must be found between performance and precision when analyzing code.
-Historically most pointer analysis solutions have been implemented as single threaded applications, because pointer analyses are challenging to parallelise \cite{su2015efficient}. By using GPGPUs the proposed library from this thesis aims to improve performance when analyzing entire programs by distributing the work across the many streaming processors modern GPGPUs possess. The performance improvement of the proposed implementation also do not decrease the analysis precision.
+Historically most pointer analysis solutions have been implemented as single threaded applications, because pointer analyses are challenging to parallelise \cite{su2015efficient}. By using GPGPUs the proposed library from this thesis aims to improve performance when analyzing entire programs by distributing the work across the many streaming processors modern GPGPUs possess. The performance improvement of the proposed implementation also should not decrease the analysis precision.
 \subsection{Static Analysis in Software Development}
 Currently, most compilers employ almost entirely intraprocedural pointer analyses to allow for a fast and scalable static analysis during compilation. Only recently limited support for interprocedural analyses was introduced in the GCC compiler\footnote{\url{https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Static-Analyzer-Options.html}}.
 With greater complexity in modern software projects, these ad hoc intraprocedural analyses during compilation are not sufficient for finding most bugs because they suffer from low accuracy and missing semantic information \cite{gu2020towards}.
@@ -32,11 +32,11 @@ For this reason this thesis explores options for improving scalability and perfo
 In general a pointer analysis tries to find the values of pointers in a program at runtime, without having to execute the program.
 So naturally this problem is undecidable \cite{landi1992undecidability} following a reduction from the halting problem.
 As a result, performing a pointer analysis becomes a delicate balancing act between precision and performance.
-Commonly analyses produce over-approximations of the targets each pointer can point towards at runtime while other parts of an analysis might omit or under-approximate certain parts for the sake of performance and scalability.
+Commonly, analyses produce over-approximations of the targets each pointer can point towards at runtime while other parts of an analysis might omit or under-approximate certain parts for the sake of performance and scalability.
 As a result, these analyses are strictly speaking unsound or soundy as put forward by \cite{livshits2015defense}:
 
 \begin{quote}
-    We introduce the term soundy for
+    "We introduce the term soundy for
     such analyses. The concept of soundiness
     attempts to capture the balance,
     prevalent in practice, of over-approximated
@@ -47,10 +47,10 @@ As a result, these analyses are strictly speaking unsound or soundy as put forwa
     claim to describe a sound analysis. A
     soundy analysis aims to be as sound as
     possible without excessively compromising
-    precision and/or scalability.
+    precision and/or scalability." \cite{livshits2015defense}
 \end{quote}
 
-Pointer analyses build the foundation for a variety of other static analyses, since call-graph generation is directly dependent on pointer analysis in order to resolve indirect or dynamic calls statically.
+Pointer analyses build the foundation for a variety of other static analyses such as value-flow analyses, since call-graph generation is directly dependent on a prior pointer analysis in order to resolve indirect or dynamic calls statically. Without pointer information most static analysis algorithms are simply unable to reason about the state of a given program.
 
 One common pointer analysis is the inclusion-based Andersen analysis \cite{andersen1994program}. The details of this type of analysis will be discussed later on, as it is the underlying basis for the proposed algorithm in \autoref{chap:main}. The Andersen algorithm sacrifices precision in favor of performance and achieves an upper bound of $O(n^3)$ where n represents the number of pointer variables relevant to the analysis. This is known as the cubic bottleneck of general Andersen analysis \cite{mathiasen2021fine}.
 This showcases the trade-off that all non-theoretical pointer analyses have to make in order to be applicable to real programs and avoid undecidability. Furthermore, Andersen's analysis is a P-complete problem and is therefore not trivially parallelizable \cite{mathiasen2021fine}.
@@ -59,7 +59,7 @@ As a general abstraction, pointer analyses can be seen as complex graph problems
 This allows us to make use of a large body of previous research concerning graph problems and transform the general analysis into a better defined mathematical problem.
 
 Another analysis closely related to pointer analysis is alias analysis, where two pointers are said to alias if their points-to sets have an intersection. An alias analysis produces a set of relations over all nodes in the analysis graph where nodes can either \textbf{NotAlias}, \textbf{MayAlias} or \textbf{MustAlias}.
-For two given nodes, $a$, $b$ and their points-to sets $pts(a)$ and $pts(b)$ the following constraints describe the relations.
+For two given nodes, $a$, $b$ and their points-to sets $pts(a)$ and $pts(b)$, the following constraints describe the relations.
 \begin{align}
     a\ \textbf{NotAlias}\ b \iff \forall ptd \in pts(a) \colon ptd \notin pts(b)\label{eq:alias1} \\
     a\ \textbf{MayAlias}\ b \iff \exists ptd \in pts(a) \colon ptd \in pts(b)\label{eq:alias2}    \\
@@ -70,7 +70,7 @@ Both pointer analysis, alias analysis, and points-to analysis are all terms comm
 A motivating example for pointer analyses is the detection of memory leaks in programs.
 This occurs when a memory location is allocated on the heap, for example with a call to \verb|malloc| in glibc, and is not freed at a later stage in the program.
 It is in the interest of the developer to find such faults as to not exhaust the computer's memory during execution by repeatedly allocating memory in the heap without freeing previous allocations.
-Finding such logical errors can be accomplished via a related static analysis called data-flow analysis, where each possible value at different stages of the program is calculated. Here pointer information is vital, as pointers can represent lateral movement of data through the control flow of a program, independent of direct assignments and read operations. Ultimately almost all static analyses require some kind of information about pointers to fully determine the state of a program.
+Finding such logical errors can be accomplished via a related static analysis called data-flow analysis, that tries to determine where specific data might flow in a program. Here pointer information is vital, as pointers can represent lateral movement of data through the control flow of a program, independent of direct assignments and read operations. Ultimately almost all static analyses require some kind of information about pointers to fully determine the state of a program.
 Aside from error detection such as memory leaks, optimizations are another aspect of compiler systems, where pointer information is important to achieve better results, see \autoref{lst:dataflow}.
 More often than not the pointer information alone does not provide an immediate value to the compiler or analysis tool, instead other procedures build on top of this information to derive valuable information about a program.
 
@@ -258,7 +258,7 @@ The trade-off for this faster algorithm is precision, since Steensgard's algorit
             this leads to an obvious loss of precision */
         }
     \end{minted}
-    \caption{Steensgard easily looses precision.}
+    \caption{Steensgard's analysis quickly looses precision during analysis.}
     \label{lst:steensvander}
 \end{listing}
 
@@ -297,7 +297,7 @@ The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
         \For{edge (node,target) $\in out_{copy/gep}(node)$}
         \State pts(target) $\leftarrow$ union pts(node) pts(target)
         \If{pts(target) changed}
-        \State changed = False and add target to worklist
+        \State changed = True $\wedge$ add target to worklist
         \EndIf
         \EndFor
         \EndWhile
@@ -331,9 +331,9 @@ The general algorithm for wave propagation is listed in \autoref{alg:waveprop}.
 By now the fundamentals of pointer analysis have been introduced, which unilaterally can be modeled as a graph problem.
 The missing part of the introduction is where the underlying data for such a pointer analysis algorithm comes from or how it is derived from a given program that has to be analyzed.
 Initially pointer analyses were solely implemented in compilers to detect errors and find possible optimizations during compilation. As compilers already employ an internal representation for the programs to be compiled, the data generation was not problematic.
-As the scope of pointer analyses expands from intraprocedural analysis part of a compiler towards standalone interprocedural whole program analyses it is clear, that a new representation for programs is needed, on which analyses can run - independent of the compilation process.
+As the scope of pointer analyses expands from intraprocedural analysis part of a compiler towards standalone interprocedural whole program analyses, it is clear, that a new representation for programs is needed, on which analyses can run - independent of the compilation process.
 
-During initial review of literature for pointer analysis multiple methods for data generation were surveyed. Notably, parsing was among the most common data extraction methods for programs. Another method was to extract an intermediate representation, called LLVM-IR, of the code during initial compilation of a program by means of using the low level virtual machine, LLVM. Using LLVM has some distinct advantages compared to parsing the source files of a program directly.
+During initial review of literature for pointer analysis multiple methods for data generation were surveyed. Notably, simply parsing the source code was among the most common data extraction methods for programs. Another method was to extract an intermediate representation, called LLVM-IR, of the code during initial compilation of a program by means of using the low level virtual machine, LLVM. Using LLVM has some distinct advantages compared to parsing the source files of a program directly.
 For one, LLVM provides multiple compiler front-ends for various compiled programming languages, including C/C++ and Objective-C through the Clang compiler or Rust through the rustc compiler, which allows one to compile multiple languages without having to adapt the parser, as can be seen in \autoref{fig:llvm}.
 Especially when working with older non-strictly standardized versions of the C language, utilizing all available tricks of an established compiler proves to be more resourceful compared to reinventing the wheel with new parsing tools.
 Secondly one can easily verify the correctness of the extracted data for a program by simply executing the compiled intermediate representation since no matter the programming language, as part of the LLVM toolchain the program always gets compiled into the intermediate representation before being assembled and linked. The LLVM project provides specific tools for executing programs in LLVM-IR format using a just-in-time compiler \footnote{https://releases.llvm.org/9.0.1/docs/CommandGuide/lli.html}. Beyond the binary intermediate representation, also called bitcode, there exists a human-readable format. Both binary and text versions can be converted between with the LLVM tools \verb|llvm-as| and \verb|llvm-dis|, see \autoref{lst:llvmir} for a basic hello world program in human-readable LLVM-IR.
@@ -394,18 +394,18 @@ The LLVM \verb|alloca| instruction is used to allocate memory on the stack.
     %ptr = alloca i32*, align 8
 \end{minted}
 The analog of the \verb|alloca| instruction in a pointer analysis is the address-of operation $x = \&a$, since the top-level variable $ptr$ points to the abstract memory location holding the actual value.
-This might come as a surprise, since the implementation of $x = \&a$ in C does not result in an \verb|alloca| instruction. This often leads to confusion when interpreting points-to results that are built using the LLVM-IR. Nonetheless the interpretation of the \verb|alloca| instruction as an address-of pointer constraint is in line with the Andersen algorithm.
+This might come as a surprise, since the implementation of $x = \&a$ in C does not result in an \verb|alloca| instruction in the LLVM-IR. This often leads to confusion when interpreting points-to results that are built using the LLVM-IR. Nonetheless the interpretation of the \verb|alloca| instruction as an address-of pointer constraint is in line with the constraints of the Andersen algorithm.
 
 \paragraph{Load Instruction}
-The LLVM \verb|load| instruction loads the value on a top-level variable into a new variable. Compared to the C programming language this is comparable to dereferencing a pointer variable.
+The LLVM \verb|load| instruction loads the value of a top-level variable into a new variable. Compared to the C programming language this is comparable to dereferencing a pointer variable.
 \begin{minted}{llvm}
     %ptr = alloca i32*, align 8
     ; load the pointer to the 32 bit integer from ptr into %var
     %var = load i32*, i32** %ptr, align 8
 \end{minted}
 When interpreting LLVM load instructions for a pointer analysis, we can treat it as the complex load constraint that is already defined for Andersen's analysis in \autoref{tab:ander}.
-Again just like the \verb|alloca| instruction we can not draw a direct comparison between the definition of the constraint $x = *y$ and the equivalent statement in the C language, since we are working with the LLVM-IR in SSA form.
-The C equivalent would be the dereferencing of $*y$ alone. The assignment to x would require another store instruction.
+Again, just like the \verb|alloca| instruction, we can not draw a direct comparison between the definition of the constraint $x = *y$ and the equivalent statement in the C language, since we are working with the LLVM-IR in SSA form.
+The C equivalent of the \verb|load| instruction would be the dereferencing of $*y$ alone. The assignment to x would require another \verb|store| instruction.
 
 \paragraph{Store Instruction}
 The LLVM \verb|store| instruction stores a value into a variable. The variable might be a top-level or an abstract memory object represented by an address-taken variable.
@@ -437,8 +437,8 @@ or the index is a variable that is subject to change during execution, and we ne
 This behavior is handled by differentiating between two types of \verb|gep| constraints in the pointer analysis, normal- and variant-gep constraints. The former specifying a singular offset and the latter every possible offset for a given aggregate data type, since the value can not be statically determined.
 
 \paragraph{Copy Instruction and equivalent Instructions}
-Other than the complex store, load and the address-of constraints, the Andersen inclusion-based pointer analysis operates also on simple constraints, see line 2 in \autoref{tab:ander}. In terms of LLVM-IR instructions, we are only interested in those instructions that manipulate pointers. In the LLVM-IR specification lots of instructions can result in values being moved, including pointers. Therefore, we group those instructions that can move values between symbols under the simple inclusion-based constraint.
-The following instructions are interpreted as simple constraints:
+Other than the complex store, load and the address-of constraints, the Andersen inclusion-based pointer analysis operates also on simple constraints, see line 2 in \autoref{tab:ander}. In terms of LLVM-IR instructions, we are only interested in those instructions that manipulate pointers. In the LLVM-IR specification lots of instructions can result in values being moved, including pointers. Therefore, we group those instructions that can move values between symbols under the simple inclusion-based copy constraint.
+The following instructions are interpreted as simple copy constraints:
 \begin{itemize}
     \item \verb|Phi| instructions are part of the LLVM-IR to correctly resolve control flow. Depending on the conditional branch a new SSA variable is introduced that holds the resulting value from the branch.
           Since we are implementing a flow-insensitive pointer analysis we do not differentiate between control flows and simply interpret each phi instruction as a simple constraint connecting the conditional values to the resulting phi variable.
@@ -873,7 +873,7 @@ During the writing of this thesis another library with a focus on static analysi
 \section{Related Work}
 \subsection{SVF}\label{sec:svf}
 As mentioned in \autoref{sec:pta}, a pointer analysis is the basis for many types of static analyses.
-One such analysis framework is SVF\footnote{\url{http://svf-tools.github.io/SVF}}, a project that aims to enable scalable and precise interprocedural static value-flow analysis \cite{sui2016svf}. The SVF tool consists of a number of subcomponents that represent individual analysis use cases, such as use-after-free and source-sink error detection \cite{sui2014detecting}, whole program pointer analysis and on-demand value flow analysis \cite{sui2018value} to name a few.
+One such analysis framework is SVF\footnote{\url{http://svf-tools.github.io/SVF}}, a project that aims to enable scalable and precise interprocedural static value-flow analysis \cite{sui2016svf}. The SVF tool consists of a number of subcomponents that represent individual analysis use cases, such as use-after-free and source-sink error detection \cite{sui2014detecting}, whole program pointer analysis and on-demand value-flow analysis \cite{sui2018value} to name a few.
 SVF as a framework also allows users to extend and implement custom analysis solutions that build on top of the subcomponents that make up SVF and LLVM, which serves as a base and data source for SVF, see \autoref{fig:svf}.
 This gives SVF a degree of modularity that other current static analysis frameworks, such as \cite{shi2018pinpoint}, often lack.
 
@@ -897,11 +897,11 @@ See \autoref{fig:pag} for the resulting PAG of the example program in \autoref{t
 \end{figure}
 
 The typical analysis run with SVF starts off with a pointer analysis that first derives a constraint graph from the PAG, similar to the procedure described in \autoref{sec:ander}.
-The constraint graph is then fed into a pointer analysis algorithm such as the state-of-the-art interprocedural Andersen style Wave Propagation algorithm.
+The constraint graph is then fed into a pointer analysis algorithm such as the state-of-the-art interprocedural Andersen style Wave Propagation algorithm, see \autoref{alg:waveprop}.
 The result is an over-approximated points-to set for each top-level variable and address-taken variable, as well as a call-graph, that represents an over-approximation for each direct and indirect function call.
 Given the points-to information, SVF performs an initial mod-ref analysis run to find interprocedural side effects of variables. Given mod-ref and pointer information, defs and uses are then annotated in each procedure with alias sets of abstract memory objects that might be accessed indirectly by loads and stores.
 SVF also allows users to specify a memory partitioning strategy whereby the heap can be partitioned with varying granularity to allow for precision and scalability trade-offs.
-The properties that are of interest here are specifically the def-use chains of address-taken variables of pointers, which are difficult to compute compared to the def-use chains of top-level variables which are already available if the program in SSA form \cite{sui2016svf}.
+The properties that are of interest here are specifically the def-use chains of address-taken variables of pointers, which are difficult to compute compared to the def-use chains of top-level variables which are already available if the program is in SSA form \cite{sui2016svf}.
 The difficulty arises from the seeming ambiguity of indirect accesses to address-taken variables through loads and stores in the program.
 After connecting defs and uses of variables, the result is a value-flow graph, or sparse value-flow graph depending on the specified analysis details, that can then be used for more concrete analyses, e.g. use-after-free memory leak detection \cite{sui2014detecting} or fed back into a more precise pointer analysis algorithm to increase precision with the gained value-flow information.
 
@@ -916,7 +916,7 @@ The components of each implementation can be split into three groups, the Graph,
 A set of Rules, which dictate how points-to information should be derived from each statement in the Graph. And a Solver which dictates the order in which the Rules are to be applied on the Graph, according to \cite{sui2016svf}.
 A user can then choose which components to reuse and which to replace or augment with custom algorithms or data structures.
 This modular approach makes it convenient to experiment with different in-memory representations of points-to data, as well as testing different methods for solving the constraint graph.
-The software developed in \autoref{chap:main} will use SVF as a basis for the pointer analysis.
+The software developed in \autoref{chap:main} will use SVF as a basis for the pointer analysis and reuse parts of SVF during the analysis.
 \subsection{Graspan}\label{sec:graspan}
 Graspan is a disk-based parallel graph system designed for computing transitive closures on very large graphs defined by context-free grammars. It was first introduced by \cite{wang2017graspan} with a CPU backend and later in \cite{zuo2021systemizing} with a GPU-based backend.
 Disk-based means, that a given constraint-graph is divided into smaller subgraphs, called partitions, that are stored on non-volatile memory and loaded into memory in pairs to calculate the transitive closures in steps that can lead to the desired pointer information - or any other static analysis solution that can be defined by a context-free grammar, see \autoref{sec:ander-cfl}.
