@@ -786,7 +786,7 @@ Initially the PTAGPU analysis and both Andersen based pointer analyses, wavediff
 The results from machine B showed that the PTAGPU analysis had a high speedup (greater than 2) for several programs, including "perl", "python", "postgres", and "vim", indicating that it was significantly faster than the wavediff analysis for these programs. However, the PTAGPU analysis had a low speedup (less than 0.5) for several programs, including "diff", "git", "nano" and "php", indicating that it was noticeably slower than the wavediff analysis for these programs.
 Most of the programs with sub-one speedup factors, are smaller in terms of node and edge count of the constraint graph, such as "diff", "htop", "nano" and "zstd". These slow results for the smaller programs can be explained by the overhead associated with CUDA initialization. For example the PTAGPU analysis for the "nano" program took 1687 ms, where 1533 ms were spent on CUDA memory allocations and deallocations and 145 ms on the actual compute kernels. Comparing this to the 87 ms required for the wavediff analysis, the PTAGPU analysis runtime is dominated by overhead from the CUDA memory management. This explains the relatively slow performance of PTAGPU on the smaller benchmarks.
 
-Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively on machine B, although both programs are relatively large and the analysis was not dominated by CUDA memory management but the primary kernel instead as can be seen in \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
+Notably the results for the benchmarks "git" and "php" achieved an especially low speedup of 0.12 and 0.01 respectively on machine B, although both programs are relatively large and the analysis was not dominated by CUDA memory management, but the primary kernel instead, as can be seen in \autoref{fig:stackedbar-problem}, indicating a large workload on the GPU.
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{img/stackedbar-problems.png}
@@ -849,7 +849,7 @@ Looking at the distribution of time spent on the individual components of PTAGPU
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{img/stackedbar-a100.png}
-    \caption{Stacked bar graph for PTAGPU runtime from machine C.}
+    \caption{Time spent on individual PTAGPU components on machine C.}
     \label{fig:stackedbar-a100}
 \end{figure}
 
